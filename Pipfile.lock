@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "76d90bc339022f8dd86cbb34dbf672efda012570ec51e218ab0630add0f96af2"
+            "sha256": "42879fcea09d3af120b668fb1b6597fc932b4521008ff16262972cb3dfba56d2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "argparse": {
+            "hashes": [
+                "sha256:62b089a55be1d8949cd2bc7e0df0bddb9e028faefc8c32038cc84862aefdd6e4",
+                "sha256:c31647edb69fd3d465a847ea3157d37bed1f95f19760b11a47aa91c04b666314"
+            ],
+            "version": "==1.4.0"
+        },
         "atomicwrites": {
             "hashes": [
                 "sha256:0312ad34fcad8fac3704d441f7b317e50af620823353ec657a53e981f92920c0",
@@ -73,6 +80,13 @@
             ],
             "version": "==3.0.4"
         },
+        "entrypoints": {
+            "hashes": [
+                "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19",
+                "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"
+            ],
+            "version": "==0.3"
+        },
         "google-api-python-client": {
             "hashes": [
                 "sha256:301e498ae5152250b7f3c2dc091ee383c2852ef90aeab12bb29767ef9981627c",
@@ -106,6 +120,13 @@
                 "sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"
             ],
             "version": "==2.8"
+        },
+        "keyring": {
+            "hashes": [
+                "sha256:8f683fa6c8886da58b28c7d8e3819b1a4bf193741888e33a6e00944b673a22cf",
+                "sha256:d71368b9a10dc096c8a1b69a46fc23f0a551f709b9a55b4d4deb7d2fbd809b68"
+            ],
+            "version": "==17.1.1"
         },
         "lxml": {
             "hashes": [
@@ -145,6 +166,26 @@
                 "sha256:fe7a7cae1ccb57d33952113ff4fa1bc5f879963600ed74918f1236e212ee50b9"
             ],
             "version": "==5.0.0"
+        },
+        "ofxclient": {
+            "hashes": [
+                "sha256:6894e30b25879e09050321e56d2e2dbb08860ab59a57d3811dd6934197c6b049"
+            ],
+            "index": "pypi",
+            "version": "==2.0.3"
+        },
+        "ofxhome": {
+            "hashes": [
+                "sha256:8510451fd228c30627c3d18c2e530df35944afc2a4c97c888df6262c3276fee6"
+            ],
+            "index": "pypi",
+            "version": "==0.3.3"
+        },
+        "ofxparse": {
+            "hashes": [
+                "sha256:eb45db5802938ac0ab3664418ca564619cc9e7ec6d301c1063ffc16e587ec37e"
+            ],
+            "version": "==0.20"
         },
         "pluggy": {
             "hashes": [
@@ -291,7 +332,6 @@
                 "sha256:320ffd3de9699d3892048baee45ebfbbf9388a7d65d832d7e580243ade426d2b",
                 "sha256:50e3b9a464d5d08cc5227413db0d1c4707b6172e4d4d915c1c70e4de0bbff1f5",
                 "sha256:5276db7ff62bb7b52f77f1f51ed58850e315154249aceb42e7f4c611f0f847ff",
-                "sha256:5ae4696e597156ddc7e6c50563fe524132b5b2644bd47175d56e3cb78a65cae3",
                 "sha256:61a6cf00dcb1a7f0c773ed4acc509cb636af2d6337a08f362413c76b2b47a8dd",
                 "sha256:6ae6c4cb59f199d8827c5a07546b2ab7e85d262acaccaacd49b62f53f7c456f7",
                 "sha256:7661d401d60d8bf15bb5da39e4dd72f5d764c5aff5a86ef52a042506e3e970ff",
@@ -338,7 +378,6 @@
         },
         "wrapt": {
             "hashes": [
-                "sha256:a458dccba2b788808214320cc8bf245e6a6d87eb5f57c6c2b9cb48733169684b",
                 "sha256:d4d560d479f2c21e1b5443bbd15fe7ec4b37fe7e53d335d3b9b0a7b1226fe3c6"
             ],
             "version": "==1.10.11"

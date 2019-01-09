@@ -9,6 +9,8 @@ pylint = "*"
 [packages]
 pyyaml = "*"
 beancount = "*"
+ofxhome = "*"
+ofxclient = "*"
 
 [requires]
 python_version = "3.7"
