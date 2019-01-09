@@ -20,7 +20,7 @@ import yaml
 # print(args.collect_config)
 
 # load accounts config
-# FIXME: hard-coded for now, see beancount issue
+# FIXME: hard-coded for now, see beancount issue https://bitbucket.org/blais/beancount/issues/358/
 fname = path.join(path.dirname(__file__), '../accounts/CONFIG.yaml')
 with open(fname) as f:
     CONFIG = yaml.load(f)
