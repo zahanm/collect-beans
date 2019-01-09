@@ -141,6 +141,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
                 return None
 
         # Parse all the transactions.
+        first_row = last_row = None
         for index, row in enumerate(reader, 1):
             if not row:
                 continue
@@ -156,6 +157,10 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
                 row = self.row_processor(row, iconfig)
                 if self.debug:
                     print('processed: ', row)
+
+            if first_row is None:
+                first_row = row
+            last_row = row
 
             # Extract the data we need from the row, based on the configuration.
             date = get(row, Col.DATE)
@@ -200,7 +205,16 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             # Add the transaction to the output list
             ledger.append(txn)
 
-        ledger = data.sorted(ledger)
+        # this has the bug where it mis-sorts within a given day, which is important for the balance
+        # ledger = data.sorted(ledger)
+
+        # Figure out if the file is in ascending or descending order.
+        first_date = parse_date_liberally(get(first_row, Col.DATE))
+        last_date = parse_date_liberally(get(last_row, Col.DATE))
+        is_ascending = first_date < last_date
+        # Reverse the list if the file is in descending order
+        if not is_ascending:
+            ledger = list(reversed(ledger))
 
         # Add a balance entry if possible
         if Col.BALANCE in iconfig and ledger:
