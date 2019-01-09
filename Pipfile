@@ -12,6 +12,7 @@ beancount = "*"
 ofxhome = "*"
 ofxclient = "*"
 ofxparse = "*"
+titlecase = "*"
 
 [requires]
 python_version = "3.7"

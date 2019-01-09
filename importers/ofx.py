@@ -1,5 +1,6 @@
 
 from ofxparse import OfxParser
+from titlecase import titlecase
 
 from beancount.core.number import D
 from beancount.core.amount import Amount
@@ -58,7 +59,7 @@ def extract(file, account_name, flag, currency):
         units = Amount(transaction.amount, currency)
         posting = data.Posting(account_name, units, None, None, None, None)
         ref = data.new_metadata(file.name, 0)
-        entry = data.Transaction(ref, transaction.date.date(), flag, transaction.payee, transaction.memo,
+        entry = data.Transaction(ref, transaction.date.date(), flag, titlecase(transaction.payee), transaction.memo,
             data.EMPTY_SET, data.EMPTY_SET, [posting])
         ledger.append(entry)
     ledger = data.sorted(ledger)
