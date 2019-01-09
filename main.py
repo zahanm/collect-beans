@@ -24,7 +24,8 @@ if len(sys.argv) > 1 and sys.argv[1] == 'download':
 
 # otherwise, go through the regular `bean-{identify,extract,file}` flow
 
-def make_importer(account):
+def make_importer(item):
+    (name, account) = item
     if account['importer'] == 'OFX':
         return ofx.Importer(
             account['account-id'],
@@ -36,10 +37,11 @@ def make_importer(account):
             account['name'],
             account['currency'],
             content_regexp=account.get('content_regexp'),
-            filename_regexp=account.get('filename_regexp'))
+            filename_regexp=account.get('filename_regexp'),
+            file_prefix=name)
     else:
         assert False, 'Invalid importer: ' + repr(account)
 
-importers = map(make_importer, CONFIG.values())
+importers = map(make_importer, CONFIG.items())
 
 ingest(importers)

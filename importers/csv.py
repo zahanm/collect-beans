@@ -56,6 +56,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
     def __init__(self, config, account, currency,
                  content_regexp: str=None,
                  filename_regexp: str=None,
+                 file_prefix: str=None,
                  categorizer: Optional[Callable]=None,
                  row_processor: Optional[Callable]=None,
                  debug: bool=False,
@@ -63,19 +64,13 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         """Constructor.
 
         Args:
-          config: A dict of Col enum types to the names or indexes of the columns.
+          config: A dict of Col enum names to the names or indexes of the columns.
           account: An account string, the account to post this to.
           currency: A currency string, the currency of this account.
-          regexps: A list of regular expression strings.
-          skip_lines: Skip first x (garbage) lines of file.
-          last4_map: A dict that maps last 4 digits of the card to a friendly string.
           categorizer: A callable that attaches the other posting (usually expenses)
             to a transaction with only single posting.
-          institution: An optional name of an institution to rename the files to.
+          file_prefix: Naming the file that's put away
           debug: Whether or not to print debug information
-          dateutil_kwds: An optional dict defining the dateutil parser kwargs.
-          csv_dialect: A `csv` dialect given either as string or as instance or
-            subclass of `csv.Dialect`.
         """
         assert isinstance(config, dict)
         self.config = config
@@ -89,6 +84,10 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
 
         # Prepare kwds for filing mixin.
         kwds['filing'] = account
+        if file_prefix:
+            prefix = kwds.get('prefix', None)
+            assert prefix is None
+            kwds['prefix'] = file_prefix
 
         # Prepare kwds for identifier mixin.
         matchers = kwds.setdefault('matchers', [])
