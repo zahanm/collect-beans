@@ -11,6 +11,7 @@ pyyaml = "*"
 beancount = "*"
 ofxhome = "*"
 ofxclient = "*"
+ofxparse = "*"
 
 [requires]
 python_version = "3.7"
