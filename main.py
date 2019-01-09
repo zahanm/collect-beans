@@ -5,7 +5,7 @@ import sys
 from os import path
 sys.path.insert(0, path.join(path.dirname(__file__)))
 
-from importers import ofx
+from importers import ofx, csv
 import collector
 
 from beancount.ingest import extract
@@ -25,10 +25,20 @@ if len(sys.argv) > 1 and sys.argv[1] == 'download':
 # otherwise, go through the regular `bean-{identify,extract,file}` flow
 
 def make_importer(account):
-    return ofx.Importer(
-        account['account-id'],
-        account['name'],
-        account['currency'])
+    if account['importer'] == 'OFX':
+        return ofx.Importer(
+            account['account-id'],
+            account['name'],
+            account['currency'])
+    elif account['importer'] == 'CSV':
+        return csv.Importer(
+            account['column_map'],
+            account['name'],
+            account['currency'],
+            content_regexp=account.get('content_regexp'),
+            filename_regexp=account.get('filename_regexp'))
+    else:
+        assert False, 'Invalid importer: ' + repr(account)
 
 importers = map(make_importer, CONFIG.values())
 
