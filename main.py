@@ -12,13 +12,21 @@ from beancount.ingest import extract
 from beancount.ingest.scripts_utils import ingest
 import yaml
 
+# import argparse
+# parser = argparse.ArgumentParser(description="Collecting beans")
+# parser.add_argument('--collect-config', required=True, help='CONFIG.yaml file location')
+# parser.add_argument('action', help='download, or the bean-* commands')
+# (args, _) = parser.parse_known_args()
+# print(args.collect_config)
+
 # load accounts config
-fname = path.join(path.dirname(__file__), 'CONFIG.yaml')
+# FIXME: hard-coded for now, see beancount issue
+fname = path.join(path.dirname(__file__), '../accounts/CONFIG.yaml')
 with open(fname) as f:
     CONFIG = yaml.load(f)
 
 # if this is the download flow
-if len(sys.argv) > 1 and sys.argv[1] == 'download':
+if 'collect' in sys.argv:
     collector.run(CONFIG)
     exit(0)
 
