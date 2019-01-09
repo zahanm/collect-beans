@@ -63,15 +63,15 @@ def extract(file, account_name, flag, currency):
         ledger.append(entry)
     ledger = data.sorted(ledger)
     # make balance
-    ledger.append(balance(file, account_name, currency, statement))
+    ledger.append(balance(file, account_name, currency, statement, ledger))
     return ledger
 
 
-def balance(file, account_name, currency, statement):
+def balance(file, account_name, currency, statement, ledger):
     # Use the last transaction date as the balance assertion date
     # (because the pending transactions will post in-between)
-    assert len(statement.transactions) > 0
-    date = statement.transactions[-1].date.date()
+    assert len(ledger) > 0
+    date = ledger[-1].date
     # The Balance assertion occurs at the beginning of the date, so move
     # it to the following day.
     date += timedelta(days=1)
