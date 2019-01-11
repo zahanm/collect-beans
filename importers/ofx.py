@@ -1,4 +1,3 @@
-
 from ofxparse import OfxParser
 from titlecase import titlecase
 
@@ -10,6 +9,7 @@ from beancount.ingest import importer
 from datetime import timedelta
 from io import StringIO
 from os import path
+
 
 class Importer(importer.ImporterProtocol):
     """An importer for Open Financial Exchange files."""
@@ -29,9 +29,11 @@ class Importer(importer.ImporterProtocol):
 
     def identify(self, file):
         # Match for a compatible MIME type.
-        if file.mimetype() not in {'application/x-ofx',
-                                   'application/vnd.intu.qbo',
-                                   'application/vnd.intu.qfx'}:
+        if file.mimetype() not in {
+            "application/x-ofx",
+            "application/vnd.intu.qbo",
+            "application/vnd.intu.qfx",
+        }:
             return False
 
         # Match the account id.
@@ -55,15 +57,25 @@ def extract(file, account_name, flag, currency):
     ofx = OfxParser.parse(strio(file.contents()))
     account = ofx.account
     statement = account.statement
-    assert statement.currency.lower() == currency.lower(), statement.currency + ' != ' + currency
+    assert statement.currency.lower() == currency.lower(), (
+        statement.currency + " != " + currency
+    )
     ledger = []
     # create transactions
     for transaction in statement.transactions:
         units = Amount(transaction.amount, currency)
         posting = data.Posting(account_name, units, None, None, None, None)
         ref = data.new_metadata(file.name, 0)
-        entry = data.Transaction(ref, transaction.date.date(), flag, titlecase(transaction.payee), transaction.memo,
-            data.EMPTY_SET, data.EMPTY_SET, [posting])
+        entry = data.Transaction(
+            ref,
+            transaction.date.date(),
+            flag,
+            titlecase(transaction.payee),
+            transaction.memo,
+            data.EMPTY_SET,
+            data.EMPTY_SET,
+            [posting],
+        )
         ledger.append(entry)
     ledger = data.sorted(ledger)
     # make balance

@@ -37,30 +37,37 @@ def get_amounts(iconfig, row):
     if Col.AMOUNT in iconfig:
         credit = row[iconfig[Col.AMOUNT]]
     else:
-        debit, credit = [row[iconfig[col]] if col in iconfig else None
-                         for col in [Col.AMOUNT_DEBIT, Col.AMOUNT_CREDIT]]
+        debit, credit = [
+            row[iconfig[col]] if col in iconfig else None
+            for col in [Col.AMOUNT_DEBIT, Col.AMOUNT_CREDIT]
+        ]
 
     # If zero amounts aren't allowed, return null value.
-    is_zero_amount = ((credit is not None and D(credit) == ZERO) and
-                      (debit is not None and D(debit) == ZERO))
+    is_zero_amount = (credit is not None and D(credit) == ZERO) and (
+        debit is not None and D(debit) == ZERO
+    )
     if is_zero_amount:
         return (None, None)
 
-    return (D(debit) if debit else None,
-            D(credit) if credit else None)
+    return (D(debit) if debit else None, D(credit) if credit else None)
 
 
 class Importer(identifier.IdentifyMixin, filing.FilingMixin):
     """Importer for CSV files."""
 
-    def __init__(self, config, account, currency,
-                 content_regexp: str=None,
-                 filename_regexp: str=None,
-                 file_prefix: str=None,
-                 categorizer: Optional[Callable]=None,
-                 row_processor: Optional[Callable]=None,
-                 debug: bool=False,
-                 **kwds):
+    def __init__(
+        self,
+        config,
+        account,
+        currency,
+        content_regexp: str = None,
+        filename_regexp: str = None,
+        file_prefix: str = None,
+        categorizer: Optional[Callable] = None,
+        row_processor: Optional[Callable] = None,
+        debug: bool = False,
+        **kwds
+    ):
         """Constructor.
 
         Args:
@@ -83,19 +90,19 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         self.row_processor = row_processor
 
         # Prepare kwds for filing mixin.
-        kwds['filing'] = account
+        kwds["filing"] = account
         if file_prefix:
-            prefix = kwds.get('prefix', None)
+            prefix = kwds.get("prefix", None)
             assert prefix is None
-            kwds['prefix'] = file_prefix
+            kwds["prefix"] = file_prefix
 
         # Prepare kwds for identifier mixin.
-        matchers = kwds.setdefault('matchers', [])
-        matchers.append(('mime', 'text/csv'))
+        matchers = kwds.setdefault("matchers", [])
+        matchers.append(("mime", "text/csv"))
         if content_regexp:
-            matchers.append(('content', content_regexp))
+            matchers.append(("content", content_regexp))
         if filename_regexp:
-            matchers.append(('filename', filename_regexp))
+            matchers.append(("filename", filename_regexp))
 
         super().__init__(**kwds)
 
@@ -110,7 +117,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             for row in reader:
                 if not row:
                     continue
-                if row[0].startswith('#'):
+                if row[0].startswith("#"):
                     continue
                 date_str = row[iconfig[Col.DATE]]
                 date = parse_date_liberally(date_str)
@@ -145,7 +152,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         for index, row in enumerate(reader, 1):
             if not row:
                 continue
-            if row[0].startswith('#'):
+            if row[0].startswith("#"):
                 continue
 
             # If debugging, print out the rows.
@@ -156,7 +163,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             if isinstance(self.row_processor, collections.abc.Callable):
                 row = self.row_processor(row, iconfig)
                 if self.debug:
-                    print('processed: ', row)
+                    print("processed: ", row)
 
             if first_row is None:
                 first_row = row
@@ -179,10 +186,11 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             # Create a transaction
             meta = data.new_metadata(file.name, index)
             if balance is not None:
-                meta['balance'] = D(balance)
+                meta["balance"] = D(balance)
             date = parse_date_liberally(date)
-            txn = data.Transaction(meta, date, self.FLAG, payee, narration,
-                                   tags, data.EMPTY_SET, [])
+            txn = data.Transaction(
+                meta, date, self.FLAG, payee, narration, tags, data.EMPTY_SET, []
+            )
 
             # Attach one posting to the transaction
             amount_debit, amount_credit = get_amounts(iconfig, row)
@@ -196,7 +204,8 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
                     continue
                 units = Amount(amount, self.currency)
                 txn.postings.append(
-                    data.Posting(account, units, None, None, None, None))
+                    data.Posting(account, units, None, None, None, None)
+                )
 
             # Attach the other posting(s) to the transaction.
             if isinstance(self.categorizer, collections.abc.Callable):
@@ -220,17 +229,18 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         if Col.BALANCE in iconfig and ledger:
             entry = ledger[-1]
             date = entry.date + datetime.timedelta(days=1)
-            balance = entry.meta.get('balance', None)
+            balance = entry.meta.get("balance", None)
             if balance:
                 meta = data.new_metadata(file.name, index)
                 ledger.append(
-                    data.Balance(meta, date,
-                                 account, Amount(balance, self.currency),
-                                 None, None))
+                    data.Balance(
+                        meta, date, account, Amount(balance, self.currency), None, None
+                    )
+                )
 
         # Remove the 'balance' metadta.
         for entry in ledger:
-            entry.meta.pop('balance', None)
+            entry.meta.pop("balance", None)
 
         return ledger
 
@@ -254,16 +264,18 @@ def normalize_config(config, head):
     index_config = {}
     if has_header:
         header = next(csv.reader(io.StringIO(head)))
-        field_map = {field_name.strip(): index
-                     for index, field_name in enumerate(header)}
+        field_map = {
+            field_name.strip(): index for index, field_name in enumerate(header)
+        }
         for field_type, field in config.items():
             if isinstance(field, str):
                 field = field_map[field]
             index_config[Col[field_type]] = field
     else:
         if any(not isinstance(field, int) for _, field in config.items()):
-            raise ValueError("CSV config without header has non-index fields: "
-                             "{}".format(config))
+            raise ValueError(
+                "CSV config without header has non-index fields: " "{}".format(config)
+            )
         for field_type, field in config.items():
             index_config[Col[field_type]] = field
     return index_config, has_header
