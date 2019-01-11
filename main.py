@@ -1,15 +1,13 @@
 """Import configuration."""
 
-# Insert our custom importers path here.
-import sys
-from os import path
-sys.path.insert(0, path.join(path.dirname(__file__)))
-
 from importers import ofx, csv
 import collector
 
 from beancount.ingest import extract
 from beancount.ingest.scripts_utils import ingest
+
+from os import path
+import sys
 import yaml
 
 # import argparse
