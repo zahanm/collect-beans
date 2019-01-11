@@ -14,11 +14,14 @@ from os import path
 class Importer(importer.ImporterProtocol):
     """An importer for Open Financial Exchange files."""
 
-    def __init__(self, account_id, account, currency):
-        """Create a new importer posting to the given account."""
-        self.account_id = account_id
+    def __init__(self, account, currency, account_id):
+        """
+        Create a new importer posting to the given account.
+        account_id = account ID that the OFX declares
+        """
         self.account = account
         self.currency = currency
+        self.account_id = account_id
 
     def name(self):
         """Include the filing account in the name."""

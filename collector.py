@@ -16,17 +16,17 @@ def run(CONFIG: Dict[str, Any]):
     args = parser.parse_args(sys.argv[2:])
 
     session = None
-    if any(acc['importer'] == 'OFX' for acc in CONFIG.values()):
+    if any(acc['downloader'] == 'OFX' for acc in CONFIG.values()):
         session = sign_in_to_op()
 
     # look up and download for each
     for name, account in CONFIG.items():
-        if account['importer'] == 'OFX':
+        if account['downloader'] == 'OFX':
             ofx(args, session, name, account)
-        elif account['importer'] == 'CSV':
+        elif account['downloader'] == 'custom':
             manual(args, name, account)
         else:
-            assert False, 'Invalid importer: ' + repr(account)
+            assert False, 'Invalid downloader: ' + repr(account)
         print()
 
 def ofx(args, session, name, account):
@@ -90,4 +90,5 @@ def fetch_creds_from_op(session, account):
 def manual(args, name, account):
     print('Account:', name)
     print('You need to download this', account['importer'], 'by hand')
+    print('Instructions:', account['instructions'])
     print('And put it in', args.out)
