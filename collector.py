@@ -11,7 +11,7 @@ from typing import Any, Dict
 
 def run(CONFIG: Dict[str, Any]):
     parser = argparse.ArgumentParser(description="Download statements from banks")
-    parser.add_argument('--days', type=int, default=5, help='How many days back should the statement go?')
+    parser.add_argument('--days', type=int, default=10, help='How many days back should the statement go?')
     parser.add_argument('--out', '-o', required=True, help='Which folder to store the .ofx files in.')
     args = parser.parse_args(sys.argv[2:])
 
