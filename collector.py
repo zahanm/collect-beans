@@ -33,6 +33,9 @@ def ofx(args, session, name, account):
     print('Account:', name)
     bank = OFXHome.lookup(account['OFX-id'])
     print('Bank:', bank.name)
+    proceed = input('Should I download on this run? (y/n): ')
+    if proceed[:1] != 'y':
+        return
     (username, pw) = fetch_creds_from_op(session, account)
     client = Institution(bank.fid, bank.org, bank.url, username, pw)
     assert len(client.accounts()) == 1
