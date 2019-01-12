@@ -13,6 +13,7 @@ ofxhome = "*"
 ofxclient = "*"
 ofxparse = "*"
 titlecase = "*"
+fava = "*"
 
 [requires]
 python_version = "3.7"
