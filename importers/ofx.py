@@ -21,7 +21,7 @@ class Importer(importer.ImporterProtocol):
         """
         self.account = account
         self.currency = currency
-        self.account_id = account_id
+        self.account_id = str(account_id)
 
     def name(self):
         """Include the filing account in the name."""
