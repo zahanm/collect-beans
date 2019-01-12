@@ -10,11 +10,39 @@ from typing import Optional
 
 
 straight_matches = {
+    # food:snacks
     r"Tartine Bakery": "Expenses:Food:Snacks",
+    r"Bi-Rite Creamery": "Expenses:Food:Snacks",
+    r"ARIZMENDI BAKERY": "Expenses:Food:Snacks",
+    r"REVEILLE COFFEE CO": "Expenses:Food:Snacks",
+    r"SCHUBERT'S BAKERY": "Expenses:Food:Snacks",
+    # food:groceries
     r"Trader Joe's": "Expenses:Food:Groceries",
+    r"Bi-Rite Market": "Expenses:Food:Groceries",
+    # food:restaurant
+    r"Taro Mountain View": "Expenses:Food:Restaurant",
+    r"Tst\* Kasa": "Expenses:Food:Restaurant",
+    # entertainment
+    r"Moviepass": "Expenses:Entertainment:Movies",
+    r"NETFLIX\.COM": "Expenses:Entertainment:Movies",
+    # shopping
+    r"Amazon Mktplace": "Expenses:Shopping:Online",
+    r"J CREW\.COM": "Expenses:Shopping:Online",
+    r"Abercrombie & Fitch": "Expenses:Shopping:InStore",
+    r"Uniqlo Union Square": "Expenses:Shopping:InStore",
+    r"Urban Outfitters": "Expenses:Shopping:InStore",
+    r"Anthropologie San": "Expenses:Shopping:InStore",
+    r"WWW\.ITUNES\.COM/BILL": "Expenses:Shopping:VirtualGoods",
+    # other
+    r"At&t Recurr Bill": "Expenses:Home:Internet",
+    r"Lyft \*Ride": "Expenses:Transport:Taxi",
+    r"Autopay Payment": "Liabilities:AccountsPayable",
 }
 straight_regexs = dict(
-    zip((re.compile(pat) for pat in straight_matches), straight_matches.values())
+    zip(
+        (re.compile(pat, flags=re.IGNORECASE) for pat in straight_matches),
+        straight_matches.values(),
+    )
 )
 
 
