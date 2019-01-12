@@ -1,4 +1,7 @@
-"""CSV importer. Mostly a rip off of https://bitbucket.org/blais/beancount/src/tip/beancount/ingest/importers/csv.py
+"""
+CSV importer.
+Mostly a rip off of https://bitbucket.org/blais/beancount/src/tip/beancount/ingest/importers/csv.py
+with small modifications. Mostly I needed to add `row_processor` - though I'm not using CSV importing much.
 """
 
 import csv
