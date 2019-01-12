@@ -58,6 +58,7 @@ def ofx(args, session, name, account):
 
 
 def sign_in_to_op():
+    """1Password CLI: https://support.1password.com/command-line/"""
     # check that op is installed, this will throw if not
     subprocess.run(
         ["op", "--version"],
@@ -65,7 +66,6 @@ def sign_in_to_op():
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    # TODO check if you're signed in
     # sign in
     ret = subprocess.run(
         ["op", "signin", "--output=raw"],
