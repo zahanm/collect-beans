@@ -16,26 +16,45 @@ straight_matches = {
     r"ARIZMENDI BAKERY": "Expenses:Food:Snacks",
     r"REVEILLE COFFEE CO": "Expenses:Food:Snacks",
     r"SCHUBERT'S BAKERY": "Expenses:Food:Snacks",
+    r"CKE*B.PATISSERIE": "Expenses:Food:Snacks",
+    r"Andersen - Fox Plaza": "Expenses:Food:Snacks",
     # food:groceries
     r"Trader Joe's": "Expenses:Food:Groceries",
     r"Bi-Rite Market": "Expenses:Food:Groceries",
+    r"Safeway Store": "Expenses:Food:Groceries",
+    r"Wholefds\W": "Expenses:Food:Groceries",
+    r"Jai Ho Indian Grocer": "Expenses:Food:Groceries",
     # food:restaurant
-    r"Taro Mountain View": "Expenses:Food:Restaurant",
+    r"Taro\W": "Expenses:Food:Restaurant",
     r"Tst\* Kasa": "Expenses:Food:Restaurant",
     # entertainment
     r"Moviepass": "Expenses:Entertainment:Movies",
     r"NETFLIX\.COM": "Expenses:Entertainment:Movies",
-    # shopping
+    # shopping:online
     r"Amazon Mktplace": "Expenses:Shopping:Online",
+    r"Amzn Mktp US": "Expenses:Shopping:Online",
+    r"AMAZON\.COM AMZN.COM/BILL": "Expenses:Shopping:Online",
     r"J CREW\.COM": "Expenses:Shopping:Online",
+    r"ZARA\.COM": "Expenses:Shopping:Online",
+    r"ABERCROMBIE\.COM": "Expenses:Shopping:Online",
+    r"ANTHROPOLOGIE\.COM": "Expenses:Shopping:Online",
+    r"Old Navy On-Line": "Expenses:Shopping:Online",
+    r"Mangous New York": "Expenses:Shopping:Online",  # ie, this is "Mango, US, New York"
+    # shopping:instore
+    r"J Crew\W": "Expenses:Shopping:InStore",
+    r"J\. Crew\W": "Expenses:Shopping:InStore",
     r"Abercrombie & Fitch": "Expenses:Shopping:InStore",
     r"Uniqlo Union Square": "Expenses:Shopping:InStore",
     r"Urban Outfitters": "Expenses:Shopping:InStore",
     r"Anthropologie San": "Expenses:Shopping:InStore",
+    r"H&m San Francisco": "Expenses:Shopping:InStore",
+    # shopping:virtual
     r"WWW\.ITUNES\.COM/BILL": "Expenses:Shopping:VirtualGoods",
     # other
     r"At&t Recurr Bill": "Expenses:Home:Internet",
     r"Lyft \*Ride": "Expenses:Transport:Taxi",
+    r"Uber *": "Expenses:Transport:Taxi",
+    r"\Wjumpbikeshar\W": "Expenses:Transport:Other",
     r"Autopay Payment": "Liabilities:AccountsPayable",
 }
 straight_regexs = dict(
