@@ -45,15 +45,16 @@ def ofx(args, session, name, account):
     if proceed[:1] != "y":
         return
     (username, pw) = fetch_creds_from_op(session, account)
+    print("Got credentials, now talking to bank.")
     client = Institution(bank.fid, bank.org, bank.url, username, pw)
-    assert len(client.accounts()) == 1
-    acc = client.accounts()[0]
-    print("Fetching:", acc.long_description())
-    statement = acc.download(days=args.days)
-    fname = path.join(args.out, name + "_" + acc.number_masked()[-4:] + ".ofx")
-    print("Writing:", fname)
-    with open(fname, "w") as f:
-        shutil.copyfileobj(statement, f)
+    assert len(client.accounts()) > 0, "No accounts"
+    for acc in client.accounts():
+        print("Fetching:", acc.long_description())
+        statement = acc.download(days=args.days)
+        fname = path.join(args.out, name + "_" + acc.number_masked()[-4:] + ".ofx")
+        print("Writing:", fname)
+        with open(fname, "w") as f:
+            shutil.copyfileobj(statement, f)
 
 
 def sign_in_to_op():
