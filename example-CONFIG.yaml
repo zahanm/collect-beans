@@ -1,3 +1,10 @@
+categories:
+  "Tartine Bakery": "Expenses:Food:Snacks"
+  "Trader Joe's": "Expenses:Food:Groceries"
+  "NETFLIX.COM": "Expenses:Entertainment:Movies"
+  "Lyft *Ride": "Expenses:Transport:Taxi"
+  "Autopay Payment": "Liabilities:AccountsPayable"
+
 # fully automated
 amex:
   currency: USD
