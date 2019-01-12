@@ -1,16 +1,18 @@
 # fully automated
 amex:
-  name: "Liabilities:US:AmEx:Green"
   currency: USD
   importer: OFX
   downloader: OFX
   OFX-id: 424 # https://www.ofxhome.com/index.php/institution/view/424
   op-id: "<1Password UUID>"
-  account-id: "1234567"
+  accounts:
+    - name: "Liabilities:US:AmEx:Green"
+      id: "1234567" # real account ID from bank, used by `bean-identify`
+    - name: "Liabilities:US:AmEx:Platinum"
+      id: "456789" # needs to be a string!
 
 # totally manual
 bofa:
-  name: "Assets:US:BofA:Checking"
   currency: USD
   importer: CSV
   downloader: custom
@@ -23,13 +25,18 @@ bofa:
     AMOUNT_CREDIT: "Credit"
     PAYEE: "Description"
     BALANCE: "Balance"
+  accounts:
+    - name: "Assets:US:BofA:Checking"
+      id: "1234"
 
 # import is OFX (less error-prone than CSV), but downloading is manual
 chase:
-  name: "Assets:US:Chase:Checking"
   currency: USD
   importer: OFX
   downloader: custom
   instructions:
     Go to the site and download in OFX format from the account page
-  account-id: "87654321"
+  accounts:
+    - name: "Assets:US:Chase:Checking"
+      id: "87654321"
+
