@@ -16,7 +16,7 @@ straight_matches = {
     r"ARIZMENDI BAKERY": "Expenses:Food:Snacks",
     r"REVEILLE COFFEE CO": "Expenses:Food:Snacks",
     r"SCHUBERT'S BAKERY": "Expenses:Food:Snacks",
-    r"CKE*B.PATISSERIE": "Expenses:Food:Snacks",
+    r"CKE\*B.PATISSERIE": "Expenses:Food:Snacks",
     r"Andersen - Fox Plaza": "Expenses:Food:Snacks",
     # food:groceries
     r"Trader Joe's": "Expenses:Food:Groceries",
@@ -53,7 +53,7 @@ straight_matches = {
     # other
     r"At&t Recurr Bill": "Expenses:Home:Internet",
     r"Lyft \*Ride": "Expenses:Transport:Taxi",
-    r"Uber *": "Expenses:Transport:Taxi",
+    r"Uber \*": "Expenses:Transport:Taxi",
     r"\Wjumpbikeshar\W": "Expenses:Transport:Other",
     r"Autopay Payment": "Liabilities:AccountsPayable",
 }
