@@ -38,10 +38,10 @@ def pdf_to_text(filename):
 class Importer(importer.ImporterProtocol):
     """An importer for PDF pay statements."""
 
-    def __init__(self, account, content_regexp=None, file_prefix=None):
+    def __init__(self, account, content_regexp=None, filing_name=None):
         self.account = account
         self.content_regexp = content_regexp
-        self.file_prefix = file_prefix
+        self.filing_name = filing_name
 
     def identify(self, file):
         if file.mimetype() != "application/pdf":
@@ -54,8 +54,7 @@ class Importer(importer.ImporterProtocol):
             return re.search(self.content_regexp, text, flags=re.IGNORECASE) is not None
 
     def file_name(self, _):
-        # Noramlize the name to something meaningful.
-        return self.file_prefix
+        return self.filing_name
 
     def file_account(self, _):
         return self.account
@@ -63,6 +62,7 @@ class Importer(importer.ImporterProtocol):
     def file_date(self, file):
         # Get the actual statement's date from the contents of the file.
         text = file.convert(pdf_to_text)
-        match = re.match(r"^(\d{2}/\d{2}/\d{4})$", text)
-        if match:
-            return parse_datetime(match.group(1)).date()
+        return max(
+            parse_datetime(match.group(1)).date()
+            for match in re.finditer(r"(\d{2}/\d{2}/\d{4})", text)
+        )

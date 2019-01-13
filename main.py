@@ -51,7 +51,7 @@ def make_importers(item):
             return pdf.Importer(
                 account["name"],
                 content_regexp=account.get("content_regexp"),
-                file_prefix=credentials_name,
+                filing_name=account.get("filing_name"),
             )
         else:
             assert False, "Invalid importer: " + repr(institution) + " " + repr(account)
