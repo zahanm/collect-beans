@@ -5,3 +5,4 @@ My collection of [Beancount](http://furius.ca/beancount/) importers and download
 ## Dependencies
 
 - 1Password CLI
+- `pdftotext` - `brew install poppler`

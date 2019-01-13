@@ -8,7 +8,7 @@ import yaml
 from beancount.ingest import extract
 from beancount.ingest.scripts_utils import ingest
 
-from importers import ofx, csv
+from importers import ofx, csv, pdf
 import collector
 
 # import argparse
@@ -47,6 +47,12 @@ def make_importers(item):
                 filename_regexp=institution.get("filename_regexp"),
                 file_prefix=credentials_name + account["id"],
             )
+        elif institution["importer"] == "PDF":
+            return pdf.Importer(
+                account["name"],
+                content_regexp=institution.get("content_regexp"),
+                file_prefix=credentials_name,
+            )
         else:
             assert False, "Invalid importer: " + repr(institution) + " " + repr(account)
 
@@ -59,5 +65,4 @@ importers = list(
         map(make_importers, filter(lambda k_v: k_v[0] != "categories", CONFIG.items()))
     )
 )
-
 ingest(importers)
