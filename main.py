@@ -1,15 +1,15 @@
 """Import configuration."""
 
-from importers import ofx, csv
-import collector
-
-from beancount.ingest import extract
-from beancount.ingest.scripts_utils import ingest
-
 from itertools import chain
 from os import path
 import sys
 import yaml
+
+from beancount.ingest import extract
+from beancount.ingest.scripts_utils import ingest
+
+from importers import ofx, csv
+import collector
 
 # import argparse
 # parser = argparse.ArgumentParser(description="Collecting beans")
@@ -53,8 +53,11 @@ def make_importers(item):
     return map(importer, institution["accounts"])
 
 
-importers = chain.from_iterable(
-    map(make_importers, filter(lambda k_v: k_v[0] != "categories", CONFIG.items()))
+# the list(..) turns this from an iterable to a materialized list
+importers = list(
+    chain.from_iterable(
+        map(make_importers, filter(lambda k_v: k_v[0] != "categories", CONFIG.items()))
+    )
 )
 
 ingest(importers)
