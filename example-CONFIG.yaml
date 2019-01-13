@@ -25,7 +25,6 @@ bofa:
   downloader: custom
   instructions:
     Go to the site and fownload in CSV format from the account page
-  filename_regexp: "BankOfAmerica\\.csv"
   column_map: # keys from beancount.ingest.importers.csv.Col
     DATE: "Date"
     AMOUNT_DEBIT: "Debit"
@@ -35,6 +34,8 @@ bofa:
   accounts:
     - name: "Assets:US:BofA:Checking"
       id: "1234"
+      filename_regexp: "BankOfAmerica\\.csv"
+      content_regexp: "123456"
 
 # import is OFX (less error-prone than CSV), but downloading is manual
 chase:

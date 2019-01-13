@@ -43,14 +43,14 @@ def make_importers(item):
                 institution["column_map"],
                 account["name"],
                 institution["currency"],
-                content_regexp=institution.get("content_regexp"),
-                filename_regexp=institution.get("filename_regexp"),
+                content_regexp=account.get("content_regexp"),
+                filename_regexp=account.get("filename_regexp"),
                 file_prefix=credentials_name + account["id"],
             )
         elif institution["importer"] == "PDF":
             return pdf.Importer(
                 account["name"],
-                content_regexp=institution.get("content_regexp"),
+                content_regexp=account.get("content_regexp"),
                 file_prefix=credentials_name,
             )
         else:
