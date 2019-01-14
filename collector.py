@@ -10,6 +10,9 @@ from typing import Any, Dict
 
 
 def run(CONFIG: Dict[str, Any]):
+    # because it's not a real account, and will mess up later logic
+    importers = dict(filter(lambda k_v: k_v[0] != "categories", CONFIG.items()))
+
     parser = argparse.ArgumentParser(description="Download statements from banks")
     parser.add_argument(
         "--days",
@@ -23,11 +26,11 @@ def run(CONFIG: Dict[str, Any]):
     args = parser.parse_args(sys.argv[2:])
 
     session = None
-    if any(acc["downloader"] == "OFX" for acc in CONFIG.values()):
+    if any(acc["downloader"] == "OFX" for acc in importers.values()):
         session = sign_in_to_op()
 
     # look up and download for each
-    for name, account in CONFIG.items():
+    for name, account in importers.items():
         if account["downloader"] == "OFX":
             ofx(args, session, name, account)
         elif account["downloader"] == "custom":

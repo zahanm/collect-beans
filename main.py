@@ -61,6 +61,7 @@ def make_importers(item):
 
 # the list(..) turns this from an iterable to a materialized list
 importers = list(
+    # aka, flatten(..)
     chain.from_iterable(
         map(make_importers, filter(lambda k_v: k_v[0] != "categories", CONFIG.items()))
     )
