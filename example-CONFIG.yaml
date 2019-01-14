@@ -5,46 +5,47 @@ categories:
   "Lyft *Ride": "Expenses:Transport:Taxi"
   "Autopay Payment": "Liabilities:AccountsPayable"
 
-# fully automated
-amex:
-  currency: USD
-  importer: OFX
-  downloader: OFX
-  OFX-id: 424 # https://www.ofxhome.com/index.php/institution/view/424
-  op-id: "<1Password UUID>"
-  accounts:
-    - name: "Liabilities:US:AmEx:Green"
-      id: "1234567" # real account ID from bank, used by `bean-identify`
-    - name: "Liabilities:US:AmEx:Platinum"
-      id: "456789" # needs to be a string!
+importers:
+  # fully automated
+  amex:
+    currency: USD
+    importer: OFX
+    downloader: OFX
+    OFX-id: 424 # https://www.ofxhome.com/index.php/institution/view/424
+    op-id: "<1Password UUID>"
+    accounts:
+      - name: "Liabilities:US:AmEx:Green"
+        id: "1234567" # real account ID from bank, used by `bean-identify`
+      - name: "Liabilities:US:AmEx:Platinum"
+        id: "456789" # needs to be a string!
 
-# totally manual
-bofa:
-  currency: USD
-  importer: CSV
-  downloader: custom
-  instructions:
-    Go to the site and fownload in CSV format from the account page
-  column_map: # keys from beancount.ingest.importers.csv.Col
-    DATE: "Date"
-    AMOUNT_DEBIT: "Debit"
-    AMOUNT_CREDIT: "Credit"
-    PAYEE: "Description"
-    BALANCE: "Balance"
-  accounts:
-    - name: "Assets:US:BofA:Checking"
-      id: "1234"
-      filename_regexp: "BankOfAmerica\\.csv"
-      content_regexp: "123456"
+  # totally manual
+  bofa:
+    currency: USD
+    importer: CSV
+    downloader: custom
+    instructions:
+      Go to the site and fownload in CSV format from the account page
+    column_map: # keys from beancount.ingest.importers.csv.Col
+      DATE: "Date"
+      AMOUNT_DEBIT: "Debit"
+      AMOUNT_CREDIT: "Credit"
+      PAYEE: "Description"
+      BALANCE: "Balance"
+    accounts:
+      - name: "Assets:US:BofA:Checking"
+        id: "1234"
+        filename_regexp: "BankOfAmerica\\.csv"
+        content_regexp: "123456"
 
-# import is OFX (less error-prone than CSV), but downloading is manual
-chase:
-  currency: USD
-  importer: OFX
-  downloader: custom
-  instructions:
-    Go to the site and download in OFX format from the account page
-  accounts:
-    - name: "Assets:US:Chase:Checking"
-      id: "87654321"
+  # import is OFX (less error-prone than CSV), but downloading is manual
+  chase:
+    currency: USD
+    importer: OFX
+    downloader: custom
+    instructions:
+      Go to the site and download in OFX format from the account page
+    accounts:
+      - name: "Assets:US:Chase:Checking"
+        id: "87654321"
 

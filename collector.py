@@ -10,8 +10,7 @@ from typing import Any, Dict
 
 
 def run(CONFIG: Dict[str, Any]):
-    # because it's not a real account, and will mess up later logic
-    importers = dict(filter(lambda k_v: k_v[0] != "categories", CONFIG.items()))
+    importers = CONFIG["importers"]
 
     parser = argparse.ArgumentParser(description="Download statements from banks")
     parser.add_argument(
