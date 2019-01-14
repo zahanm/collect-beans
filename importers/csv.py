@@ -241,7 +241,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
                     )
                 )
 
-        # Remove the 'balance' metadta.
+        # Remove the 'balance' metadata.
         for entry in ledger:
             entry.meta.pop("balance", None)
 
