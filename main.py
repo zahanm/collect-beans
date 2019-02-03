@@ -8,7 +8,7 @@ import yaml
 from beancount.ingest import extract
 from beancount.ingest.scripts_utils import ingest
 
-from importers import ofx, csv, pdf
+from importers import ofx, csv, pdf, dummy
 import collector
 
 # import argparse
@@ -53,6 +53,8 @@ def make_importers(item):
                 content_regexp=account.get("content_regexp"),
                 filing_name=account.get("filing_name"),
             )
+        elif institution["importer"] == "manual":
+            return dummy.Importer(account["name"])
         else:
             assert False, "Invalid importer: " + repr(institution) + " " + repr(account)
 
