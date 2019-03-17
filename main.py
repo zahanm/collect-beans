@@ -53,7 +53,7 @@ def make_importers(item):
                 content_regexp=account.get("content_regexp"),
                 filing_name=account.get("filing_name"),
             )
-        elif institution["importer"] == "manual":
+        elif institution["importer"] == "custom":
             return dummy.Importer(account["name"])
         else:
             assert False, "Invalid importer: " + repr(institution) + " " + repr(account)
