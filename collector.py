@@ -25,7 +25,7 @@ def run():
     args = parser.parse_args()
 
     with open(args.config) as f:
-        CONFIG = yaml.load(f)
+        CONFIG = yaml.full_load(f)
     importers = CONFIG["importers"]
 
     session = None
