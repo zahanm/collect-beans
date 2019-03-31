@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 from ofxclient import Institution
 from ofxhome import OFXHome
 from os import path
@@ -22,11 +23,17 @@ def run():
     parser.add_argument(
         "--out", "-o", required=True, help="Which folder to store the .ofx files in."
     )
+    parser.add_argument(
+        "--debug", action="store_true", help="Debug the request and responses"
+    )
     args = parser.parse_args()
 
     with open(args.config) as f:
         CONFIG = yaml.full_load(f)
     importers = CONFIG["importers"]
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     session = None
     if any(acc["downloader"] == "OFX" for acc in importers.values()):
