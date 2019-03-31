@@ -24,12 +24,7 @@ fname = path.join(path.dirname(__file__), "../accounts/CONFIG.yaml")
 with open(fname) as f:
     CONFIG = yaml.load(f)
 
-# if this is the download flow
-if "collect" in sys.argv:
-    collector.run(CONFIG)
-    exit(0)
-
-# otherwise, go through the regular `bean-{identify,extract,file}` flow
+# go through the regular `bean-{identify,extract,file}` flow
 
 
 def make_importers(item):

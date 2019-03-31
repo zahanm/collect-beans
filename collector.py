@@ -6,13 +6,13 @@ from os import path
 import shutil
 import subprocess
 import sys
+import yaml
 from typing import Any, Dict
 
 
-def run(CONFIG: Dict[str, Any]):
-    importers = CONFIG["importers"]
-
+def run():
     parser = argparse.ArgumentParser(description="Download statements from banks")
+    parser.add_argument("config", help="YAML file with accounts configured")
     parser.add_argument(
         "--days",
         type=int,
@@ -22,7 +22,11 @@ def run(CONFIG: Dict[str, Any]):
     parser.add_argument(
         "--out", "-o", required=True, help="Which folder to store the .ofx files in."
     )
-    args = parser.parse_args(sys.argv[2:])
+    args = parser.parse_args()
+
+    with open(args.config) as f:
+        CONFIG = yaml.load(f)
+    importers = CONFIG["importers"]
 
     session = None
     if any(acc["downloader"] == "OFX" for acc in importers.values()):
@@ -111,3 +115,7 @@ def manual(args, name, account):
     print("You need to download this", account["importer"], "by hand")
     print("Instructions:", account["instructions"])
     print("And put it in", args.out)
+
+
+if __name__ == "__main__":
+    run()
