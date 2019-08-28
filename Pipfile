@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+black = "*"
 
 [packages]
 pyyaml = "*"
@@ -14,6 +15,8 @@ ofxclient = "*"
 ofxparse = "*"
 titlecase = "*"
 fava = "*"
+flask = "*"
+plaid-python = "*"
 
 [requires]
 python_version = "3.7"
