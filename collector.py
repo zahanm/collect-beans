@@ -99,12 +99,17 @@ def fetch(args, name, item):
     currency = item["currency"]
     for account in item["accounts"]:
         # checking for every configured account in the response
-        if not any(
-            account["id"] == tacc["account_id"]
-            for tacc in transactions_response["accounts"]
-        ):
+        t_accounts = list(
+            filter(
+                lambda tacc: account["id"] == tacc["account_id"],
+                transactions_response["accounts"],
+            )
+        )
+        if len(t_accounts) == 0:
             print_error("Not present in response: {}".format(account["name"]))
             continue
+        assert len(t_accounts) == 1
+        t_account = t_accounts[0]
         ledger = []
         for transaction in transactions_response["transactions"]:
             if account["id"] != transaction["account_id"]:
@@ -124,13 +129,24 @@ def fetch(args, name, item):
                 [posting],
             )
             ledger.append(entry)
+        ledger.reverse()  # API returns transactions in reverse chronological order
         # print entries to stdout
         print("; = {}, {} =".format(account["name"], currency))
         print("; {} transactions\n".format(len(ledger)))
         for entry in ledger:
             out = printer.format_entry(entry)
             print(out)
-        # TODO add a "balance" entry
+        # find and print the balance directive
+        if "current" in t_account["balances"]:
+            b = D(t_account["balances"]["current"])
+            if t_account["balances"]["current"] != None:
+                meta = data.new_metadata("foo", 0)
+                entry = data.Balance(
+                    meta, date.today(), account["name"], Amount(b, currency), None, None
+                )
+                out = printer.format_entry(entry)
+                print(out)
+
     if args.debug:
         pretty_print_response(transactions_response)
     print()
