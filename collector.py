@@ -33,16 +33,15 @@ def run():
     if args.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    session = None
     if any(acc["downloader"] == "plaid" for acc in importers.values()):
-        session = sign_in_to_op()
+        check_that_op_is_present()
 
     # look up and download for each
     for name, account in importers.items():
         if account["downloader"] != "plaid":
             continue
-        fetch(args, session, name, account)
-        print()
+        fetch(args, name, account)
+        print_error()
 
 
 # = Plaid initialisation =
@@ -73,13 +72,10 @@ client = plaid.Client(
 )
 
 
-def fetch(args, session, name, account):
-    print("Account:", name)
-    proceed = input("Should I download on this run? (y/n): ")
-    if proceed[:1] != "y":
-        return
-    (_, access_token) = fetch_creds_from_op(session, account)
-    print("Got credentials, now talking to bank.")
+def fetch(args, name, account):
+    print_error("Account:", name)
+    (_, access_token) = fetch_creds_from_op(account)
+    print_error("Got credentials, now talking to bank.")
     # Pull transactions for the last 30 days
     start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-2))
     end_date = "{:%Y-%m-%d}".format(datetime.now())
@@ -88,12 +84,13 @@ def fetch(args, session, name, account):
             access_token, start_date, end_date
         )
     except plaid.errors.PlaidError as e:
-        print("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
+        print_error("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
         return
+
     pretty_print_response(transactions_response)
 
 
-def sign_in_to_op():
+def check_that_op_is_present():
     """1Password CLI: https://support.1password.com/command-line/"""
     # check that op is installed, this will throw if not
     subprocess.run(
@@ -102,28 +99,16 @@ def sign_in_to_op():
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    # sign in
-    ret = subprocess.run(
-        ["op", "signin", "--output=raw"],
-        check=True,
-        stderr=sys.stderr,
-        stdin=sys.stdin,
-        stdout=subprocess.PIPE,
-        text=True,
-    )
-    session = ret.stdout
-    return session
 
 
-def fetch_creds_from_op(session, account):
+def fetch_creds_from_op(account):
     """fetch credentials from 1Password"""
-    print("op get item", account["op-id"])
+    print_error("op get item", account["op-id"])
     # fetch the item
     ret = subprocess.run(
         ["op", "get", "item", account["op-id"]],
         check=True,
         text=True,
-        input=session,
         stdout=subprocess.PIPE,
     )
     item = json.loads(ret.stdout)
@@ -148,6 +133,10 @@ def fetch_creds_from_op(session, account):
 
 def pretty_print_response(response):
     print(json.dumps(response, indent=2, sort_keys=True))
+
+
+def print_error(*args, **kwargs):
+    print(file=sys.stderr, *args, **kwargs)
 
 
 if __name__ == "__main__":
