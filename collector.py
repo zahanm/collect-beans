@@ -1,7 +1,7 @@
 from beancount.core import flags
 from beancount.core.number import D
 from beancount.core.amount import Amount
-from beancount.core import data
+from beancount.core.data import Balance, Transaction
 from beancount.parser import printer
 import plaid
 import yaml
@@ -118,7 +118,7 @@ def fetch(args, name, item):
             units = Amount(-D(transaction["amount"]), currency)
             posting = data.Posting(account["name"], units, None, None, None, None)
             ref = data.new_metadata("foo", 0)
-            entry = data.Transaction(
+            entry = Transaction(
                 ref,
                 date.fromisoformat(transaction["date"]),
                 flags.FLAG_OKAY,
@@ -141,7 +141,7 @@ def fetch(args, name, item):
             b = D(t_account["balances"]["current"])
             if t_account["balances"]["current"] != None:
                 meta = data.new_metadata("foo", 0)
-                entry = data.Balance(
+                entry = Balance(
                     meta, date.today(), account["name"], Amount(b, currency), None, None
                 )
                 out = printer.format_entry(entry)
