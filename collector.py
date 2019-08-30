@@ -111,6 +111,8 @@ def fetch(args, name, item):
         assert len(t_accounts) == 1
         t_account = t_accounts[0]
         ledger = []
+        # TODO handle pagination https://github.com/plaid/plaid-python#retrieve-transactions
+        # transactions_response["total_transactions"]
         for transaction in transactions_response["transactions"]:
             if account["id"] != transaction["account_id"]:
                 continue
