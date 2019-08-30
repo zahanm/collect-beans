@@ -1,8 +1,12 @@
+from beancount.core import flags
+from beancount.core.number import D
+from beancount.core.amount import Amount
+from beancount.core import data
 import plaid
 import yaml
 
 import argparse
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 import json
 import logging
 from os import getenv, path
@@ -37,10 +41,10 @@ def run():
         check_that_op_is_present()
 
     # look up and download for each
-    for name, account in importers.items():
-        if account["downloader"] != "plaid":
+    for name, item in importers.items():
+        if item["downloader"] != "plaid":
             continue
-        fetch(args, name, account)
+        fetch(args, name, item)
         print_error()
 
 
@@ -72,12 +76,12 @@ client = plaid.Client(
 )
 
 
-def fetch(args, name, account):
-    print_error("Account:", name)
-    (_, access_token) = fetch_creds_from_op(account)
+def fetch(args, name, item):
+    print_error("Item:", name)
+    (_, access_token) = fetch_creds_from_op(item)
     print_error("Got credentials, now talking to bank.")
     # Pull transactions for the last 30 days
-    start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-2))
+    start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-args.days))
     end_date = "{:%Y-%m-%d}".format(datetime.now())
     try:
         transactions_response = client.Transactions.get(
@@ -87,7 +91,43 @@ def fetch(args, name, account):
         print_error("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
         return
 
+    if "accounts" not in transactions_response:
+        print_error("No accounts, aborting")
+        return
+    assert "accounts" in item
+    currency = item["currency"]
+    for account in item["accounts"]:
+        # checking for every configured account in the response
+        if not any(
+            account["id"] == tacc["account_id"]
+            for tacc in transactions_response["accounts"]
+        ):
+            print_error("Not present in response: {}".format(account["name"]))
+            continue
+        print("; {}, {}".format(account["name"], currency))
+        ledger = []
+        for transaction in transactions_response["transactions"]:
+            if account["id"] != transaction["account_id"]:
+                continue
+            # assert currency == transaction["iso_currency_code"] skipping for now in sandbox
+            units = Amount(D(transaction["amount"]), currency)
+            posting = data.Posting(account["name"], units, None, None, None, None)
+            ref = data.new_metadata("foo", 0)
+            entry = data.Transaction(
+                ref,
+                date.fromisoformat(transaction["date"]),
+                flags.FLAG_OKAY,
+                transaction["name"],
+                "",  # memo
+                data.EMPTY_SET,
+                data.EMPTY_SET,
+                [posting],
+            )
+            ledger.append(entry)
+        print("Transactions:", len(ledger))
+
     pretty_print_response(transactions_response)
+    print()
 
 
 def check_that_op_is_present():
@@ -101,12 +141,12 @@ def check_that_op_is_present():
     )
 
 
-def fetch_creds_from_op(account):
+def fetch_creds_from_op(item):
     """fetch credentials from 1Password"""
-    print_error("op get item", account["op-id"])
+    print_error("op get item", item["op-id"])
     # fetch the item
     ret = subprocess.run(
-        ["op", "get", "item", account["op-id"]],
+        ["op", "get", "item", item["op-id"]],
         check=True,
         text=True,
         stdout=subprocess.PIPE,
