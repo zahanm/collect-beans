@@ -4,6 +4,7 @@ import plaid
 import yaml
 
 import argparse
+from datetime import datetime, timedelta
 import json
 import logging
 from os import getenv, path
@@ -53,9 +54,9 @@ def run():
             pass
         elif account["downloader"] == "plaid":
             plaid_fetch(args, session, name, account)
+            print()
         else:
             assert False, "Invalid downloader: " + repr(account)
-        print()
 
 
 def ofx(args, session, name, account):
@@ -108,13 +109,26 @@ client = plaid.Client(
 
 def plaid_fetch(args, session, name, account):
     print("Account:", name)
+    proceed = input("Should I download on this run? (y/n): ")
+    if proceed[:1] != "y":
+        return
     (_, access_token) = fetch_plaid_creds_from_op(session, account)
+    print("Got credentials, now talking to bank.")
+    # Pull transactions for the last 30 days
+    start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-2))
+    end_date = "{:%Y-%m-%d}".format(datetime.now())
     try:
-        auth_response = client.Auth.get(access_token)
+        transactions_response = client.Transactions.get(
+            access_token, start_date, end_date
+        )
     except plaid.errors.PlaidError as e:
         print("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
         return
-    print(json.dumps(auth_response))
+    pretty_print_response(transactions_response)
+
+
+def pretty_print_response(response):
+    print(json.dumps(response, indent=2, sort_keys=True))
 
 
 def sign_in_to_op():
