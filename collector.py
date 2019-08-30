@@ -68,6 +68,7 @@ PLAID_PRODUCTS = getenv("PLAID_PRODUCTS", "transactions")
 # will be able to select institutions from.
 PLAID_COUNTRY_CODES = getenv("PLAID_COUNTRY_CODES", "US")
 
+# TODO is there a Plaid client debugging mode?
 client = plaid.Client(
     client_id=PLAID_CLIENT_ID,
     secret=PLAID_SECRET,
@@ -124,7 +125,7 @@ def fetch(args, name, item):
                 ref,
                 date.fromisoformat(transaction["date"]),
                 flags.FLAG_OKAY,
-                transaction["name"],
+                transaction["name"],  # TODO titlecase First Republic at least
                 "",  # memo
                 data.EMPTY_SET,
                 data.EMPTY_SET,
