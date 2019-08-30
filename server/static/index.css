@@ -43,6 +43,17 @@ Content at the top of the view
 
 /*
 
+Content on pre-connect view
+
+*/
+
+#relink-access_token {
+  padding: 6px;
+  width: 30%;
+}
+
+/*
+
 Item overview
 
 */

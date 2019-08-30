@@ -32,6 +32,21 @@
           </p>
 
           <button id="link-btn" class="button button--is-primary">Connect with Plaid</button>
+
+          <br />
+          <br />
+          <hr />
+          <br />
+
+          <p class="initial-view__description">
+            Enter your <code>access_token</code> below to re-connect an Item with Plaid.
+          </p>
+          <p>
+            <label><code>access_token</code></label>
+            <input type="password" id="relink-access_token">
+          </p>
+          <button id="relink-btn" class="button button--is-primary">Re-connect with Plaid</button>
+          </form>
         </div>
 
         <div id="app" class="connected-view">
@@ -310,6 +325,12 @@
 
       $('#link-btn').on('click', function (e) {
         handler.open();
+      });
+
+      $('#relink-btn').on('click', function (e) {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set('access_token', $('#relink-access_token').val());
+        window.location.search = searchParams.toString();
       });
 
       $('#get-accounts-btn').on('click', function (e) {
