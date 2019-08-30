@@ -2,6 +2,7 @@ from beancount.core import flags
 from beancount.core.number import D
 from beancount.core.amount import Amount
 from beancount.core import data
+from beancount.parser import printer
 import plaid
 import yaml
 
@@ -104,13 +105,12 @@ def fetch(args, name, item):
         ):
             print_error("Not present in response: {}".format(account["name"]))
             continue
-        print("; {}, {}".format(account["name"], currency))
         ledger = []
         for transaction in transactions_response["transactions"]:
             if account["id"] != transaction["account_id"]:
                 continue
             # assert currency == transaction["iso_currency_code"] skipping for now in sandbox
-            units = Amount(D(transaction["amount"]), currency)
+            units = Amount(-D(transaction["amount"]), currency)
             posting = data.Posting(account["name"], units, None, None, None, None)
             ref = data.new_metadata("foo", 0)
             entry = data.Transaction(
@@ -124,9 +124,15 @@ def fetch(args, name, item):
                 [posting],
             )
             ledger.append(entry)
-        print("Transactions:", len(ledger))
-
-    pretty_print_response(transactions_response)
+        # print entries to stdout
+        print("; = {}, {} =".format(account["name"], currency))
+        print("; {} transactions\n".format(len(ledger)))
+        for entry in ledger:
+            out = printer.format_entry(entry)
+            print(out)
+        # TODO add a "balance" entry
+    if args.debug:
+        pretty_print_response(transactions_response)
     print()
 
 
