@@ -1,5 +1,3 @@
-from ofxclient import Institution
-from ofxhome import OFXHome
 import plaid
 import yaml
 
@@ -24,9 +22,6 @@ def run():
         help="How many days back should the statement go?",
     )
     parser.add_argument(
-        "--out", "-o", required=True, help="Which folder to store the .ofx files in."
-    )
-    parser.add_argument(
         "--debug", action="store_true", help="Debug the request and responses"
     )
     args = parser.parse_args()
@@ -39,44 +34,15 @@ def run():
         logging.getLogger().setLevel(logging.DEBUG)
 
     session = None
-    if any(
-        acc["downloader"] == "OFX" or acc["downloader"] == "plaid"
-        for acc in importers.values()
-    ):
+    if any(acc["downloader"] == "plaid" for acc in importers.values()):
         session = sign_in_to_op()
 
     # look up and download for each
     for name, account in importers.items():
-        if account["downloader"] == "OFX":
-            ofx(args, session, name, account)
-        elif account["downloader"] == "custom":
-            # manual(args, name, account)
-            pass
-        elif account["downloader"] == "plaid":
-            plaid_fetch(args, session, name, account)
-            print()
-        else:
-            assert False, "Invalid downloader: " + repr(account)
-
-
-def ofx(args, session, name, account):
-    print("Account:", name)
-    bank = OFXHome.lookup(account["OFX-id"])
-    print("Bank:", bank.name)
-    proceed = input("Should I download on this run? (y/n): ")
-    if proceed[:1] != "y":
-        return
-    (username, pw) = fetch_creds_from_op(session, account)
-    print("Got credentials, now talking to bank.")
-    client = Institution(bank.fid, bank.org, bank.url, username, pw)
-    assert len(client.accounts()) > 0, "No accounts"
-    for acc in client.accounts():
-        print("Fetching:", acc.long_description())
-        statement = acc.download(days=args.days)
-        fname = path.join(args.out, name + "_" + acc.number_masked()[-4:] + ".ofx")
-        print("Writing:", fname)
-        with open(fname, "w") as f:
-            shutil.copyfileobj(statement, f)
+        if account["downloader"] != "plaid":
+            continue
+        fetch(args, session, name, account)
+        print()
 
 
 # = Plaid initialisation =
@@ -107,12 +73,12 @@ client = plaid.Client(
 )
 
 
-def plaid_fetch(args, session, name, account):
+def fetch(args, session, name, account):
     print("Account:", name)
     proceed = input("Should I download on this run? (y/n): ")
     if proceed[:1] != "y":
         return
-    (_, access_token) = fetch_plaid_creds_from_op(session, account)
+    (_, access_token) = fetch_creds_from_op(session, account)
     print("Got credentials, now talking to bank.")
     # Pull transactions for the last 30 days
     start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-2))
@@ -125,10 +91,6 @@ def plaid_fetch(args, session, name, account):
         print("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
         return
     pretty_print_response(transactions_response)
-
-
-def pretty_print_response(response):
-    print(json.dumps(response, indent=2, sort_keys=True))
 
 
 def sign_in_to_op():
@@ -165,31 +127,6 @@ def fetch_creds_from_op(session, account):
         stdout=subprocess.PIPE,
     )
     item = json.loads(ret.stdout)
-    # parse out the username and password
-    fields = item["details"]["fields"]
-    assert any(f["designation"] == "username" for f in fields)
-    assert any(f["designation"] == "password" for f in fields)
-    for f in fields:
-        if f["designation"] == "username":
-            username = f["value"]
-    for f in fields:
-        if f["designation"] == "password":
-            pw = f["value"]
-    return (username, pw)
-
-
-def fetch_plaid_creds_from_op(session, account):
-    """fetch credentials from 1Password"""
-    print("op get item", account["op-id"])
-    # fetch the item
-    ret = subprocess.run(
-        ["op", "get", "item", account["op-id"]],
-        check=True,
-        text=True,
-        input=session,
-        stdout=subprocess.PIPE,
-    )
-    item = json.loads(ret.stdout)
     # parse out the item_id and access_token
     item_id, access_token = None, None
     sections = item["details"]["sections"]
@@ -209,11 +146,8 @@ def fetch_plaid_creds_from_op(session, account):
     return (item_id, access_token)
 
 
-def manual(args, name, account):
-    print("Account:", name)
-    print("You need to download this", account["importer"], "by hand")
-    print("Instructions:", account["instructions"])
-    print("And put it in", args.out)
+def pretty_print_response(response):
+    print(json.dumps(response, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
