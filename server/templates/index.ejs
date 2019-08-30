@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Plaid Quickstart Example</title>
+  <title>Bean Collector</title>
   <link rel="stylesheet" href="https://threads.plaid.com/threads.css">
 
-  <link rel="stylesheet" type="text/css" href="/static/style.css">
+  <link rel="stylesheet" type="text/css" href="/static/index.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
@@ -15,9 +15,9 @@
     <div class="grid">
       <div class="grid__column grid__column--is-twelve-columns">
         <div id="banner" class="everpresent-content">
-          <h1 class="everpresent-content__heading">Plaid Quickstart</h1>
+          <h1 class="everpresent-content__heading">Bean Collector</h1>
           <p id="intro" class="everpresent-content__subheading">
-            An example application that outlines an end-to-end integration with Plaid
+            Link your account to Plaid
           </p>
           <p id="steps" class="everpresent-content__subheading">
             Success! You just created an Item by linking your account.
@@ -27,8 +27,8 @@
         <div id="container" class="initial-view">
           <p class="initial-view__description">
             Click the button below to open a list of Institutions. After you select one, you’ll be guided through an
-            authentication process. Upon completion, a public_token will be passed back to the server and exchanged for
-            access_token.
+            authentication process. Upon completion, a <code>public_token</code> will be passed back to the server and
+            exchanged for an <code>access_token</code>.
           </p>
 
           <button id="link-btn" class="button button--is-primary">Connect with Plaid</button>
@@ -38,17 +38,17 @@
           <div class="item-overview">
             <div class="item-overview__column">
               <h3 class="item-overview__heading">item_id</h3>
-              <p class="item-overview__id" id="item_id">$replace_me</p>
+              <p class="item-overview__id"><code id="item_id">$replace_me</code></p>
             </div>
             <div class="item-overview__column">
               <h3 class="item-overview__heading">access_token</h3>
-              <p class="item-overview__id" id="access_token">$replace_me</p>
+              <p class="item-overview__id"><code id="access_token">$replace_me</code></p>
             </div>
 
             <div style="clear: both"></div>
           </div>
 
-          <p>Now that you have an access_token you can make all of the following API requests:</p>
+          <p>Now that you have an <code>access_token</code> you can make all of the following API requests:</p>
 
           <div class="box">
             <h3 class="box__heading">Products</h3>
@@ -276,12 +276,11 @@
 
       var handler = Plaid.create({
         apiVersion: 'v2',
-        clientName: 'Plaid Quickstart',
+        clientName: 'Bean Collector',
         env: '{{ plaid_environment }}',
         product: products,
         key: '{{ plaid_public_key }}',
         countryCodes: '{{ plaid_country_codes }}'.split(','),
-        // webhook: 'https://your-domain.tld/plaid-webhook',
         onSuccess: function (public_token) {
           $.post('/get_access_token', {
             public_token: public_token

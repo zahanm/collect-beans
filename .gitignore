@@ -7,3 +7,5 @@ __pycache__/
 /CONFIG.yaml
 *.ofx
 /statements/
+
+/server/env.fish
