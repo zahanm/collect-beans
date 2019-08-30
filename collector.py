@@ -1,13 +1,15 @@
+from ofxclient import Institution
+from ofxhome import OFXHome
+import plaid
+import yaml
+
 import argparse
 import json
 import logging
-from ofxclient import Institution
-from ofxhome import OFXHome
-from os import path
+from os import getenv, path
 import shutil
 import subprocess
 import sys
-import yaml
 from typing import Any, Dict
 
 
@@ -36,7 +38,10 @@ def run():
         logging.getLogger().setLevel(logging.DEBUG)
 
     session = None
-    if any(acc["downloader"] == "OFX" for acc in importers.values()):
+    if any(
+        acc["downloader"] == "OFX" or acc["downloader"] == "plaid"
+        for acc in importers.values()
+    ):
         session = sign_in_to_op()
 
     # look up and download for each
@@ -44,7 +49,10 @@ def run():
         if account["downloader"] == "OFX":
             ofx(args, session, name, account)
         elif account["downloader"] == "custom":
-            manual(args, name, account)
+            # manual(args, name, account)
+            pass
+        elif account["downloader"] == "plaid":
+            plaid_fetch(args, session, name, account)
         else:
             assert False, "Invalid downloader: " + repr(account)
         print()
@@ -68,6 +76,45 @@ def ofx(args, session, name, account):
         print("Writing:", fname)
         with open(fname, "w") as f:
             shutil.copyfileobj(statement, f)
+
+
+# = Plaid initialisation =
+# Get Plaid API keys from https://dashboard.plaid.com/account/keys
+PLAID_CLIENT_ID = getenv("PLAID_CLIENT_ID")
+PLAID_SECRET = getenv("PLAID_SECRET")
+PLAID_PUBLIC_KEY = getenv("PLAID_PUBLIC_KEY")
+# Use 'sandbox' to test with Plaid's Sandbox environment (username: user_good,
+# password: pass_good)
+# Use `development` to test with live users and credentials and `production`
+# to go live
+PLAID_ENV = getenv("PLAID_ENV", "sandbox")
+# PLAID_PRODUCTS is a comma-separated list of products to use when initializing
+# Link. Note that this list must contain 'assets' in order for the app to be
+# able to create and retrieve asset reports.
+PLAID_PRODUCTS = getenv("PLAID_PRODUCTS", "transactions")
+
+# PLAID_COUNTRY_CODES is a comma-separated list of countries for which users
+# will be able to select institutions from.
+PLAID_COUNTRY_CODES = getenv("PLAID_COUNTRY_CODES", "US")
+
+client = plaid.Client(
+    client_id=PLAID_CLIENT_ID,
+    secret=PLAID_SECRET,
+    public_key=PLAID_PUBLIC_KEY,
+    environment=PLAID_ENV,
+    api_version="2019-05-29",
+)
+
+
+def plaid_fetch(args, session, name, account):
+    print("Account:", name)
+    (_, access_token) = fetch_plaid_creds_from_op(session, account)
+    try:
+        auth_response = client.Auth.get(access_token)
+    except plaid.errors.PlaidError as e:
+        print("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
+        return
+    print(json.dumps(auth_response))
 
 
 def sign_in_to_op():
@@ -115,6 +162,37 @@ def fetch_creds_from_op(session, account):
         if f["designation"] == "password":
             pw = f["value"]
     return (username, pw)
+
+
+def fetch_plaid_creds_from_op(session, account):
+    """fetch credentials from 1Password"""
+    print("op get item", account["op-id"])
+    # fetch the item
+    ret = subprocess.run(
+        ["op", "get", "item", account["op-id"]],
+        check=True,
+        text=True,
+        input=session,
+        stdout=subprocess.PIPE,
+    )
+    item = json.loads(ret.stdout)
+    # parse out the item_id and access_token
+    item_id, access_token = None, None
+    sections = item["details"]["sections"]
+    for s in sections:
+        if "fields" not in s:
+            continue
+        if item_id != None and access_token != None:
+            break  # short-circuit
+        fields = s["fields"]
+        for f in fields:
+            if f["t"] == "item_id":
+                item_id = f["v"]
+            elif f["t"] == "access_token":
+                access_token = f["v"]
+    assert item_id != None
+    assert access_token != None
+    return (item_id, access_token)
 
 
 def manual(args, name, account):
