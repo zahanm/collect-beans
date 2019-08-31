@@ -8,6 +8,7 @@ import yaml
 
 import argparse
 from datetime import date, datetime, timedelta
+import http.client
 import json
 import logging
 from os import getenv, path
@@ -15,38 +16,6 @@ import shutil
 import subprocess
 import sys
 from typing import Any, Dict
-
-
-def run():
-    parser = argparse.ArgumentParser(description="Download statements from banks")
-    parser.add_argument("config", help="YAML file with accounts configured")
-    parser.add_argument(
-        "--days",
-        type=int,
-        default=10,
-        help="How many days back should the statement go?",
-    )
-    parser.add_argument(
-        "--debug", action="store_true", help="Debug the request and responses"
-    )
-    args = parser.parse_args()
-
-    with open(args.config) as f:
-        CONFIG = yaml.full_load(f)
-    importers = CONFIG["importers"]
-
-    if args.debug:
-        logging.getLogger().setLevel(logging.DEBUG)
-
-    if any(acc["downloader"] == "plaid" for acc in importers.values()):
-        check_that_op_is_present()
-
-    # look up and download for each
-    for name, item in importers.items():
-        if item["downloader"] != "plaid":
-            continue
-        fetch(args, name, item)
-        print_error()
 
 
 # = Plaid initialisation =
@@ -68,20 +37,59 @@ PLAID_PRODUCTS = getenv("PLAID_PRODUCTS", "transactions")
 # will be able to select institutions from.
 PLAID_COUNTRY_CODES = getenv("PLAID_COUNTRY_CODES", "US")
 
-# TODO is there a Plaid client debugging mode?
-client = plaid.Client(
-    client_id=PLAID_CLIENT_ID,
-    secret=PLAID_SECRET,
-    public_key=PLAID_PUBLIC_KEY,
-    environment=PLAID_ENV,
-    api_version="2019-05-29",
-)
+client = None
+
+
+def run():
+    parser = argparse.ArgumentParser(description="Download statements from banks")
+    parser.add_argument("config", help="YAML file with accounts configured")
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=10,
+        help="How many days back should the statement go?",
+    )
+    parser.add_argument(
+        "--debug", action="store_true", help="Debug the request and responses"
+    )
+    args = parser.parse_args()
+
+    with open(args.config) as f:
+        CONFIG = yaml.full_load(f)
+    importers = CONFIG["importers"]
+
+    global client
+    client = plaid.Client(
+        client_id=PLAID_CLIENT_ID,
+        secret=PLAID_SECRET,
+        public_key=PLAID_PUBLIC_KEY,
+        environment=PLAID_ENV,
+        api_version="2019-05-29",
+    )
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+        http.client.HTTPConnection.debuglevel = 1
+        r_log = logging.getLogger("requests.packages.urllib3")
+        r_log.setLevel(logging.DEBUG)
+        r_log.propagate = True
+    else:
+        logging.getLogger().setLevel(logging.INFO)
+
+    if any(acc["downloader"] == "plaid" for acc in importers.values()):
+        check_that_op_is_present()
+
+    # look up and download for each
+    for name, item in importers.items():
+        if item["downloader"] != "plaid":
+            continue
+        fetch(args, name, item)
 
 
 def fetch(args, name, item):
-    print_error("Item:", name)
+    logging.info("Item: %s", name)
     (_, access_token) = fetch_creds_from_op(item)
-    print_error("Got credentials, now talking to bank.")
+    logging.info("Got credentials, now talking to bank.")
     # Pull transactions for the last 30 days
     start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-args.days))
     end_date = "{:%Y-%m-%d}".format(datetime.now())
@@ -90,11 +98,14 @@ def fetch(args, name, item):
             access_token, start_date, end_date
         )
     except plaid.errors.PlaidError as e:
-        print_error("Plaid error:", e.code, e.type, e.display_message, file=sys.stderr)
+        logging.warning("Plaid error: %s", e.message)
         return
 
+    if args.debug:
+        pretty_print_response(transactions_response)
+
     if "accounts" not in transactions_response:
-        print_error("No accounts, aborting")
+        logging.warning("No accounts, aborting")
         return
     assert "accounts" in item
     currency = item["currency"]
@@ -107,7 +118,7 @@ def fetch(args, name, item):
             )
         )
         if len(t_accounts) == 0:
-            print_error("Not present in response: {}".format(account["name"]))
+            logging.warning("Not present in response: %s", account["name"])
             continue
         assert len(t_accounts) == 1
         t_account = t_accounts[0]
@@ -150,8 +161,7 @@ def fetch(args, name, item):
                 out = printer.format_entry(entry)
                 print(out)
 
-    if args.debug:
-        pretty_print_response(transactions_response)
+    logging.info("Done %s", name)
     print()
 
 
@@ -168,7 +178,7 @@ def check_that_op_is_present():
 
 def fetch_creds_from_op(item):
     """fetch credentials from 1Password"""
-    print_error("op get item", item["op-id"])
+    logging.debug("op get item %s", item["op-id"])
     # fetch the item
     ret = subprocess.run(
         ["op", "get", "item", item["op-id"]],
@@ -197,7 +207,7 @@ def fetch_creds_from_op(item):
 
 
 def pretty_print_response(response):
-    print(json.dumps(response, indent=2, sort_keys=True))
+    print(json.dumps(response, indent=2, sort_keys=True), file=sys.stderr)
 
 
 def print_error(*args, **kwargs):

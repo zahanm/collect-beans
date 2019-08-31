@@ -50,10 +50,12 @@ def make_importers(item):
             )
         elif institution["importer"] == "custom":
             return dummy.Importer(account["name"])
+        elif institution["importer"] == "none":
+            return None
         else:
             assert False, "Invalid importer: " + repr(institution) + " " + repr(account)
 
-    return map(importer, institution["accounts"])
+    return [ii for ii in map(importer, institution["accounts"]) if ii is not None]
 
 
 # the list(..) turns this from an iterable to a materialized list

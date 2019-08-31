@@ -9,3 +9,4 @@ __pycache__/
 /statements/
 
 /server/env.fish
+/*.out
