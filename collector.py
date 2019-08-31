@@ -148,7 +148,7 @@ def fetch(args, name, item):
                 ref,
                 date.fromisoformat(transaction["date"]),
                 flags.FLAG_OKAY,
-                transaction["name"],  # TODO titlecase First Republic at least
+                transaction["name"],
                 "",  # memo
                 data.EMPTY_SET,
                 data.EMPTY_SET,
