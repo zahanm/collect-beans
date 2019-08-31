@@ -93,18 +93,28 @@ def fetch(args, name, item):
     # Pull transactions for the last 30 days
     start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-args.days))
     end_date = "{:%Y-%m-%d}".format(datetime.now())
-    try:
-        transactions_response = client.Transactions.get(
-            access_token, start_date, end_date
-        )
-    except plaid.errors.PlaidError as e:
-        logging.warning("Plaid error: %s", e.message)
-        return
 
-    if args.debug:
-        pretty_print_response(transactions_response)
+    # the transactions in the response are paginated, so make multiple calls while increasing the offset to
+    # retrieve all transactions
+    transactions = []
+    total_transactions = 1
+    first_response = None
+    while len(transactions) < total_transactions:
+        try:
+            response = client.Transactions.get(
+                access_token, start_date, end_date, offset=len(transactions)
+            )
+        except plaid.errors.PlaidError as e:
+            logging.warning("Plaid error: %s", e.message)
+            return
+        transactions.extend(response["transactions"])
+        if first_response is None:
+            first_response = response
+            total_transactions = response["total_transactions"]
+        if args.debug:
+            pretty_print_response(response)
 
-    if "accounts" not in transactions_response:
+    if "accounts" not in first_response:
         logging.warning("No accounts, aborting")
         return
     assert "accounts" in item
@@ -114,7 +124,7 @@ def fetch(args, name, item):
         t_accounts = list(
             filter(
                 lambda tacc: account["id"] == tacc["account_id"],
-                transactions_response["accounts"],
+                first_response["accounts"],
             )
         )
         if len(t_accounts) == 0:
@@ -123,9 +133,7 @@ def fetch(args, name, item):
         assert len(t_accounts) == 1
         t_account = t_accounts[0]
         ledger = []
-        # TODO handle pagination https://github.com/plaid/plaid-python#retrieve-transactions
-        # transactions_response["total_transactions"]
-        for transaction in transactions_response["transactions"]:
+        for transaction in transactions:
             if account["id"] != transaction["account_id"]:
                 continue
             # assert currency == transaction["iso_currency_code"] skipping for now in sandbox
