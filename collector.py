@@ -129,8 +129,12 @@ def fetch(args, name, item):
             if account["id"] != transaction["account_id"]:
                 continue
             # assert currency == transaction["iso_currency_code"] skipping for now in sandbox
-            units = Amount(-D(transaction["amount"]), currency)
-            posting = data.Posting(account["name"], units, None, None, None, None)
+            amount = D(transaction["amount"])
+            # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
+            amount = round(amount, 2)
+            posting = data.Posting(
+                account["name"], Amount(-amount, currency), None, None, None, None
+            )
             ref = data.new_metadata("foo", 0)
             entry = data.Transaction(
                 ref,
@@ -152,11 +156,18 @@ def fetch(args, name, item):
             print(out)
         # find and print the balance directive
         if "current" in t_account["balances"]:
-            b = D(t_account["balances"]["current"])
+            bal = D(t_account["balances"]["current"])
+            # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
+            bal = round(bal, 2)
             if t_account["balances"]["current"] != None:
                 meta = data.new_metadata("foo", 0)
                 entry = data.Balance(
-                    meta, date.today(), account["name"], Amount(b, currency), None, None
+                    meta,
+                    date.today(),
+                    account["name"],
+                    Amount(bal, currency),
+                    None,
+                    None,
                 )
                 out = printer.format_entry(entry)
                 print(out)
