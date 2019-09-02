@@ -32,7 +32,8 @@ def make_importers(item):
 
     def importer(account):
         if institution["importer"] == "OFX":
-            return ofx.Importer(account["name"], institution["currency"], account["id"])
+            account_id = account["number"] if "number" in account else account["id"]
+            return ofx.Importer(account["name"], institution["currency"], account_id)
         elif institution["importer"] == "CSV":
             return csv.Importer(
                 institution["column_map"],
