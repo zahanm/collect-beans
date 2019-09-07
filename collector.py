@@ -147,7 +147,7 @@ def fetch(args, name, item):
             entry = data.Transaction(
                 ref,
                 date.fromisoformat(transaction["date"]),
-                flags.FLAG_OKAY,
+                flags.FLAG_WARNING if transaction["pending"] else flags.FLAG_OKAY,
                 transaction["name"],
                 "",  # memo
                 data.EMPTY_SET,
