@@ -1,0 +1,13 @@
+importers:
+  plaid-bank:
+    currency: USD
+    downloader: plaid
+    op-id: "5ncfmu6iaffivid3ffniptuxvq" # Plaid 1P item
+    accounts:
+      - name: "Assets:US:Plaid:Checking"
+        id: "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR" # Plaid account ID
+        number: "0000"
+      - name: "Liabilities:US:Plaid:CreditCard"
+        id: "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx"
+        number: "3333"
+    importer: none

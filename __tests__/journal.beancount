@@ -1,0 +1,56 @@
+
+option "operating_currency" "USD"
+
+plugin "beancount.plugins.nounused"
+
+; expenses
+
+2018-12-31 open Expenses:Transport  USD
+
+2018-12-31 open Expenses:Food  USD
+
+2018-12-31 open Equity:Random  USD
+
+; checking account
+
+2018-12-31 open Assets:US:Plaid:Checking  USD
+
+2019-01-01 pad Assets:US:Plaid:Checking Equity:Random
+
+2019-01-02 balance Assets:US:Plaid:Checking     2,194.83 USD
+
+2019-09-01 * "Uber 072515 SF**POOL**" ""
+  Assets:US:Plaid:Checking  -6.33 USD
+  Expenses:Transport
+
+2019-09-07 balance Assets:US:Plaid:Checking                        110.00 USD
+
+; credit card
+
+2018-12-31 open Liabilities:US:Plaid:CreditCard  USD
+
+2019-01-01 pad Liabilities:US:Plaid:CreditCard Equity:Random
+
+2019-01-02 balance Liabilities:US:Plaid:CreditCard     -488.50 USD
+
+2019-08-28 * "Madison Bicycle Shop" ""
+  Liabilities:US:Plaid:CreditCard  -500.00 USD
+  Expenses:Transport
+
+2019-08-28 * "KFC" ""
+  Liabilities:US:Plaid:CreditCard  -500.00 USD
+  Expenses:Food
+
+2019-08-28 * "AUTOMATIC PAYMENT - THANK" ""
+  Liabilities:US:Plaid:CreditCard  2078.50 USD
+  Assets:US:Plaid:Checking
+
+2019-08-29 * "Tectra Inc" ""
+  Liabilities:US:Plaid:CreditCard  -500.00 USD
+  Expenses:Transport
+
+2019-09-03 * "United Airlines" ""
+  Liabilities:US:Plaid:CreditCard  -500.00 USD
+  Expenses:Transport
+
+2019-09-07 balance Liabilities:US:Plaid:CreditCard                 -410.00 USD
