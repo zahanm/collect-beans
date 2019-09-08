@@ -2,7 +2,9 @@ from beancount.core import flags
 from beancount.core.number import D
 from beancount.core.amount import Amount
 from beancount.core import data
+from beancount.ingest import similar
 from beancount.parser import printer
+from beancount import loader
 import plaid
 import yaml
 
@@ -15,6 +17,7 @@ from os import getenv, path
 import shutil
 import subprocess
 import sys
+import textwrap
 from typing import Any, Dict
 
 
@@ -37,12 +40,22 @@ PLAID_PRODUCTS = getenv("PLAID_PRODUCTS", "transactions")
 # will be able to select institutions from.
 PLAID_COUNTRY_CODES = getenv("PLAID_COUNTRY_CODES", "US")
 
+# Name of metadata field to be set to indicate that the entry is a likely duplicate.
+DUPLICATE_META = "__duplicate__"
+
 client = None
+existing_entries = None
 
 
 def run():
     parser = argparse.ArgumentParser(description="Download statements from banks")
     parser.add_argument("config", help="YAML file with accounts configured")
+    parser.add_argument(
+        "--existing",
+        metavar="BEANCOUNT_FILE",
+        default=None,
+        help="Beancount file for de-duplication (optional)",
+    )
     parser.add_argument(
         "--days",
         type=int,
@@ -57,6 +70,10 @@ def run():
     with open(args.config) as f:
         CONFIG = yaml.full_load(f)
     importers = CONFIG["importers"]
+
+    if args.existing:
+        global existing_entries
+        existing_entries, _, _ = loader.load_file(args.existing)
 
     global client
     client = plaid.Client(
@@ -159,8 +176,13 @@ def fetch(args, name, item):
         # print entries to stdout
         print("; = {}, {} =".format(account["name"], currency))
         print("; {} transactions\n".format(len(ledger)))
-        for entry in ledger:
+        # look for duplicates
+        ledger_with_dupes = find_duplicate_entries(ledger)
+        # print the entries
+        for entry in ledger_with_dupes:
             out = printer.format_entry(entry)
+            if DUPLICATE_META in entry.meta:
+                out = textwrap.indent(out, "; ")
             print(out)
         # find and print the balance directive
         if "current" in t_account["balances"]:
@@ -223,6 +245,32 @@ def fetch_creds_from_op(item):
     assert item_id != None
     assert access_token != None
     return (item_id, access_token)
+
+
+def find_duplicate_entries(new_entries):
+    """Flag potentially duplicate entries.
+    Args:
+      new_entries: A list of lists of imported entries, one for each
+        importer.
+    Returns:
+      A list of modified new entries (like new_entries), potentially with
+        modified metadata to indicate those which are duplicated.
+    """
+    entries_with_dupes = []
+
+    # Find similar entries against the existing ledger only.
+    duplicate_pairs = similar.find_similar_entries(new_entries, existing_entries)
+
+    # Add a metadata marker to the extracted entries for duplicates.
+    duplicate_set = set(id(entry) for entry, _ in duplicate_pairs)
+    for entry in new_entries:
+        if id(entry) in duplicate_set:
+            marked_meta = entry.meta.copy()
+            marked_meta[DUPLICATE_META] = True
+            entry = entry._replace(meta=marked_meta)
+        entries_with_dupes.append(entry)
+
+    return entries_with_dupes
 
 
 def pretty_print_response(response):
