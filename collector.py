@@ -189,6 +189,10 @@ def fetch(args, name, item):
             bal = D(t_account["balances"]["current"])
             # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
             bal = round(bal, 2)
+            if t_account["type"] in {"credit", "loan"}:
+                # the balance is a liability in the case of credit cards, and loans
+                # https://plaid.com/docs/#account-types
+                bal = -bal
             if t_account["balances"]["current"] != None:
                 meta = data.new_metadata("foo", 0)
                 entry = data.Balance(
