@@ -153,7 +153,7 @@ def fetch(args, name, item):
         for transaction in transactions:
             if account["id"] != transaction["account_id"]:
                 continue
-            # assert currency == transaction["iso_currency_code"] skipping for now in sandbox
+            assert currency == transaction["iso_currency_code"]
             amount = D(transaction["amount"])
             # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
             amount = round(amount, 2)
