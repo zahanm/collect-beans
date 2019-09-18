@@ -21,7 +21,6 @@ from beancount.core.number import ZERO
 from beancount.ingest.importers.csv import Col
 from beancount.ingest.importers.mixins import filing
 from beancount.ingest.importers.mixins import identifier
-from beancount.utils.date_utils import parse_date_liberally
 
 
 def get_amounts(iconfig, row):
@@ -60,12 +59,9 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
 
     def __init__(
         self,
-        config,
-        account,
-        currency,
-        content_regexp: str = None,
-        filename_regexp: str = None,
-        file_prefix: str = None,
+        item_name: str,
+        item_config: dict,
+        account_config: dict,
         categorizer: Optional[Callable] = None,
         row_processor: Optional[Callable] = None,
         debug: bool = False,
@@ -74,26 +70,36 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         """Constructor.
 
         Args:
-          config: A dict of Col enum names to the names or indexes of the columns.
-          account: An account string, the account to post this to.
-          currency: A currency string, the currency of this account.
-          categorizer: A callable that attaches the other posting (usually expenses)
-            to a transaction with only single posting.
-          file_prefix: Naming the file that's put away
-          debug: Whether or not to print debug information
+            item_name
+            item_config: A dict with the following
+                column_map: A dict of Col enum names to the names or indexes of the columns.
+                date_format: Special values: "UK"
+                currency: A currency string, the currency of this account.
+            account_config: A dict with the following
+                account: An account string, the account to post this to.
+            categorizer: A callable that attaches the other posting (usually expenses)
+                to a transaction with only single posting.
+            debug: Whether or not to print debug information
         """
-        assert isinstance(config, dict)
-        self.config = config
+        self.item_config = item_config
+        self.account_config = account_config
 
-        self.account = account
-        self.currency = currency
+        column_map = self.item_config["column_map"]
+        assert isinstance(column_map, dict)
+        self.column_map = column_map
+
+        self.account = self.account_config["name"]
+        self.currency = self.item_config["currency"]
+        content_regexp = self.account_config.get("content_regexp")
+        filename_regexp = self.account_config.get("filename_regexp")
+        file_prefix = item_name + self.account_config["id"]
         self.debug = debug
 
         self.categorizer = categorizer
         self.row_processor = row_processor
 
         # Prepare kwds for filing mixin.
-        kwds["filing"] = account
+        kwds["filing"] = self.account
         if file_prefix:
             prefix = kwds.get("prefix", None)
             assert prefix is None
@@ -111,8 +117,8 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
 
     def file_date(self, file):
         "Get the maximum date from the file."
-        iconfig, has_header = normalize_config(self.config, file.head())
-        if Col.DATE in iconfig:
+        icolumn_map, has_header = normalize_config(self.column_map, file.head())
+        if Col.DATE in icolumn_map:
             reader = iter(csv.reader(open(file.name)))
             if has_header:
                 next(reader)
@@ -122,8 +128,8 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
                     continue
                 if row[0].startswith("#"):
                     continue
-                date_str = row[iconfig[Col.DATE]]
-                date = parse_date_liberally(date_str)
+                date_str = row[icolumn_map[Col.DATE]]
+                date = self.parse_date_liberally(date_str)
                 if max_date is None or date > max_date:
                     max_date = date
             return max_date
@@ -136,7 +142,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         ledger = []
 
         # Normalize the configuration to fetch by index.
-        iconfig, has_header = normalize_config(self.config, file.head())
+        icolumn_map, has_header = normalize_config(self.column_map, file.head())
 
         reader = iter(csv.reader(open(file.name)))
 
@@ -146,7 +152,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
 
         def get(row, ftype):
             try:
-                return row[iconfig[ftype]] if ftype in iconfig else None
+                return row[icolumn_map[ftype]] if ftype in icolumn_map else None
             except IndexError:  # FIXME: this should not happen
                 return None
 
@@ -164,7 +170,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
 
             # If provided, provide the row to a custom "processor"
             if isinstance(self.row_processor, collections.abc.Callable):
-                row = self.row_processor(row, iconfig)
+                row = self.row_processor(row, icolumn_map)
                 if self.debug:
                     print("processed: ", row)
 
@@ -190,13 +196,13 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             meta = data.new_metadata(file.name, index)
             if balance is not None:
                 meta["balance"] = D(balance)
-            date = parse_date_liberally(date)
+            date = self.parse_date_liberally(date)
             txn = data.Transaction(
                 meta, date, self.FLAG, payee, narration, tags, data.EMPTY_SET, []
             )
 
             # Attach one posting to the transaction
-            amount_debit, amount_credit = get_amounts(iconfig, row)
+            amount_debit, amount_credit = get_amounts(icolumn_map, row)
 
             # Skip empty transactions
             if amount_debit is None and amount_credit is None:
@@ -221,15 +227,15 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         # ledger = data.sorted(ledger)
 
         # Figure out if the file is in ascending or descending order.
-        first_date = parse_date_liberally(get(first_row, Col.DATE))
-        last_date = parse_date_liberally(get(last_row, Col.DATE))
+        first_date = self.parse_date_liberally(get(first_row, Col.DATE))
+        last_date = self.parse_date_liberally(get(last_row, Col.DATE))
         is_ascending = first_date < last_date
         # Reverse the list if the file is in descending order
         if not is_ascending:
             ledger = list(reversed(ledger))
 
         # Add a balance entry if possible
-        if Col.BALANCE in iconfig and ledger:
+        if Col.BALANCE in icolumn_map and ledger:
             entry = ledger[-1]
             date = entry.date + datetime.timedelta(days=1)
             balance = entry.meta.get("balance", None)
@@ -246,6 +252,23 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             entry.meta.pop("balance", None)
 
         return ledger
+
+    def parse_date_liberally(self, string):
+        """Parse arbitrary strings to dates.
+
+        This function is intended to support liberal inputs, so that we can use it
+        in accepting user-specified dates on command-line scripts.
+
+        Args:
+        string: A string to parse.
+        Returns:
+        A datetime.date object.
+        """
+        # Rely on the most excellent dateutil.
+        dayfirst = False
+        if self.item_config.get("date_format") == "UK":
+            dayfirst = True
+        return dateutil.parser.parse(string, dayfirst=dayfirst).date()
 
 
 def normalize_config(config, head):

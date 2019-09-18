@@ -35,14 +35,7 @@ def make_importers(item):
             account_id = account["number"] if "number" in account else account["id"]
             return ofx.Importer(account["name"], institution["currency"], account_id)
         elif institution["importer"] == "CSV":
-            return csv.Importer(
-                institution["column_map"],
-                account["name"],
-                institution["currency"],
-                content_regexp=account.get("content_regexp"),
-                filename_regexp=account.get("filename_regexp"),
-                file_prefix=credentials_name + account["id"],
-            )
+            return csv.Importer(credentials_name, institution, account)
         elif institution["importer"] == "PDF":
             return pdf.Importer(
                 account["name"],
