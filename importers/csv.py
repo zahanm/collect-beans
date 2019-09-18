@@ -74,9 +74,9 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
             item_config: A dict with the following
                 column_map: A dict of Col enum names to the names or indexes of the columns.
                 date_format: Special values: "UK"
-                currency: A currency string, the currency of this account.
             account_config: A dict with the following
                 account: An account string, the account to post this to.
+                currency: A currency string, the currency of this account.
             categorizer: A callable that attaches the other posting (usually expenses)
                 to a transaction with only single posting.
             debug: Whether or not to print debug information
@@ -89,7 +89,7 @@ class Importer(identifier.IdentifyMixin, filing.FilingMixin):
         self.column_map = column_map
 
         self.account = self.account_config["name"]
-        self.currency = self.item_config["currency"]
+        self.currency = self.account_config["currency"]
         content_regexp = self.account_config.get("content_regexp")
         filename_regexp = self.account_config.get("filename_regexp")
         file_prefix = item_name + self.account_config["id"]
