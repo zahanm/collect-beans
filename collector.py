@@ -135,8 +135,8 @@ def fetch(args, name, item):
         logging.warning("No accounts, aborting")
         return
     assert "accounts" in item
-    currency = item["currency"]
     for account in item["accounts"]:
+        currency = account["currency"]
         # checking for every configured account in the response
         t_accounts = list(
             filter(
