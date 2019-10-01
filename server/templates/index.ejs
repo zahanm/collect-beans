@@ -20,7 +20,7 @@
             Link your account to Plaid
           </p>
           <p id="steps" class="everpresent-content__subheading">
-            Success! You just created an Item by linking your account.
+            Success! You just linked your account.
           </p>
         </div>
 
@@ -46,7 +46,6 @@
             <input type="password" id="relink-access_token">
           </p>
           <button id="relink-btn" class="button button--is-primary">Re-connect with Plaid</button>
-          </form>
         </div>
 
         <div id="app" class="connected-view">
@@ -61,6 +60,10 @@
             </div>
 
             <div style="clear: both"></div>
+
+            <div style="margin-top: 1em">
+              <button id="update-mode-btn" class="button button--is-primary">Re-authenticate with Plaid</button>
+            </div>
           </div>
 
           <p>Now that you have an <code>access_token</code> you can make all of the following API requests:</p>
@@ -289,7 +292,7 @@
         $('#assets').show();
       }
 
-      var handler = Plaid.create({
+      const handler = Plaid.create({
         apiVersion: 'v2',
         clientName: 'Bean Collector',
         env: '{{ plaid_environment }}',
@@ -331,6 +334,40 @@
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.set('access_token', $('#relink-access_token').val());
         window.location.search = searchParams.toString();
+      });
+
+      $('#update-mode-btn').on('click', function (e) {
+        $.post('/create_public_token', {}, function (data) {
+          if (data.error != null) {
+            displayError(this, data.error);
+            return;
+          }
+
+          const handler = Plaid.create({
+            apiVersion: 'v2',
+            clientName: 'Bean Collector',
+            env: '{{ plaid_environment }}',
+            product: products,
+            key: '{{ plaid_public_key }}',
+            countryCodes: '{{ plaid_country_codes }}'.split(','),
+            token: data.public_token,
+            onSuccess: function (public_token, metadata) {
+              // notify the user that all is good
+              console.log("Updated Plaid Item authentication");
+            },
+            onExit: function (err, metadata) {
+              if (err != null) {
+                // The user encountered a Plaid API error prior
+                // to exiting.
+                displayError(this, err);
+                return;
+              }
+              // nothing to do
+            },
+          });
+          handler.open();
+        });
+
       });
 
       $('#get-accounts-btn').on('click', function (e) {

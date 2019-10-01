@@ -285,7 +285,6 @@ def get_investment_transactions():
 # https://plaid.com/docs/#retrieve-item
 @app.route("/item", methods=["GET"])
 def item():
-    global access_token
     item_response = client.Item.get(access_token)
     institution_response = client.Institutions.get_by_id(
         item_response["item"]["institution_id"]
@@ -307,6 +306,29 @@ def set_access_token():
     access_token = request.form["access_token"]
     item = client.Item.get(access_token)
     return jsonify({"error": None, "item_id": item["item"]["item_id"]})
+
+
+# Create public_token flow - exchange an API access_token
+# for a Link public_token to use in Link's update flow
+# https://plaid.com/docs/#creating-public-tokens
+@app.route("/create_public_token", methods=["POST"])
+def create_public_token():
+    if access_token is None:
+        return jsonify(
+            {
+                "error": {
+                    "display_message": "No access_token is set to create a public_token",
+                    "error_code": 1,
+                    "error_type": "NO_TOKEN",
+                }
+            }
+        )
+    try:
+        create_response = client.Item.public_token.create(access_token)
+    except plaid.errors.PlaidError as e:
+        return jsonify(format_error(e))
+    pretty_print_response(create_response)
+    return jsonify(create_response)
 
 
 def pretty_print_response(response):
