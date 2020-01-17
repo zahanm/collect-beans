@@ -154,6 +154,9 @@ def fetch(args, name, item):
             if account["id"] != transaction["account_id"]:
                 continue
             assert currency == transaction["iso_currency_code"]
+            if transaction["pending"]:
+                # we want to wait for the transaction to be posted
+                continue
             amount = D(transaction["amount"])
             # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
             amount = round(amount, 2)
@@ -164,7 +167,7 @@ def fetch(args, name, item):
             entry = data.Transaction(
                 ref,
                 date.fromisoformat(transaction["date"]),
-                flags.FLAG_WARNING if transaction["pending"] else flags.FLAG_OKAY,
+                flags.FLAG_OKAY,
                 transaction["name"],
                 "",  # memo
                 data.EMPTY_SET,
