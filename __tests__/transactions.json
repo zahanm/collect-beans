@@ -1,345 +1,145 @@
 {
   "accounts": [
     {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
       "balances": {
-        "available": 100,
-        "current": 110,
+        "available": 408.90999999999997,
+        "current": 439.57,
         "iso_currency_code": "USD",
         "limit": null,
         "unofficial_currency_code": null
       },
       "mask": "0000",
-      "name": "Plaid Checking",
-      "official_name": "Plaid Gold Standard 0% Interest Checking",
+      "name": "Hsa",
+      "official_name": "Plaid hsa",
+      "subtype": "hsa",
+      "type": "depository"
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "balances": {
+        "available": 295.09,
+        "current": 366.7,
+        "iso_currency_code": "USD",
+        "limit": null,
+        "unofficial_currency_code": null
+      },
+      "mask": "3295",
+      "name": "Checking",
+      "official_name": "Plaid checking",
       "subtype": "checking",
       "type": "depository"
     },
     {
-      "account_id": "wBKkpGKB4aiQK6KLVgv3C4MpBx5RAntrXrer3",
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
       "balances": {
-        "available": 200,
-        "current": 210,
+        "available": 440.49,
+        "current": 487.97,
         "iso_currency_code": "USD",
         "limit": null,
         "unofficial_currency_code": null
       },
-      "mask": "1111",
-      "name": "Plaid Saving",
-      "official_name": "Plaid Silver Standard 0.1% Interest Saving",
-      "subtype": "savings",
+      "mask": "5880",
+      "name": "Prepaid",
+      "official_name": "Plaid prepaid",
+      "subtype": "prepaid",
       "type": "depository"
     },
     {
-      "account_id": "5ZoANBoZWeck313eEld9fovA7ekp4BtZrZBZ6",
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
       "balances": {
-        "available": null,
-        "current": 1000,
+        "available": 16190.849999999999,
+        "current": 750.62,
         "iso_currency_code": "USD",
-        "limit": null,
+        "limit": 17000,
         "unofficial_currency_code": null
       },
-      "mask": "2222",
-      "name": "Plaid CD",
-      "official_name": "Plaid Bronze Standard 0.2% Interest CD",
-      "subtype": "cd",
-      "type": "depository"
-    },
-    {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
-      "balances": {
-        "available": null,
-        "current": 410,
-        "iso_currency_code": "USD",
-        "limit": 2000,
-        "unofficial_currency_code": null
-      },
-      "mask": "3333",
-      "name": "Plaid Credit Card",
-      "official_name": "Plaid Diamond 12.5% APR Interest Credit Card",
+      "mask": "6095",
+      "name": "Credit card",
+      "official_name": "Plaid credit card",
       "subtype": "credit card",
       "type": "credit"
     },
     {
-      "account_id": "k1yNa6y1V9Ie8b8J1AvnFeW9jq5Rv4fW5WPWA",
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
       "balances": {
-        "available": 43200,
-        "current": 43200,
+        "available": 449.15999999999997,
+        "current": 449.15999999999997,
         "iso_currency_code": "USD",
         "limit": null,
         "unofficial_currency_code": null
       },
-      "mask": "4444",
-      "name": "Plaid Money Market",
-      "official_name": "Plaid Platinum Standard 1.85% Interest Money Market",
-      "subtype": "money market",
+      "mask": "8963",
+      "name": "Savings",
+      "official_name": "Plaid savings",
+      "subtype": "savings",
       "type": "depository"
     },
     {
-      "account_id": "lLZP4GZLwvt9e5eJlm8rfvP4ZA39y1iZ3Z9ZA",
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
       "balances": {
-        "available": null,
-        "current": 320.76,
+        "available": 328.5899999999999,
+        "current": 583.6800000000001,
         "iso_currency_code": "USD",
-        "limit": null,
+        "limit": 1000,
         "unofficial_currency_code": null
       },
-      "mask": "5555",
-      "name": "Plaid IRA",
-      "official_name": null,
-      "subtype": "ira",
-      "type": "investment"
+      "mask": "9025",
+      "name": "Credit card 2",
+      "official_name": "Plaid credit card",
+      "subtype": "credit card",
+      "type": "credit"
     },
     {
-      "account_id": "qERZeGREzruNVqVKn4vpimDEaoKRgBTdKdbdA",
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
       "balances": {
-        "available": null,
-        "current": 23631.9805,
+        "available": 460.65999999999997,
+        "current": 500,
         "iso_currency_code": "USD",
         "limit": null,
         "unofficial_currency_code": null
       },
-      "mask": "6666",
-      "name": "Plaid 401k",
-      "official_name": null,
-      "subtype": "401k",
-      "type": "investment"
-    },
-    {
-      "account_id": "Kjn7BKnjxqt1lnl35LVwF1L6A7ZJVxcVXVwVl",
-      "balances": {
-        "available": null,
-        "current": 65262,
-        "iso_currency_code": "USD",
-        "limit": null,
-        "unofficial_currency_code": null
-      },
-      "mask": "7777",
-      "name": "Plaid Student Loan",
-      "official_name": null,
-      "subtype": "student",
-      "type": "loan"
+      "mask": "9321",
+      "name": "Savings 2",
+      "official_name": "Plaid savings",
+      "subtype": "savings",
+      "type": "depository"
     }
   ],
   "item": {
     "available_products": [
       "assets",
+      "auth",
       "balance",
+      "credit_details",
       "identity",
-      "income"
+      "income",
+      "investments",
+      "liabilities"
     ],
     "billed_products": [
-      "auth",
       "transactions"
     ],
+    "consent_expiration_time": null,
     "error": null,
-    "institution_id": "ins_113974",
-    "item_id": "D38kWL83lbTPjajZ5x4ASgEAPZGoXguv5aMkm",
+    "institution_id": "ins_3",
+    "item_id": "rdBMjlE6DvcqKAEpdyy1SrG5lwZjDqilPRwxE",
     "webhook": ""
   },
-  "request_id": "",
-  "total_transactions": 16,
+  "request_id": "x9yZClG8f7eeZR6",
+  "total_transactions": 537,
   "transactions": [
     {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
       "account_owner": null,
-      "amount": 500,
-      "category": [
-        "Travel",
-        "Airlines and Aviation Services"
-      ],
-      "category_id": "22001000",
-      "date": "2019-09-03",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "United Airlines",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "6MgGP3gMAQI8xyxL3PaqsP4BrXaD7ZfgJp3p6",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
-      "account_owner": null,
-      "amount": 6.33,
-      "category": [
-        "Travel",
-        "Car Service",
-        "Ride Share"
-      ],
-      "category_id": "22006001",
-      "date": "2019-09-01",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "Uber 072515 SF**POOL**",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "aaeqA8eangS58a81vJV9sbrNDAqZxDi769a6m",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
-      "account_owner": null,
-      "amount": 500,
-      "category": [
-        "Food and Drink",
-        "Restaurants"
-      ],
-      "category_id": "13005000",
-      "date": "2019-08-29",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "Tectra Inc",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "p85Q7y58rKtRj9jqzd8Lc6RyZpnE39fLMLRpG",
-      "transaction_type": "place",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
-      "account_owner": null,
-      "amount": 2078.5,
-      "category": [
-        "Payment"
-      ],
-      "category_id": "16000000",
-      "date": "2019-08-28",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "AUTOMATIC PAYMENT - THANK",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "8Lpb7dpLnMtlqQq4deNPIAPbJryq3lswowdWQ",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
-      "account_owner": null,
-      "amount": 500,
-      "category": [
-        "Food and Drink",
-        "Restaurants"
-      ],
-      "category_id": "13005000",
-      "date": "2019-08-28",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "KFC",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "gebxBGbeRnSwZ1ZvekV8iPNGoAB4KEtgpg3EG",
-      "transaction_type": "place",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
-      "account_owner": null,
-      "amount": 500,
+      "amount": 100.22,
+      "authorized_date": null,
       "category": [
         "Shops",
-        "Sporting Goods"
+        "Department Stores"
       ],
-      "category_id": "19046000",
-      "date": "2019-08-28",
+      "category_id": "19018000",
+      "date": "2020-01-18",
       "iso_currency_code": "USD",
       "location": {
         "address": null,
@@ -351,122 +151,8 @@
         "region": null,
         "store_number": null
       },
-      "name": "Madison Bicycle Shop",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "og5ejG5gKqhbeJelrw8Zf5mjdXyk7JCReRLom",
-      "transaction_type": "place",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "wBKkpGKB4aiQK6KLVgv3C4MpBx5RAntrXrer3",
-      "account_owner": null,
-      "amount": 25,
-      "category": [
-        "Payment",
-        "Credit Card"
-      ],
-      "category_id": "16001000",
-      "date": "2019-08-19",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "CREDIT CARD 3333 PAYMENT *//",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "Me7Qxz7earSpmjmq5BwGszdyxAEK5Df9g9nLW",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
-      "account_owner": null,
-      "amount": 5.4,
-      "category": [
-        "Travel",
-        "Car Service",
-        "Ride Share"
-      ],
-      "category_id": "22006001",
-      "date": "2019-08-19",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "Uber 063015 SF**POOL**",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "PMb14xbMP3InGrGz5wyQcZ8vdaxRnVu7l73ol",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "k1yNa6y1V9Ie8b8J1AvnFeW9jq5Rv4fW5WPWA",
-      "account_owner": null,
-      "amount": 5850,
-      "category": [
-        "Transfer",
-        "Debit"
-      ],
-      "category_id": "21006000",
-      "date": "2019-08-18",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "ACH Electronic CreditGUSTO PAY 123456",
+      "name": "ACH WEBSINGLE XXXXX0123 MACYS ONLINE PMT",
+      "payment_channel": "online",
       "payment_meta": {
         "by_order_of": null,
         "payee": null,
@@ -479,134 +165,21 @@
       },
       "pending": false,
       "pending_transaction_id": null,
-      "transaction_id": "ArnzgZnrDAFa9g96ZnlPC73QwBZNk4u1N1G91",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "5ZoANBoZWeck313eEld9fovA7ekp4BtZrZBZ6",
-      "account_owner": null,
-      "amount": 1000,
-      "category": [
-        "Transfer",
-        "Deposit"
-      ],
-      "category_id": "21007000",
-      "date": "2019-08-18",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "CD DEPOSIT .INITIAL.",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "L7Ve3rV7dKfLeRel5qGjs1na8rxym9TPnPDk8",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "JPEjzqEP3luMzRzn5xybtDm5gr4KE3Cd8d7dx",
-      "account_owner": null,
-      "amount": 78.5,
-      "category": [
-        "Recreation",
-        "Gyms and Fitness Centers"
-      ],
-      "category_id": "17018000",
-      "date": "2019-08-17",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "Touchstone Climbing",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "Ex9dAp9xqmij9Z9y5na4HrDaBJPxMVfXnXD4Z",
+      "transaction_id": "4oEWMQLAb1uJLypBNGGLHXkg54jlgvFdvdG6j",
       "transaction_type": "place",
       "unofficial_currency_code": null
     },
     {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
       "account_owner": null,
-      "amount": -500,
-      "category": [
-        "Travel",
-        "Airlines and Aviation Services"
-      ],
-      "category_id": "22001000",
-      "date": "2019-08-17",
-      "iso_currency_code": "USD",
-      "location": {
-        "address": null,
-        "city": null,
-        "country": null,
-        "lat": null,
-        "lon": null,
-        "postal_code": null,
-        "region": null,
-        "store_number": null
-      },
-      "name": "United Airlines",
-      "payment_meta": {
-        "by_order_of": null,
-        "payee": null,
-        "payer": null,
-        "payment_method": null,
-        "payment_processor": null,
-        "ppd_id": null,
-        "reason": null,
-        "reference_number": null
-      },
-      "pending": false,
-      "pending_transaction_id": null,
-      "transaction_id": "jMb4d9bMDyIb838LAmvof97GEekZL3F1g1p6V",
-      "transaction_type": "special",
-      "unofficial_currency_code": null
-    },
-    {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
-      "account_owner": null,
-      "amount": 12,
+      "amount": 62.92,
+      "authorized_date": null,
       "category": [
         "Food and Drink",
         "Restaurants"
       ],
       "category_id": "13005000",
-      "date": "2019-08-16",
+      "date": "2020-01-18",
       "iso_currency_code": "USD",
       "location": {
         "address": null,
@@ -616,9 +189,50 @@
         "lon": null,
         "postal_code": null,
         "region": null,
-        "store_number": "3322"
+        "store_number": null
       },
-      "name": "McDonald's",
+      "name": "Abercrombie",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "11ogPjZAVQhPajeKXllat65QJwKVQWf5k56A7",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 13.02,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Carl's Jr.",
+      "payment_channel": "in store",
       "payment_meta": {
         "by_order_of": null,
         "payee": null,
@@ -631,21 +245,702 @@
       },
       "pending": false,
       "pending_transaction_id": null,
-      "transaction_id": "71pnjxp1GZI8wNwVEB4yFWnarAGmLvIgkgvdG",
+      "transaction_id": "kqVNJ1ERDvHbXlE5qGGXC3dl5anmlESWjWMyN",
       "transaction_type": "place",
       "unofficial_currency_code": null
     },
     {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
       "account_owner": null,
-      "amount": 4.33,
+      "amount": 12.18,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Bookstores"
+      ],
+      "category_id": "19009000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Chegg",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "L5deg7lAaJSRdpn3MZZdTebGQxv6GKhPxPZVM",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 8.25,
+      "authorized_date": null,
+      "category": [
+        "Service"
+      ],
+      "category_id": "18000000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": "US",
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "DAVE.COM 0123456789",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "jlD4wMER5vf3gRyjDddgijnVrkd4VAf171nrJ",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 8.6,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Food and Beverage"
+      ],
+      "category_id": "18021000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Doordash",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "Q5jL91BRMlSGjPq1AggdT1QaPmnW7lupmNoke",
+      "transaction_id": "N54ZAQKLNJSg48WvPnn4iXoqjGrJqpFWGWRlR",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 20.63,
+      "authorized_date": null,
+      "category": [
+        "Recreation",
+        "Arts and Entertainment"
+      ],
+      "category_id": "17001000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Fandango",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "mkljrpy6DvF5rKomkVVBSpymKRVQe9cLyGj9a",
+      "transaction_id": "jlD4wMER5vf3gRyjDddgijnVrkd4VAf171nr3",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 19.7,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Shipping and Freight"
+      ],
+      "category_id": "18058000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "TN",
+        "store_number": null
+      },
+      "name": "FedEx",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "zQjWndK6rvSoEmb1xzzEiKzAGmvqAjHoyok4L",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 83.42,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Clothing and Accessories"
+      ],
+      "category_id": "19012000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "GAP US 0123",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "a5nqoapRXQSanRABzllniklBM3LqBDc7E7yAJ",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 13.08,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Supermarkets and Groceries"
+      ],
+      "category_id": "19047000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "King Soopers",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "B6VBrzPoZJfQGrzkyAAGfgAN8jzdNEfwpwmDj",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 1.86,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "McDonald's",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "rdBMjlE6DvcqKAEpdyyKtXyERM4xEzFlAl83g",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 2.19,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "0123"
+      },
+      "name": "McDonald's",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "x7N8E3l6qvTQ6BV9Lxx6fZKe45lde6inznrdK",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 39.76,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Mellow Mushroom",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "3p8EQe1ZbMcZo6dl4GGoikAw1aWjwVcqjq4dE",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 6.74,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Netflix",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "X5LAzlP3GxSKLEAeMVVkTDdPA3pazBFdK7gxm",
+      "transaction_id": "P5P1mMzLWJSrPLlBMeePhXb9kxzD9pF7e7qpP",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 24.48,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Netflix",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "e59BbjERXLSb975xdnnyIP9GKMa8ZbfL9qDM5",
+      "transaction_id": "P5P1mMzLWJSrPLlBMeePhXb9kxzD9pF7e7qx3",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 3.8,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Pret A Manger",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "M5aQEeqn4JSjagWyNkkai491lEnX1pt9W9adl",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 17.5,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Financial",
+        "Stock Brokers"
+      ],
+      "category_id": "18020003",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "ROBINHOOD Funds",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "qxzZNEw6Dvtq93wLxXX9t5X1KM8b16Idjdp4Z",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 75.8,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Warehouses and Wholesale Stores"
+      ],
+      "category_id": "19051000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "SAMS SCAN-N-GO",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "lKwPqLERD6C5WkELKxxySgGwzKpR8XTZoKWaW",
+      "transaction_id": "4oEWMQLAb1uJLypBNGGLHXkg54jlgvFdvdGjb",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 26.25,
+      "authorized_date": null,
+      "category": [
+        "Recreation",
+        "Gyms and Fitness Centers"
+      ],
+      "category_id": "17018000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "NY",
+        "store_number": null
+      },
+      "name": "SOULCYCLE-ONLINE",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "oBKexgE6DvtJRAEdBLLRHPL8eyDz86iRZR6WP",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 10.38,
+      "authorized_date": null,
       "category": [
         "Food and Drink",
         "Restaurants",
         "Coffee Shop"
       ],
       "category_id": "13005043",
-      "date": "2019-08-16",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "0123"
+      },
+      "name": "Starbucks",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "Z5ondK7kMaSJox45AEEoH9VB7ZqeBzcgEgZdE",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 41.21,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Department Stores"
+      ],
+      "category_id": "19018000",
+      "date": "2020-01-18",
       "iso_currency_code": "USD",
       "location": {
         "address": null,
@@ -657,7 +952,130 @@
         "region": null,
         "store_number": null
       },
-      "name": "Starbucks",
+      "name": "Target",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "K5x7pjkLdJSnxAj8yvvxfE4DZzRoDkuV9Vd4a",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 5.29,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Uber",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "R57pRL3lMqSG7PKWA88LT9VEkZgBDJTRp6jGp",
+      "transaction_id": "N54ZAQKLNJSg48WvPnn4iXoqjGrJqpFWGWRPJ",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 28.04,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Food and Beverage"
+      ],
+      "category_id": "18021000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Uber Eats",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "W51WKENBM3Se1KxlAJJGIRzVwjdQZEFlZdMXR",
+      "transaction_id": "e59BbjERXLSb975xdnn9Clv4goQR45uLbLAoN",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 12.07,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "UberBV _V",
+      "payment_channel": "online",
       "payment_meta": {
         "by_order_of": null,
         "payee": null,
@@ -670,20 +1088,179 @@
       },
       "pending": false,
       "pending_transaction_id": null,
-      "transaction_id": "ejvBrGvj9Ato4b4zjqVpCmpr3bo78jFLZL6rj",
+      "transaction_id": "lKwPqLERD6C5WkELKxxWtNaV3dQqVMiZqZPDl",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 4.25,
+      "authorized_date": null,
+      "category": [
+        "Bank Fees"
+      ],
+      "category_id": "10000000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Uncollected Protection W/D",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "Q5jL91BRMlSGjPq1AggjiNB5MyRp5xipgpbq1",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 23.28,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "WW INT'L-DIGITAL",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "g5Rxve9DXoS1RDnl4GGRc3yvxBr5vnSg6gAvZ",
       "transaction_type": "place",
       "unofficial_currency_code": null
     },
     {
-      "account_id": "V8WEQjW8MPtnbNbG5jqZcQPK1nmyvMSWMW7WR",
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
       "account_owner": null,
-      "amount": 89.4,
+      "amount": 11.76,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Gas Stations"
+      ],
+      "category_id": "22009000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Wawa",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "yePEAxq6KwIZ8zEV3WWgTNX3paW91liy6JdoZ",
+      "transaction_id": "7EGn81qgboINx6Xa755xsXzJlGVZJBFg5gD79",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 15.84,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Supermarkets and Groceries"
+      ],
+      "category_id": "19047000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Wegmans",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": "lKwPqLERD6C5WkELKxxySgGwzKpR8XTZoKW6Q",
+      "transaction_id": "E5qdaxeLKJSZqwxdNJJqilZ1RPGo1WuXBXWpj",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 8.68,
+      "authorized_date": null,
       "category": [
         "Food and Drink",
         "Restaurants"
       ],
       "category_id": "13005000",
-      "date": "2019-08-15",
+      "date": "2020-01-18",
       "iso_currency_code": "USD",
       "location": {
         "address": null,
@@ -695,7 +1272,8 @@
         "region": null,
         "store_number": null
       },
-      "name": "SparkFun",
+      "name": "Wendy's",
+      "payment_channel": "in store",
       "payment_meta": {
         "by_order_of": null,
         "payee": null,
@@ -706,22 +1284,23 @@
         "reason": null,
         "reference_number": null
       },
-      "pending": false,
+      "pending": true,
       "pending_transaction_id": null,
-      "transaction_id": "Q1JLNdJ1jxIn3G3o5DXmcV83olyvWbtpQpywx",
+      "transaction_id": "p3rQa8w6DvI9PBVn3bbPcqblMn7JlVHLvLPAd",
       "transaction_type": "place",
       "unofficial_currency_code": null
     },
     {
-      "account_id": "wBKkpGKB4aiQK6KLVgv3C4MpBx5RAntrXrer3",
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
       "account_owner": null,
-      "amount": -4.22,
+      "amount": 18.31,
+      "authorized_date": null,
       "category": [
-        "Transfer",
-        "Credit"
+        "Service",
+        "Food and Beverage"
       ],
-      "category_id": "21005000",
-      "date": "2019-08-14",
+      "category_id": "18021000",
+      "date": "2020-01-18",
       "iso_currency_code": "USD",
       "location": {
         "address": null,
@@ -733,7 +1312,8 @@
         "region": null,
         "store_number": null
       },
-      "name": "INTRST PYMNT",
+      "name": "Wendy's",
+      "payment_channel": "online",
       "payment_meta": {
         "by_order_of": null,
         "payee": null,
@@ -746,8 +1326,2806 @@
       },
       "pending": false,
       "pending_transaction_id": null,
-      "transaction_id": "1jlgxqljoNtQ9P9pq8zWCxkAj3wdP1u5d5WpK",
+      "transaction_id": "8knbWLKomgFQWyJjGZZWf8j9Ly1z9ntwXwDkv",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 16.67,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-18",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Wingstop",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "d5yzGPERX1Spy7omxEEyiBrjQkKRjocZbZVLy",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 11.25,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Computers and Electronics"
+      ],
+      "category_id": "19013000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "APPLE PAY - SENT MONE",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "g5Rxve9DXoS1RDnl4GGasw89Z7bKpAIg8eDPX",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 8.69,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Amazon",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "X5LAzlP3GxSKLEAeMVVkTDdPA3pazBFdK7gJe",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 37.46,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Amazon",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "oBKexgE6DvtJRAEdBLLoiKGMBxr7EXFRqJ91d",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 43.54,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "01234"
+      },
+      "name": "Burger King",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "p3rQa8w6DvI9PBVn3bbesjorKaz3WpcLo7gbM",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 17.9,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Pharmacies"
+      ],
+      "category_id": "19043000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "01"
+      },
+      "name": "CVS",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "D5lkx37EqJSalrWkKXXnT43W1AKrMNcvWAedV",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 78.75,
+      "authorized_date": null,
+      "category": [
+        "Transfer",
+        "Debit"
+      ],
+      "category_id": "21006000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Cash",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "5gWALZpXbkH18W7oPJJQs6XKWlx81RFZKaVjn",
       "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 7,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "D J*WALL-ST-JOURNAL",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "9AbmGpro7JHEz176oRRWTJoVPzd36luRx78Eo",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 2625,
+      "authorized_date": null,
+      "category": [
+        "Transfer",
+        "Debit"
+      ],
+      "category_id": "21006000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "DEBIT",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "nzq7BoE6DvcB5ryNzWWxHVWe7vDrwmF6lak6J",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 8.82,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "ESPN Plus",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "p3rQa8w6DvI9PBVn3bbesjorKaz3WpcLo7gmR",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 9.71,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "HLU*HULU 012345678901 HLU*HULU 012345678 HULU.COM/BILLCAUS",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "kqVNJ1ERDvHbXlE5qGGRID6wLoxPNBFW64Ead",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 1.23,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Parking"
+      ],
+      "category_id": "22013000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "MPA PARKING PAY BY PHONE",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "L5deg7lAaJSRdpn3MZZDcXWANjMm5rcPjA8zZ",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 4.49,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Computers and Electronics",
+        "Video Games"
+      ],
+      "category_id": "19013001",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "WA",
+        "store_number": null
+      },
+      "name": "Microsoft*Xbox msbill.info",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "L5deg7lAaJSRdpn3MZZDcXWANjMm5rcPjA8qj",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 9.22,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Digital Purchase"
+      ],
+      "category_id": "19019000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Moon Active",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": "Google Wallet",
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "nzq7BoE6DvcB5ryNzWWxHVWe7vDrwmF6lakZk",
+      "transaction_type": "digital",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 8.21,
+      "authorized_date": null,
+      "category": [
+        "Recreation",
+        "Gyms and Fitness Centers"
+      ],
+      "category_id": "17018000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Planet Fitness",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "wj4kgBE6lvF6lDoP5xxBCkEDyrXVzjTrZ49M5",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 6.98,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Computers and Electronics",
+        "Video Games"
+      ],
+      "category_id": "19013001",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Playstation",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "68AGoMlk6pcypZbVQXXGTVjDzqZNP8FgDEJx7",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 3.96,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Food and Beverage"
+      ],
+      "category_id": "18021000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Postmates",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "G5r4jaZVzJSkrR9yQaaNU9WMy6qLdgT1MV9qB",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 15,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Gas Stations"
+      ],
+      "category_id": "22009000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Shell",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "J53j1PLyxJSR3gPv988WclwZqbxGPdid6ljw4",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 16.03,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Subway",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "D5lkx37EqJSalrWkKXXnT43W1AKrMNcvWAeX8",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 37.89,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Department Stores"
+      ],
+      "category_id": "19018000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Target",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "V5MEl84zLBSNMoAJDwwvtp3GzZ7reBcWgjklz",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 1.75,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Shipping and Freight"
+      ],
+      "category_id": "18058000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "USPS.COM MOVER'S GUIDE",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "bJbK84ERXZuM57EmBWWaTEGe96VvpnuVbRLEj",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 5.03,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Uber",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "8knbWLKomgFQWyJjGZZRUa5kKVe3BrCw3Pagl",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 11.24,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Uber",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "9AbmGpro7JHEz176oRRWTJoVPzd36luRx78ke",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 13.09,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Uber",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "E5qdaxeLKJSZqwxdNJJKTXvmgAwMNJcXxaQrw",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 6.63,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Gas Stations"
+      ],
+      "category_id": "22009000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "WAWA 012 01234567",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "yePEAxq6KwIZ8zEV3WWgTNX3paW91liy6JdD8",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 50.68,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Department Stores"
+      ],
+      "category_id": "19018000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "0123"
+      },
+      "name": "Walmart",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "wj4kgBE6lvF6lDoP5xxBCkEDyrXVzjTrZ49KG",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 63.71,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Department Stores"
+      ],
+      "category_id": "19018000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Walmart",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "bJbK84ERXZuM57EmBWWaTEGe96VvpnuVbRLVP",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 24.47,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Supermarkets and Groceries"
+      ],
+      "category_id": "19047000",
+      "date": "2020-01-17",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Weis Markets",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "vPaopzX6DvcDgR1aPAAwfRkz45epmaFW6LxXe",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 6.14,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Carl's Jr.",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "J53j1PLyxJSR3gPv988WclwZqbxGPdid6ljQy",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 68.43,
+      "authorized_date": null,
+      "category": [
+        "Service"
+      ],
+      "category_id": "18000000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "DAVE.COM",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "N54ZAQKLNJSg48WvPnnKTeQMyRxzwaTW6lZog",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 18.74,
+      "authorized_date": null,
+      "category": [
+        "Service"
+      ],
+      "category_id": "18000000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": "US",
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "DAVE.COM 0123456789",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "V5MEl84zLBSNMoAJDwwvtp3GzZ7reBcWgjkN4",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL",
+      "account_owner": null,
+      "amount": 41.81,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Supermarkets and Groceries"
+      ],
+      "category_id": "19047000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "FOOD*LESS 0123",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "11ogPjZAVQhPajeKXlldS89mpZGPL3f5jn7vA",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 1.32,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "01234"
+      },
+      "name": "McDonald's",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "bJbK84ERXZuM57EmBWWaTEGe96VvpnuVbRL3q",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 13.82,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "012"
+      },
+      "name": "McDonald's",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "D5lkx37EqJSalrWkKXXnT43W1AKrMNcvWAeGP",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 30.29,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": "US",
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Netflix",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "kqVNJ1ERDvHbXlE5qGGRID6wLoxPNBFW64EJQ",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 27.86,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "POS DEBIT UBER *",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "7EGn81qgboINx6Xa755ZtM6w7KpLyAhgJEQNL",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 6.71,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Pizza Hut",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "qxzZNEw6Dvtq93wLxXXySPWVvwyrn4fdreW6G",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 3.18,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Music, Video and DVD"
+      ],
+      "category_id": "19036000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Redbox",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "mkljrpy6DvF5rKomkVVBSpymKRVQe9cLyGjL8",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 4.04,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "NY",
+        "store_number": null
+      },
+      "name": "Spotify",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "mkljrpy6DvF5rKomkVVBSpymKRVQe9cLyGjAX",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 43.75,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants",
+        "Coffee Shop"
+      ],
+      "category_id": "13005043",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "WA",
+        "store_number": null
+      },
+      "name": "Starbucks",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "Z5ondK7kMaSJox45AEE1i3yxKGAEJ5sgqoL8G",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 37.5,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-16",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Venmo",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "5gWALZpXbkH18W7oPJJQs6XKWlx81RFZKaVJA",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 8.24,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Convenience Stores"
+      ],
+      "category_id": "19015000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "7-Eleven",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "mkljrpy6DvF5rKomkVVBSpymKRVQe9cLyGj8Q",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 15,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Convenience Stores"
+      ],
+      "category_id": "19015000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "7-Eleven",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "5gWALZpXbkH18W7oPJJQs6XKWlx81RFZKaVGv",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 15,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Convenience Stores"
+      ],
+      "category_id": "19015000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "7-Eleven",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "9AbmGpro7JHEz176oRRWTJoVPzd36luRx78My",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 20.23,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Amazon",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "G5r4jaZVzJSkrR9yQaaNU9WMy6qLdgT1MV91q",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 13.98,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "WA",
+        "store_number": null
+      },
+      "name": "Amazon Music",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "68AGoMlk6pcypZbVQXXGTVjDzqZNP8FgDEJzw",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 15,
+      "authorized_date": null,
+      "category": [
+        "Transfer",
+        "Debit"
+      ],
+      "category_id": "21006000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "From XX012S* To XX012S01 REMOTE BANKING",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "yePEAxq6KwIZ8zEV3WWgTNX3paW91liy6JdpP",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 7.91,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "McDonald's",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "R57pRL3lMqSG7PKWA88LT9VEkZgBDJTRp6j5V",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 30.29,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": "US",
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "CA",
+        "store_number": null
+      },
+      "name": "Netflix",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "X5LAzlP3GxSKLEAeMVVkTDdPA3pazBFdK7g8R",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 4.49,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "PURCHASE Prime Video WA CARD0123",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "ARDzqrNoVJfgzQrL7EE1TMblaPEkmBh1rbwap",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 6.97,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Gas Stations"
+      ],
+      "category_id": "22009000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Pilot Oil (Fast Food)",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "wj4kgBE6lvF6lDoP5xxBCkEDyrXVzjTrZ49Ev",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 8.75,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Public Transportation Services"
+      ],
+      "category_id": "22014000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "SOUND TRANSIT - SO QPS",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "K5x7pjkLdJSnxAj8yvvmUpdalwvjQKcVpl8EQ",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 35.46,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Gas Stations"
+      ],
+      "category_id": "22009000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Shell",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "R57pRL3lMqSG7PKWA88LT9VEkZgBDJTRp6jZe",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb",
+      "account_owner": null,
+      "amount": 13.67,
+      "authorized_date": null,
+      "category": [
+        "Travel",
+        "Car Service",
+        "Ride Share"
+      ],
+      "category_id": "22006001",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Uber",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "vPaopzX6DvcDgR1aPAAwfRkz45epmaFW6Lxw9",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 17.14,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Department Stores"
+      ],
+      "category_id": "19018000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": "0123"
+      },
+      "name": "Walmart",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "vPaopzX6DvcDgR1aPAAwfRkz45epmaFW6LxV6",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 19.97,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Department Stores"
+      ],
+      "category_id": "19018000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": "Paw Paw",
+        "country": "US",
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": "MI",
+        "store_number": "0123"
+      },
+      "name": "Walmart",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "68AGoMlk6pcypZbVQXXGTVjDzqZNP8FgDEJnB",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM",
+      "account_owner": null,
+      "amount": 15,
+      "authorized_date": null,
+      "category": [
+        "Transfer",
+        "Debit"
+      ],
+      "category_id": "21006000",
+      "date": "2020-01-15",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Withrawal by Cash",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": true,
+      "pending_transaction_id": null,
+      "transaction_id": "J53j1PLyxJSR3gPv988WclwZqbxGPdid6ljxq",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 9.71,
+      "authorized_date": null,
+      "category": [
+        "Service"
+      ],
+      "category_id": "18000000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "CANVA* FOR WORK MONTH",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "E5qdaxeLKJSZqwxdNJJKTXvmgAwMNJcXxaQEb",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 300,
+      "authorized_date": null,
+      "category": [
+        "Transfer",
+        "Debit"
+      ],
+      "category_id": "21006000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Citi Card",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "V5MEl84zLBSNMoAJDwwvtp3GzZ7reBcWgjkq8",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 45.93,
+      "authorized_date": null,
+      "category": [
+        "Service"
+      ],
+      "category_id": "18000000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "DAVE.COM",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "P5P1mMzLWJSrPLlBMeeJC1EBNQwngau76xd8r",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 41.81,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Supermarkets and Groceries"
+      ],
+      "category_id": "19047000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "FOOD*LESS 0123",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "8knbWLKomgFQWyJjGZZRUa5kKVe3BrCw3ParM",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 9.71,
+      "authorized_date": null,
+      "category": [
+        "Service",
+        "Subscription"
+      ],
+      "category_id": "18061000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "HLU*HULU 012345678901 HLU*HULU 012345678 HULU.COM/BILLCAUS",
+      "payment_channel": "online",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "68AGoMlk6pcypZbVQXXGTVjDzqZNP8FgDEJ17",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 2.63,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "McDonald's",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "W51WKENBM3Se1KxlAJJGIRzVwjdQZEFlZdMl4",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 8.72,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Beauty Products"
+      ],
+      "category_id": "19006000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "NARA BEAUTY SUPPLY",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "e59BbjERXLSb975xdnnyIP9GKMa8ZbfL9qDJk",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "jlD4wMER5vf3gRyjDdd5T6oQGbNRJec17lqa5",
+      "account_owner": null,
+      "amount": 182.56,
+      "authorized_date": null,
+      "category": [
+        "Shops"
+      ],
+      "category_id": "19000000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "NAVY EXCHANGE 012345",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "g5Rxve9DXoS1RDnl4GGasw89Z7bKpAIg8eDMK",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 64.49,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Supermarkets and Groceries"
+      ],
+      "category_id": "19047000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Publix",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "jlD4wMER5vf3gRyjDdd5T6oMwRbLDeF1WN4xq",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 2380,
+      "authorized_date": null,
+      "category": [
+        "Transfer",
+        "Debit"
+      ],
+      "category_id": "21006000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "REGULAR SH CASH W/D",
+      "payment_channel": "other",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "D5lkx37EqJSalrWkKXXnT43W1AKrMNcvWAe48",
+      "transaction_type": "special",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "7EGn81qgboINx6Xa755ZtM6jap4K3Aug5rLxZ",
+      "account_owner": null,
+      "amount": 8.69,
+      "authorized_date": null,
+      "category": [
+        "Shops",
+        "Pharmacies"
+      ],
+      "category_id": "19043000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Rite Aid",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "7EGn81qgboINx6Xa755ZtM6w7KpLyAhgJEQ6n",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1",
+      "account_owner": null,
+      "amount": 9.73,
+      "authorized_date": null,
+      "category": [
+        "Food and Drink",
+        "Restaurants"
+      ],
+      "category_id": "13005000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Steak 'n Shake",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "ARDzqrNoVJfgzQrL7EE1TMblaPEkmBh1rbw1y",
+      "transaction_type": "place",
+      "unofficial_currency_code": null
+    },
+    {
+      "account_id": "P5P1mMzLWJSrPLlBMeeJC1E7vwKQLaS7eVZAM",
+      "account_owner": null,
+      "amount": 113.4,
+      "authorized_date": null,
+      "category": [
+        "Recreation",
+        "Arts and Entertainment"
+      ],
+      "category_id": "17001000",
+      "date": "2020-01-14",
+      "iso_currency_code": "USD",
+      "location": {
+        "address": null,
+        "city": null,
+        "country": null,
+        "lat": null,
+        "lon": null,
+        "postal_code": null,
+        "region": null,
+        "store_number": null
+      },
+      "name": "Zoo Onsite Ne Auth",
+      "payment_channel": "in store",
+      "payment_meta": {
+        "by_order_of": null,
+        "payee": null,
+        "payer": null,
+        "payment_method": null,
+        "payment_processor": null,
+        "ppd_id": null,
+        "reason": null,
+        "reference_number": null
+      },
+      "pending": false,
+      "pending_transaction_id": null,
+      "transaction_id": "X5LAzlP3GxSKLEAeMVVkTDdPA3pazBFdK7g1m",
+      "transaction_type": "place",
       "unofficial_currency_code": null
     }
   ]
