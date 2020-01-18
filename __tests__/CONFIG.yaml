@@ -3,6 +3,7 @@ importers:
     downloader: plaid
     op-id: "5ncfmu6iaffivid3ffniptuxvq" # Plaid 1P item
     accounts:
+      # default, transactions sync
       - name: "Assets:US:Plaid:Checking"
         id: "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1" # Plaid account ID
         currency: USD
@@ -11,4 +12,15 @@ importers:
         id: "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL"
         currency: USD
         number: "3333"
+      # balance sync accounts
+      - name: "Assets:US:Plaid:Savings"
+        id: "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM"
+        currency: USD
+        number: "9321"
+        sync: balance
+      - name: "Assets:US:Plaid:HAS"
+        id: "e59BbjERXLSb975xdnnyIP9zrakMVbCLbe1mb"
+        currency: USD
+        number: "0000"
+        sync: balance
     importer: none

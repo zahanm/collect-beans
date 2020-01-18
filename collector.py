@@ -46,6 +46,7 @@ DUPLICATE_META = "__duplicate__"
 args = None
 client = None
 existing_entries = None
+sync_mode = None
 
 
 def run():
@@ -62,6 +63,11 @@ def run():
         type=int,
         default=10,
         help="How many days back should the statement go?",
+    )
+    parser.add_argument(
+        "--balance",
+        action="store_true",
+        help="Run this script in 'balance sync' mode (mutually exclusive with transactions download)",
     )
     parser.add_argument(
         "--debug", action="store_true", help="Debug the request and responses"
@@ -98,17 +104,23 @@ def run():
     if any(acc["downloader"] == "plaid" for acc in importers.values()):
         check_that_op_is_present()
 
+    global sync_mode
+    sync_mode = "balance" if args.balance else "transactions"
+
     # look up and download for each
     for name, item in importers.items():
         if item["downloader"] != "plaid":
             continue
-        fetch(name, item)
+        logging.info("Item: %s", name)
+        (_, access_token) = fetch_creds_from_op(item)
+        logging.info("Got credentials, now talking to bank.")
+        if sync_mode == "transactions":
+            fetch_transactions(name, item, access_token)
+        elif sync_mode == "balance":
+            fetch_balance(name, item, access_token)
 
 
-def fetch(name, item):
-    logging.info("Item: %s", name)
-    (_, access_token) = fetch_creds_from_op(item)
-    logging.info("Got credentials, now talking to bank.")
+def fetch_transactions(name, item, access_token):
     # Pull transactions for the last 30 days
     start_date = "{:%Y-%m-%d}".format(datetime.now() + timedelta(days=-args.days))
     end_date = "{:%Y-%m-%d}".format(datetime.now())
@@ -213,6 +225,10 @@ def fetch(name, item):
 
     logging.info("Done %s", name)
     print()
+
+
+def fetch_balance(name, item, access_token):
+    pass
 
 
 def check_that_op_is_present():
