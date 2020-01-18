@@ -8,10 +8,12 @@ importers:
         id: "N54ZAQKLNJSg48WvPnnKTeQPkxnRVasWGkmQ1" # Plaid account ID
         currency: USD
         number: "0000"
+        sync: transactions
       - name: "Liabilities:US:Plaid:CreditCard"
         id: "Z5ondK7kMaSJox45AEE1i3y8dAPGw5igE9VGL"
         currency: USD
         number: "3333"
+        sync: transactions
       # balance sync accounts
       - name: "Assets:US:Plaid:Savings"
         id: "Q5jL91BRMlSGjPq1AggdT1QZ3nrm6lSpgREDM"

@@ -150,6 +150,8 @@ def fetch_transactions(name, item, access_token):
         return
     assert "accounts" in item
     for account in item["accounts"]:
+        if account["sync"] != "transactions":
+            continue
         currency = account["currency"]
         # checking for every configured account in the response
         t_accounts = list(
@@ -228,7 +230,61 @@ def fetch_transactions(name, item, access_token):
 
 
 def fetch_balance(name, item, access_token):
-    pass
+    try:
+        response = client.Accounts.get(access_token)
+    except plaid.errors.PlaidError as e:
+        logging.warning("Plaid error: %s", e.message)
+        return
+    if args.debug:
+        pretty_print_response(response)
+
+    if "accounts" not in response:
+        logging.warning("No accounts, aborting")
+        return
+    assert "accounts" in item
+    for account_def in item["accounts"]:
+        if account_def["sync"] != "balance":
+            continue
+        # checking for every configured account in the response
+        account_res = next(
+            filter(
+                lambda tacc: account_def["id"] == tacc["account_id"],
+                response["accounts"],
+            ),
+            None,
+        )
+        if account_res is None:
+            logging.warning("Not present in response: %s", account_def["name"])
+            continue
+        assert "balances" in account_res
+        assert account_def["currency"] == account_res["balances"]["iso_currency_code"]
+        if (
+            "current" not in account_res["balances"]
+            or account_res["balances"]["current"] is None
+        ):
+            logging.warning("No 'current' account balance, aborting")
+            continue
+        bal = D(account_res["balances"]["current"])
+        # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
+        bal = round(bal, 2)
+        if account_res["type"] in {"credit", "loan"}:
+            # the balance is a liability in the case of credit cards, and loans
+            # https://plaid.com/docs/#account-types
+            bal = -bal
+        meta = data.new_metadata("foo", 0)
+        entry = data.Balance(
+            meta,
+            date.today(),
+            account_def["name"],
+            Amount(bal, account_def["currency"]),
+            None,
+            None,
+        )
+        out = printer.format_entry(entry)
+        print("; = {}, {} =".format(account_def["name"], account_def["currency"]))
+        print(out)
+    logging.info("Done %s", name)
+    print()
 
 
 def check_that_op_is_present():
