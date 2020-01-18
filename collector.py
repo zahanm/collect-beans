@@ -43,6 +43,7 @@ PLAID_COUNTRY_CODES = getenv("PLAID_COUNTRY_CODES", "US")
 # Name of metadata field to be set to indicate that the entry is a likely duplicate.
 DUPLICATE_META = "__duplicate__"
 
+args = None
 client = None
 existing_entries = None
 
@@ -65,6 +66,7 @@ def run():
     parser.add_argument(
         "--debug", action="store_true", help="Debug the request and responses"
     )
+    global args
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -100,10 +102,10 @@ def run():
     for name, item in importers.items():
         if item["downloader"] != "plaid":
             continue
-        fetch(args, name, item)
+        fetch(name, item)
 
 
-def fetch(args, name, item):
+def fetch(name, item):
     logging.info("Item: %s", name)
     (_, access_token) = fetch_creds_from_op(item)
     logging.info("Got credentials, now talking to bank.")
