@@ -154,17 +154,16 @@ def fetch_transactions(name, item, access_token):
             continue
         currency = account["currency"]
         # checking for every configured account in the response
-        t_accounts = list(
+        t_account = next(
             filter(
                 lambda tacc: account["id"] == tacc["account_id"],
                 first_response["accounts"],
-            )
+            ),
+            None,
         )
-        if len(t_accounts) == 0:
+        if t_account is None:
             logging.warning("Not present in response: %s", account["name"])
             continue
-        assert len(t_accounts) == 1
-        t_account = t_accounts[0]
         ledger = []
         for transaction in transactions:
             if account["id"] != transaction["account_id"]:
