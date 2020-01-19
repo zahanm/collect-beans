@@ -112,6 +112,15 @@ def run():
         if item["downloader"] != "plaid":
             continue
         logging.info("Item: %s", name)
+        assert "accounts" in item
+        if sync_mode == "transactions":
+            if not any(acc.get("sync") == "transactions" for acc in item["accounts"]):
+                logging.info("%s: skip", name)
+                continue
+        elif sync_mode == "balance":
+            if not any(acc.get("sync") == "balance" for acc in item["accounts"]):
+                logging.info("%s: skip", name)
+                continue
         (_, access_token) = fetch_creds_from_op(item)
         logging.info("Got credentials, now talking to bank.")
         if sync_mode == "transactions":
