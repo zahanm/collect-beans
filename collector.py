@@ -288,11 +288,20 @@ def fetch_balance(name, item, access_token):
             None,
             None,
         )
-        out = printer.format_entry(entry)
         print("; = {}, {} =".format(account_def["name"], account_def["currency"]))
+        print_pad(meta, account_def["name"])
+        out = printer.format_entry(entry)
         print(out)
     logging.info("Done %s", name)
     print()
+
+
+def print_pad(meta, account):
+    entry = data.Pad(
+        meta, date.today() + timedelta(days=-1), account, "Equity:Net-Worth-Sync"
+    )
+    out = printer.format_entry(entry)
+    print(out)
 
 
 def check_that_op_is_present():
