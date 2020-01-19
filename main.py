@@ -31,23 +31,22 @@ def make_importers(item):
     (credentials_name, institution) = item
 
     def importer(account):
-        if institution["importer"] == "OFX":
+        importer = institution.get("importer")
+        if importer == "OFX":
             account_id = account["number"] if "number" in account else account["id"]
             return ofx.Importer(account["name"], account["currency"], account_id)
-        elif institution["importer"] == "CSV":
+        elif importer == "CSV":
             return csv.Importer(credentials_name, institution, account)
-        elif institution["importer"] == "PDF":
+        elif importer == "PDF":
             return pdf.Importer(
                 account["name"],
                 content_regexp=account.get("content_regexp"),
                 filing_name=account.get("filing_name"),
             )
-        elif institution["importer"] == "custom":
+        elif importer == "custom":
             return dummy.Importer(account["name"])
-        elif institution["importer"] == "none":
-            return None
         else:
-            assert False, "Invalid importer: " + repr(institution) + " " + repr(account)
+            return None
 
     return [ii for ii in map(importer, institution["accounts"]) if ii is not None]
 
