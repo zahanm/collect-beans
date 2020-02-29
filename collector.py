@@ -121,6 +121,9 @@ def run():
             if not any(acc.get("sync") == "balance" for acc in item["accounts"]):
                 logging.info("%s: skip", name)
                 continue
+        if not check_institution_status(name, item):
+            logging.info("%s: unhealthy, skip", name)
+            continue
         (_, access_token) = fetch_creds_from_op(item)
         logging.info("Got credentials, now talking to bank.")
         if sync_mode == "transactions":
@@ -343,6 +346,26 @@ def fetch_creds_from_op(item):
     assert item_id != None
     assert access_token != None
     return (item_id, access_token)
+
+
+def check_institution_status(name, item) -> bool:
+    assert client
+    try:
+        # pyre-fixme[16] it doesn't know types for beancount client
+        response = client.Institutions.get_by_id(
+            item["institution-id"], _options={"include_status": True}
+        )
+    except plaid.errors.PlaidError as e:
+        logging.warning("Plaid error: %s", e.message)
+        return False
+    assert "institution" in response
+    if "status" in response["institution"]:
+        inst_status = response["institution"]["status"]
+        logging.debug(inst_status)
+        if "transactions_updates" in inst_status:
+            if "status" in inst_status["transactions_updates"]:
+                return inst_status["transactions_updates"]["status"] == "HEALTHY"
+    return False
 
 
 def find_duplicate_entries(new_entries):
