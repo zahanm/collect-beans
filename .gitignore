@@ -12,3 +12,7 @@ env.fish
 /*.out
 
 /__tests__/env.fish
+
+/.pyre/
+/.pyre_configuration
+/.watchmanconfig
