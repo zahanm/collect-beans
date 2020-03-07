@@ -122,7 +122,9 @@ def run():
                 logging.info("%s: skip", name)
                 continue
         if not check_institution_status(name, item):
-            logging.info("%s: unhealthy, skip", name)
+            logging.info(
+                "%s: unhealthy, skip %s", name, get_status_url(item["institution-id"])
+            )
             continue
         (_, access_token) = fetch_creds_from_op(item)
         logging.info("Got credentials, now talking to bank.")
@@ -366,6 +368,10 @@ def check_institution_status(name, item) -> bool:
             if "status" in inst_status["transactions_updates"]:
                 return inst_status["transactions_updates"]["status"] == "HEALTHY"
     return False
+
+
+def get_status_url(inst_id: str) -> str:
+    return "https://dashboard.plaid.com/activity/status/institution/{}".format(inst_id)
 
 
 def find_duplicate_entries(new_entries):
