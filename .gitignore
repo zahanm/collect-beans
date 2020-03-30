@@ -16,3 +16,5 @@ env.fish
 /.pyre/
 /.pyre_configuration
 /.watchmanconfig
+
+/out.png
