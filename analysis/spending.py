@@ -1,7 +1,6 @@
 import argparse
 import csv
 from datetime import date, timedelta
-from io import StringIO
 import subprocess
 from tempfile import NamedTemporaryFile
 
@@ -28,6 +27,11 @@ args = None
 def run():
     parser = argparse.ArgumentParser(description="Analyse spending")
     parser.add_argument("journal", help="Journal file with beancount transations")
+    parser.add_argument(
+        "--monthly",
+        action="store_true",
+        help="Look at spend per month for half a year",
+    )
     global args
     args = parser.parse_args()
     with NamedTemporaryFile(mode="w+") as outfile:
@@ -62,12 +66,14 @@ def parse(outfile):
         },
     )
     start = get_start()
-    end = date.today()
-    bins = pd.date_range(
-        start=start, end=end, freq=pd.offsets.Week(weekday=end.weekday())
+    end = get_end()
+    freq = (
+        pd.offsets.MonthBegin()
+        if args.monthly
+        else pd.offsets.Week(weekday=end.weekday())
     )
+    bins = pd.date_range(start=start, end=end, freq=freq)
     data["bin"] = pd.cut(data["date"], bins)
-    print(data)
     return data
 
 
@@ -88,7 +94,19 @@ def plot(data):
 
 
 def get_start():
-    return date.today() - timedelta(weeks=12)
+    if args.monthly:
+        old = date.today() - timedelta(days=6 * 30)
+        return old.replace(day=1)  # start from first of month
+    else:
+        return date.today() - timedelta(weeks=12)
+
+
+def get_end():
+    if args.monthly:
+        new = date.today() + timedelta(days=30)
+        return new.replace(day=1)  # end on first day of next month
+    else:
+        return date.today()
 
 
 if __name__ == "__main__":
