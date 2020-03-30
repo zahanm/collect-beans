@@ -18,7 +18,7 @@ select
     convert(position, 'USD') as spend
 where account ~ '^Expenses:'
     and not account ~ '^Expenses:Taxes:'
-    and date >= #"{start}";
+    and date > #"{start}";
 """
 
 args = None
@@ -57,9 +57,10 @@ def parse(outfile):
         parse_dates=[0],
         converters={"spend": lambda x: pd.to_numeric(Amount.from_string(x).number)},
     )
-    today = date.today()
+    start = get_start()
+    end = date.today()
     bins = pd.date_range(
-        start=get_start(), end=today, freq=pd.offsets.Week(weekday=today.weekday())
+        start=start, end=end, freq=pd.offsets.Week(weekday=end.weekday())
     )
     data["bins"] = pd.cut(data["date"], bins)
     print(data.index)
