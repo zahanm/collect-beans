@@ -1,11 +1,13 @@
 import argparse
 import csv
+from datetime import date, timedelta
 from io import StringIO
 import subprocess
 from tempfile import NamedTemporaryFile
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 OUT_FILE = "out.png"
 QUERY = """
@@ -13,9 +15,9 @@ select
     date,
     root(account, 2) as category,
     position
-where account ~ 'Expenses:'
-    and not account ~ 'Expenses:Taxes:'
-    and date > #"Mar 1 2020"
+where account ~ '^Expenses:'
+    and not account ~ '^Expenses:Taxes:'
+    and date >= #"{start}"
 limit 10;
 """
 
@@ -34,11 +36,12 @@ def run():
 
 
 def bean_query(outfile):
+    start = date.today() - timedelta(weeks=12)
     _ret = subprocess.run(
         [
             "bean-query",
             args.journal,
-            QUERY,
+            QUERY.format(start=start.isoformat()),
             "--format",
             "csv",
             "--output",
@@ -50,9 +53,12 @@ def bean_query(outfile):
 
 
 def parse(outfile):
-    reader = csv.DictReader(outfile)
-    for row in reader:
-        print(row["date"])
+    data = pd.read_csv(outfile, parse_dates=[0])
+    print(data.index)
+    print(data.columns)
+    print(data.dtypes)
+    print(data.shape)
+    print(data)
 
 
 def plot():

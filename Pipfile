@@ -19,6 +19,7 @@ fava = "*"
 flask = "*"
 plaid-python = "*"
 matplotlib = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"
