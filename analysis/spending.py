@@ -55,7 +55,10 @@ def parse(outfile):
     data = pd.read_csv(
         outfile,
         parse_dates=[0],
-        converters={"spend": lambda x: pd.to_numeric(Amount.from_string(x).number)},
+        converters={
+            "category": lambda x: x.split(":")[1].strip(),
+            "spend": lambda x: pd.to_numeric(Amount.from_string(x).number),
+        },
     )
     start = get_start()
     end = date.today()
@@ -68,11 +71,12 @@ def parse(outfile):
 
 
 def plot(data):
-    daily_totals = data.groupby(["bin"]).sum()
+    daily_spend = data.groupby(["bin", "category"])
     _categories = np.unique(data["category"])
+    table = daily_spend.sum()["spend"].unstack()
     fig, ax = plt.subplots()
-    daily_totals.plot.bar(ax=ax)
-    datelabels = [interval.left.strftime("%d %b") for interval in daily_totals.index]
+    table.plot.bar(ax=ax)
+    datelabels = [interval.left.strftime("%d %b") for interval in table.index]
     ax.set_xlabel(None)
     ax.set_xticklabels(datelabels)
     fig.autofmt_xdate()
