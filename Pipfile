@@ -20,6 +20,7 @@ flask = "*"
 plaid-python = "*"
 matplotlib = "*"
 pandas = "*"
+seaborn = "*"
 
 [requires]
 python_version = "3.7"

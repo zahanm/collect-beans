@@ -9,6 +9,7 @@ from beancount.core.amount import Amount
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 OUT_FILE = "out.png"
 QUERY = """
@@ -74,7 +75,9 @@ def plot(data):
     daily_spend = data.groupby(["bin", "category"])
     _categories = np.unique(data["category"])
     table = daily_spend.sum()["spend"].unstack()
+    sns.set()
     fig, ax = plt.subplots()
+    fig.set_size_inches(12.8, 8.8)
     table.plot.bar(ax=ax, stacked=True)
     datelabels = [interval.left.strftime("%d %b") for interval in table.index]
     ax.set_xlabel(None)
