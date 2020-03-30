@@ -75,7 +75,7 @@ def plot(data):
     _categories = np.unique(data["category"])
     table = daily_spend.sum()["spend"].unstack()
     fig, ax = plt.subplots()
-    table.plot.bar(ax=ax)
+    table.plot.bar(ax=ax, stacked=True)
     datelabels = [interval.left.strftime("%d %b") for interval in table.index]
     ax.set_xlabel(None)
     ax.set_xticklabels(datelabels)
