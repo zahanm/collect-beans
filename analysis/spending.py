@@ -31,8 +31,8 @@ def run():
     args = parser.parse_args()
     with NamedTemporaryFile(mode="w+") as outfile:
         bean_query(outfile)
-        parse(outfile)
-    plot()
+        data = parse(outfile)
+    plot(data)
 
 
 def bean_query(outfile):
@@ -62,17 +62,20 @@ def parse(outfile):
     bins = pd.date_range(
         start=start, end=end, freq=pd.offsets.Week(weekday=end.weekday())
     )
-    data["bins"] = pd.cut(data["date"], bins)
-    print(data.index)
-    print(data.columns)
-    print(data.dtypes)
-    print(data.shape)
+    data["bin"] = pd.cut(data["date"], bins)
     print(data)
+    return data
 
 
-def plot():
-    _fig, ax = plt.subplots()
-    ax.plot([1, 2, 3, 4], [1, 4, 2, 3])
+def plot(data):
+    daily_totals = data.groupby(["bin"]).sum()
+    _categories = np.unique(data["category"])
+    fig, ax = plt.subplots()
+    daily_totals.plot.bar(ax=ax)
+    datelabels = [interval.left.strftime("%d %b") for interval in daily_totals.index]
+    ax.set_xlabel(None)
+    ax.set_xticklabels(datelabels)
+    fig.autofmt_xdate()
     plt.savefig(OUT_FILE)
     subprocess.run(["open", OUT_FILE])
 
