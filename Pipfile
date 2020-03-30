@@ -18,6 +18,10 @@ titlecase = "*"
 fava = "*"
 flask = "*"
 plaid-python = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
