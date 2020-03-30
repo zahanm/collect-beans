@@ -5,6 +5,7 @@ from io import StringIO
 import subprocess
 from tempfile import NamedTemporaryFile
 
+from beancount.core.amount import Amount
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -14,11 +15,10 @@ QUERY = """
 select
     date,
     root(account, 2) as category,
-    position
+    convert(position, 'USD') as spend
 where account ~ '^Expenses:'
     and not account ~ '^Expenses:Taxes:'
-    and date >= #"{start}"
-limit 10;
+    and date >= #"{start}";
 """
 
 args = None
@@ -36,12 +36,11 @@ def run():
 
 
 def bean_query(outfile):
-    start = date.today() - timedelta(weeks=12)
     _ret = subprocess.run(
         [
             "bean-query",
             args.journal,
-            QUERY.format(start=start.isoformat()),
+            QUERY.format(start=get_start().isoformat()),
             "--format",
             "csv",
             "--output",
@@ -53,7 +52,16 @@ def bean_query(outfile):
 
 
 def parse(outfile):
-    data = pd.read_csv(outfile, parse_dates=[0])
+    data = pd.read_csv(
+        outfile,
+        parse_dates=[0],
+        converters={"spend": lambda x: pd.to_numeric(Amount.from_string(x).number)},
+    )
+    today = date.today()
+    bins = pd.date_range(
+        start=get_start(), end=today, freq=pd.offsets.Week(weekday=today.weekday())
+    )
+    data["bins"] = pd.cut(data["date"], bins)
     print(data.index)
     print(data.columns)
     print(data.dtypes)
@@ -66,6 +74,10 @@ def plot():
     ax.plot([1, 2, 3, 4], [1, 4, 2, 3])
     plt.savefig(OUT_FILE)
     subprocess.run(["open", OUT_FILE])
+
+
+def get_start():
+    return date.today() - timedelta(weeks=12)
 
 
 if __name__ == "__main__":
