@@ -19,8 +19,11 @@ select
     root(account, 2) as category,
     convert(position, 'USD') as spend
 where account ~ '^Expenses:'
-    and not account ~ '^Expenses:Taxes:'
+    {exclusions}
     and date > #"{start}";
+"""
+EXCLUSION = """
+and not account ~ '^{account}'
 """
 
 args = None
@@ -38,6 +41,12 @@ def run():
     parser.add_argument(
         "--debug", action="store_true", help="Output debug logs to stderr",
     )
+    parser.add_argument(
+        "--exclude",
+        action="append",
+        help="Exclude this account/prefix from the analysis (can specify multiple). f.e. Expenses:Home:",
+        default=[],
+    )
     global args, logger
     args = parser.parse_args()
     logger = logging.getLogger(__name__)
@@ -50,7 +59,10 @@ def run():
 
 
 def bean_query(outfile):
-    query = QUERY.format(start=get_start().isoformat()).strip()
+    exclusions = [EXCLUSION.strip().format(account=ex) for ex in args.exclude]
+    query = QUERY.format(
+        start=get_start().isoformat(), exclusions="\n".join(exclusions)
+    ).strip()
     logger.debug(query)
     _ret = subprocess.run(
         [
