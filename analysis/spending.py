@@ -1,7 +1,9 @@
 import argparse
 import csv
 from datetime import date, timedelta
+import logging
 import subprocess
+import sys
 from tempfile import NamedTemporaryFile
 
 from beancount.core.amount import Amount
@@ -22,6 +24,7 @@ where account ~ '^Expenses:'
 """
 
 args = None
+logger = None
 
 
 def run():
@@ -32,8 +35,14 @@ def run():
         action="store_true",
         help="Look at spend per month for half a year",
     )
-    global args
+    parser.add_argument(
+        "--debug", action="store_true", help="Output debug logs to stderr",
+    )
+    global args, logger
     args = parser.parse_args()
+    logger = logging.getLogger(__name__)
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG if args.debug else logging.WARNING)
     with NamedTemporaryFile(mode="w+") as outfile:
         bean_query(outfile)
         data = parse(outfile)
@@ -41,11 +50,13 @@ def run():
 
 
 def bean_query(outfile):
+    query = QUERY.format(start=get_start().isoformat()).strip()
+    logger.debug(query)
     _ret = subprocess.run(
         [
             "bean-query",
             args.journal,
-            QUERY.format(start=get_start().isoformat()),
+            query,
             "--format",
             "csv",
             "--output",
