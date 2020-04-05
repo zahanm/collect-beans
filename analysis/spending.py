@@ -17,13 +17,18 @@ QUERY = """
 select
     date,
     root(account, 2) as category,
+    account,
     convert(position, 'USD') as spend
 where account ~ '^Expenses:'
     {exclusions}
+    {inclusions}
     and date > #"{start}";
 """
 EXCLUSION = """
 and not account ~ '^{account}'
+"""
+INCLUSION = """
+and account ~ '^{account}'
 """
 
 args = None
@@ -47,6 +52,17 @@ def run():
         help="Exclude this account/prefix from the analysis (can specify multiple). f.e. Expenses:Home:",
         default=[],
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        help="Include only this account/prefix from the analysis (can specify multiple). f.e. Expenses:Home:Utilities",
+        default=[],
+    )
+    parser.add_argument(
+        "--full-account",
+        action="store_true",
+        help="Use the full account name as group-by",
+    )
     global args, logger
     args = parser.parse_args()
     logger = logging.getLogger(__name__)
@@ -60,8 +76,11 @@ def run():
 
 def bean_query(outfile):
     exclusions = [EXCLUSION.strip().format(account=ex) for ex in args.exclude]
+    inclusions = [INCLUSION.strip().format(account=inc) for inc in args.only]
     query = QUERY.format(
-        start=get_start().isoformat(), exclusions="\n".join(exclusions)
+        start=get_start().isoformat(),
+        exclusions="\n".join(exclusions),
+        inclusions="\n".join(inclusions),
     ).strip()
     logger.debug(query)
     _ret = subprocess.run(
@@ -85,6 +104,7 @@ def parse(outfile):
         parse_dates=[0],
         converters={
             "category": lambda x: x.split(":")[1].strip(),
+            "account": lambda x: ":".join(x.split(":")[1:]).strip(),
             "spend": lambda x: pd.to_numeric(Amount.from_string(x).number),
         },
     )
@@ -101,8 +121,11 @@ def parse(outfile):
 
 
 def plot(data):
-    daily_spend = data.groupby(["bin", "category"])
-    _categories = np.unique(data["category"])
+    if args.full_account:
+        group_by = "account"
+    else:
+        group_by = "category"
+    daily_spend = data.groupby(["bin", group_by])
     table = daily_spend.sum()["spend"].unstack()
     sns.set()
     fig, ax = plt.subplots()
