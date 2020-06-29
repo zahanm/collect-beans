@@ -2,6 +2,7 @@ from beancount.core import flags
 from beancount.core.number import D
 from beancount.core.amount import Amount
 from beancount.core import data
+from beancount.core.data import Transaction, Balance, Pad
 from beancount.ingest import similar
 from beancount.parser import printer
 from beancount import loader
@@ -171,15 +172,15 @@ class Collector:
                     account["name"], Amount(-amount, currency), None, None, None, None
                 )
                 ref = data.new_metadata("foo", 0)
-                entry = data.Transaction(
-                    ref,
-                    date.fromisoformat(transaction["date"]),
-                    flags.FLAG_OKAY,
-                    transaction["name"],
-                    "",  # memo
-                    data.EMPTY_SET,
-                    data.EMPTY_SET,
-                    [posting],
+                entry = Transaction(
+                    meta=ref,
+                    date=date.fromisoformat(transaction["date"]),
+                    flag=flags.FLAG_OKAY,
+                    payee=transaction["name"],
+                    narration="",
+                    tags=data.EMPTY_SET,
+                    links=data.EMPTY_SET,
+                    postings=[posting],
                 )
                 ledger.append(entry)
             ledger.reverse()  # API returns transactions in reverse chronological order
@@ -205,13 +206,11 @@ class Collector:
                     bal = -bal
                 if t_account["balances"]["current"] != None:
                     meta = data.new_metadata("foo", 0)
-                    entry = data.Balance(
-                        meta,
-                        date.today(),
-                        account["name"],
-                        Amount(bal, currency),
-                        None,
-                        None,
+                    entry = Balance(
+                        meta=meta,
+                        date=date.today(),
+                        account=account["name"],
+                        amount=Amount(bal, currency),
                     )
                     out = printer.format_entry(entry)
                     print(out)
@@ -264,13 +263,11 @@ class Collector:
                 # https://plaid.com/docs/#account-types
                 bal = -bal
             meta = data.new_metadata("foo", 0)
-            entry = data.Balance(
-                meta,
-                date.today(),
-                account_def["name"],
-                Amount(bal, account_def["currency"]),
-                None,
-                None,
+            entry = Balance(
+                meta=meta,
+                date=date.today(),
+                account=account_def["name"],
+                amount=Amount(bal, account_def["currency"]),
             )
             print("; = {}, {} =".format(account_def["name"], account_def["currency"]))
             self.print_pad(meta, account_def["name"])
@@ -280,8 +277,11 @@ class Collector:
         print()
 
     def print_pad(self, meta, account):
-        entry = data.Pad(
-            meta, date.today() + timedelta(days=-1), account, "Equity:Net-Worth-Sync"
+        entry = Pad(
+            meta=meta,
+            date=date.today() + timedelta(days=-1),
+            account=account,
+            source_account="Equity:Net-Worth-Sync",
         )
         out = printer.format_entry(entry)
         print(out)
