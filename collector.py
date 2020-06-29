@@ -49,44 +49,8 @@ class Collector:
     Primary driver
     """
 
-    def __init__(self):
-        self.args = None
-        self.client = None
-        self.existing_entries = None
-        self.sync_mode = None
-
-    def run(self):
-        parser = argparse.ArgumentParser(description="Download statements from banks")
-        parser.add_argument("config", help="YAML file with accounts configured")
-        parser.add_argument(
-            "--existing",
-            metavar="BEANCOUNT_FILE",
-            default=None,
-            help="Beancount file for de-duplication (optional)",
-        )
-        parser.add_argument(
-            "--days",
-            type=int,
-            default=10,
-            help="How many days back should the statement go?",
-        )
-        parser.add_argument(
-            "--balance",
-            action="store_true",
-            help="Run this script in 'balance sync' mode (mutually exclusive with transactions download)",
-        )
-        parser.add_argument(
-            "--debug", action="store_true", help="Debug the request and responses"
-        )
-        self.args = parser.parse_args()
-
-        with open(self.args.config) as f:
-            CONFIG = yaml.full_load(f)
-        importers = CONFIG["importers"]
-
-        if self.args.existing:
-            self.existing_entries, _, _ = loader.load_file(self.args.existing)
-
+    def __init__(self, args):
+        self.args = args
         self.client = plaid.Client(
             client_id=PLAID_CLIENT_ID,
             secret=PLAID_SECRET,
@@ -94,7 +58,11 @@ class Collector:
             environment=PLAID_ENV,
             api_version="2019-05-29",
         )
-
+        if args.existing:
+            self.existing_entries, _, _ = loader.load_file(self.args.existing)
+        else:
+            self.existing_entries = None
+        self.sync_mode = "balance" if self.args.balance else "transactions"
         if self.args.debug:
             logging.getLogger().setLevel(logging.DEBUG)
             http.client.HTTPConnection.debuglevel = 1
@@ -104,10 +72,13 @@ class Collector:
         else:
             logging.getLogger().setLevel(logging.INFO)
 
+    def run(self):
+        with open(self.args.config) as f:
+            CONFIG = yaml.full_load(f)
+        importers = CONFIG["importers"]
+
         if any(acc["downloader"] == "plaid" for acc in importers.values()):
             self.check_that_op_is_present()
-
-        self.sync_mode = "balance" if self.args.balance else "transactions"
 
         # look up and download for each
         for name, item in importers.items():
@@ -414,6 +385,32 @@ def print_error(*args, **kwargs):
     print(file=sys.stderr, *args, **kwargs)
 
 
+def extract_args():
+    parser = argparse.ArgumentParser(description="Download statements from banks")
+    parser.add_argument("config", help="YAML file with accounts configured")
+    parser.add_argument(
+        "--existing",
+        metavar="BEANCOUNT_FILE",
+        default=None,
+        help="Beancount file for de-duplication (optional)",
+    )
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=10,
+        help="How many days back should the statement go?",
+    )
+    parser.add_argument(
+        "--balance",
+        action="store_true",
+        help="Run this script in 'balance sync' mode (mutually exclusive with transactions download)",
+    )
+    parser.add_argument(
+        "--debug", action="store_true", help="Debug the request and responses"
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    collector = Collector()
+    collector = Collector(extract_args())
     collector.run()
