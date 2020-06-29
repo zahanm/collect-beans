@@ -1,0 +1,10 @@
+; = Liabilities:US:Plaid:CreditCard, USD =
+; 2 transactions
+
+2020-06-02 * "Mollie Stone's Market" ""
+  Liabilities:US:Plaid:CreditCard                   -7.58 USD
+
+2020-06-07 * "AUTOPAY PAYMENT - THANK YOU" ""
+  Liabilities:US:Plaid:CreditCard                   44.97 USD
+
+2020-06-28 balance Liabilities:US:Plaid:CreditCard  -7.58 USD
