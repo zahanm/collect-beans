@@ -50,7 +50,8 @@ class Inserter:
         print(self.destination)
 
     def _parse_shelf(self, filename) -> shelve.Shelf:
-        return shelve.open(filename)
+        # the shelf module doesn't like the suffix, since it adds it automatically
+        return shelve.open(filename.rstrip(".db"))
 
     def _parse_journal_entries(self, journal) -> Entries:
         entries, _errors, _options_map = loader.load_file(journal)
