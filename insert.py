@@ -9,7 +9,11 @@ from beancount.core.data import Entries, Directive, Transaction, Balance, Pad
 from beancount.parser import printer
 from beancount.scripts.format import align_beancount
 
+from collector import DUPLICATE_META
 from lib.utils import print_stderr, pretty_print_stderr
+
+
+SUPPORTED_DIRECTIVES = {Transaction, Balance, Pad}
 
 
 class Inserter:
@@ -76,9 +80,6 @@ class Inserter:
         raise RuntimeError(f"No balance entry for {account}")
 
 
-SUPPORTED_DIRECTIVES = {Transaction, Balance, Pad}
-
-
 def _accounts(entry) -> Set[str]:
     if type(entry) is Transaction:
         return set([posting.account for posting in entry.postings])
@@ -97,6 +98,8 @@ def _format_entries(entries: Entries, indent: str) -> str:
     outf = StringIO()
     for entry in entries:
         outs = printer.format_entry(entry)
+        if DUPLICATE_META in entry.meta:
+            outs = textwrap.indent(outs, "; ")
         outf.write(textwrap.indent(outs, indent))
         outf.write("\n")  # add a newline
     return outf.getvalue()
