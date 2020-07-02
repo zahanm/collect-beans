@@ -22,6 +22,8 @@ import sys
 import textwrap
 from typing import Any, Dict
 
+from lib.utils import print_stderr, pretty_print_stderr
+
 
 # = Plaid initialisation =
 # Get Plaid API keys from https://dashboard.plaid.com/account/keys
@@ -121,7 +123,7 @@ class Collector:
         finally:
             # close the database
             self.output.close()
-            print_error(f"Wrote out to {self.output_filename()}")
+            print_stderr(f"Wrote out to {self.output_filename()}")
 
     def fetch_transactions(self, name, item, access_token):
         # Pull transactions for the last 30 days
@@ -148,7 +150,7 @@ class Collector:
                 first_response = response
                 total_transactions = response["total_transactions"]
             if self.args.debug:
-                pretty_print_response(response)
+                pretty_print_stderr(response)
 
         if "accounts" not in first_response:
             logging.warning("No accounts, aborting")
@@ -240,7 +242,7 @@ class Collector:
             logging.warning("Plaid error: %s", e.message)
             return
         if self.args.debug:
-            pretty_print_response(response)
+            pretty_print_stderr(response)
 
         if "accounts" not in response:
             logging.warning("No accounts, aborting")
@@ -390,14 +392,6 @@ class Collector:
 
     def output_filename(self):
         return OUTPUT_FILENAME.format(mode=self.sync_mode)
-
-
-def pretty_print_response(response):
-    print(json.dumps(response, indent=2, sort_keys=True), file=sys.stderr)
-
-
-def print_error(*args, **kwargs):
-    print(file=sys.stderr, *args, **kwargs)
 
 
 def extract_args():
