@@ -7,6 +7,7 @@ import textwrap
 from beancount import loader
 from beancount.core.data import Entries, Directive, Transaction, Balance, Pad
 from beancount.parser import printer
+from beancount.scripts.format import align_beancount
 
 from lib.utils import print_stderr, pretty_print_stderr
 
@@ -43,6 +44,9 @@ class Inserter:
             ).splitlines()
             self.destination = "\n".join(destination_lines)
             print_stderr(f"Total lines {len(destination_lines)}")
+        # run bean-format on the final results
+        print_stderr("Formatting")
+        self.destination = align_beancount(self.destination)
         print(self.destination)
 
     def _parse_shelf(self, filename) -> shelve.Shelf:
