@@ -70,6 +70,7 @@ class Collector:
         else:
             self.existing_entries = None
         self.sync_mode = "balance" if self.args.balance else "transactions"
+        self.output_mode = "text" if self.args.txt else "db"
         if self.args.debug:
             logging.getLogger().setLevel(logging.DEBUG)
             http.client.HTTPConnection.debuglevel = 1
@@ -78,7 +79,8 @@ class Collector:
             r_log.propagate = True
         else:
             logging.getLogger().setLevel(logging.INFO)
-        self.output = shelve.open(self.output_filename())
+        if self.output_mode is "db":
+            self.output = shelve.open(self.output_filename())
 
     def run(self):
         try:
@@ -121,9 +123,10 @@ class Collector:
                 elif self.sync_mode == "balance":
                     self.fetch_balance(name, item, access_token)
         finally:
-            # close the database
-            self.output.close()
-            print_stderr(f"Wrote out to {self.output_filename()}")
+            if self.output_mode is "db":
+                # close the database
+                self.output.close()
+                print(f"{self.output_filename()}.db")
 
     def fetch_transactions(self, name, item, access_token):
         # Pull transactions for the last 30 days
@@ -198,9 +201,10 @@ class Collector:
                 )
                 ledger.append(entry)
             ledger.reverse()  # API returns transactions in reverse chronological order
-            # print entries to stdout
-            print("; = {}, {} =".format(account["name"], currency))
-            print("; {} transactions\n".format(len(ledger)))
+            if self.output_mode is "text":
+                # print entries to stdout
+                print("; = {}, {} =".format(account["name"], currency))
+                print("; {} transactions\n".format(len(ledger)))
             # flag the duplicates
             self.annotate_duplicate_entries(ledger)
             # add the balance directive
@@ -223,17 +227,21 @@ class Collector:
                         diff_amount=None,
                     )
                     ledger.append(entry)
-            # write the account's ledger to intermediate output, pickled file
-            self.output[account["name"]] = ledger
-            # print out all the entries
-            for entry in ledger:
-                out = printer.format_entry(entry)
-                if DUPLICATE_META in entry.meta:
-                    out = textwrap.indent(out, "; ")
-                print(out)
+            if self.output_mode is "db":
+                # write the account's ledger to intermediate output, pickled file
+                self.output[account["name"]] = ledger
+            else:
+                assert self.output_mode is "text"
+                # print out all the entries
+                for entry in ledger:
+                    out = printer.format_entry(entry)
+                    if DUPLICATE_META in entry.meta:
+                        out = textwrap.indent(out, "; ")
+                    print(out)
 
         logging.info("Done %s", name)
-        print()
+        if self.output_mode is "text":
+            print()  # newline
 
     def fetch_balance(self, name, item, access_token):
         try:
@@ -288,16 +296,20 @@ class Collector:
                 tolerance=None,
                 diff_amount=None,
             )
-            print("; = {}, {} =".format(account_def["name"], account_def["currency"]))
             ledger = []
             ledger.append(self.pad(meta, account_def["name"]))
             ledger.append(balance_entry)
-            self.output[account_def["name"]] = ledger
-            for entry in ledger:
-                out = printer.format_entry(entry)
-                print(out)
+            if self.output_mode is "text":
+                print(f"; = {account_def['name']}, {account_def['currency']} =")
+                for entry in ledger:
+                    out = printer.format_entry(entry)
+                    print(out)
+            else:
+                assert self.output_mode is "db"
+                self.output[account_def["name"]] = ledger
         logging.info("Done %s", name)
-        print()
+        if self.output_mode is "text":
+            print()  # newline
 
     def pad(self, meta, account):
         entry = Pad(  # pylint: disable=not-callable
@@ -395,7 +407,15 @@ class Collector:
 
 
 def extract_args():
-    parser = argparse.ArgumentParser(description="Download statements from banks")
+    parser = argparse.ArgumentParser(
+        description=textwrap.dedent(
+            """
+            Download statements from banks.
+            Writes just the file name that the transactions are stored in (in a binary format) to stdout.
+            Unless the --txt argument is given, then it prints out the beancount entries directly.
+            """
+        )
+    )
     parser.add_argument("config", help="YAML file with accounts configured")
     parser.add_argument(
         "--existing",
@@ -412,7 +432,12 @@ def extract_args():
     parser.add_argument(
         "--balance",
         action="store_true",
-        help="Run this script in 'balance sync' mode (mutually exclusive with transactions download)",
+        help="Run this script in 'balance sync' mode (mutually exclusive with transactions download).",
+    )
+    parser.add_argument(
+        "--txt",
+        action="store_true",
+        help="Output the beancount entries directly to stdout, instead of writing to a file.",
     )
     parser.add_argument(
         "--debug", action="store_true", help="Debug the request and responses"
