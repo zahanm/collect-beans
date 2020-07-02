@@ -172,7 +172,7 @@ class Collector:
                     account["name"], Amount(-amount, currency), None, None, None, None
                 )
                 ref = data.new_metadata("foo", 0)
-                entry = Transaction(
+                entry = Transaction(  # pylint: disable=not-callable
                     meta=ref,
                     date=date.fromisoformat(transaction["date"]),
                     flag=flags.FLAG_OKAY,
@@ -206,7 +206,7 @@ class Collector:
                     bal = -bal
                 if t_account["balances"]["current"] != None:
                     meta = data.new_metadata("foo", 0)
-                    entry = Balance(
+                    entry = Balance(  # pylint: disable=not-callable
                         meta=meta,
                         date=date.today(),
                         account=account["name"],
@@ -263,7 +263,7 @@ class Collector:
                 # https://plaid.com/docs/#account-types
                 bal = -bal
             meta = data.new_metadata("foo", 0)
-            entry = Balance(
+            entry = Balance(  # pylint: disable=not-callable
                 meta=meta,
                 date=date.today(),
                 account=account_def["name"],
@@ -277,7 +277,7 @@ class Collector:
         print()
 
     def print_pad(self, meta, account):
-        entry = Pad(
+        entry = Pad(  # pylint: disable=not-callable
             meta=meta,
             date=date.today() + timedelta(days=-1),
             account=account,
