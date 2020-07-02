@@ -1,7 +1,8 @@
 import argparse
-from typing import List
+from typing import List, Set
 from io import StringIO
 import shelve
+import textwrap
 
 from beancount import loader
 from beancount.core.data import Entries, Directive, Transaction, Balance, Pad
@@ -32,11 +33,13 @@ class Inserter:
                 print_stderr(f"Skipping {account}")
                 continue
             print_stderr(f"Processing {account}")
-            insert_pos = self._find_last_balance_lineno(account) + 1  # for a newline
+            lineno = self._find_last_balance_lineno(account)
+            # +1 since we're going from line number to position, and +1 for a newline
+            insert_pos = lineno + 1
             print_stderr(f"Insert at -> {insert_pos}")
             destination_lines = self.destination.splitlines()
             destination_lines[insert_pos:insert_pos] = _format_entries(
-                directives
+                directives, _indentation_at(destination_lines, lineno),
             ).splitlines()
             self.destination = "\n".join(destination_lines)
             print_stderr(f"Total lines {len(destination_lines)}")
@@ -53,7 +56,7 @@ class Inserter:
         entries, _errors, _options_map = loader.load_string(journal)
         return entries
 
-    def _find_last_balance_lineno(self, account: str):
+    def _find_last_balance_lineno(self, account: str) -> int:
         """
         Looks for the last "balance" directive for this account in the destination.
         The assumption (which is safe in my journal) is that each account ends its dedicated section with a "balance" entry.
@@ -71,7 +74,7 @@ class Inserter:
 SUPPORTED_DIRECTIVES = {Transaction, Balance, Pad}
 
 
-def _accounts(entry):
+def _accounts(entry) -> Set[str]:
     if type(entry) is Transaction:
         return set([posting.account for posting in entry.postings])
     if type(entry) in {Pad, Balance}:
@@ -79,10 +82,18 @@ def _accounts(entry):
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
 
 
-def _format_entries(entries: Entries):
+def _indentation_at(lines, lineno) -> str:
+    line = lines[lineno - 1]
+    num = len(line) - len(line.lstrip())
+    return " " * num
+
+
+def _format_entries(entries: Entries, indent: str) -> str:
     outf = StringIO()
-    printer.print_entries(entries, file=outf)
-    outf.write("\n")  # add a newline
+    for entry in entries:
+        outs = printer.format_entry(entry)
+        outf.write(textwrap.indent(outs, indent))
+        outf.write("\n")  # add a newline
     return outf.getvalue()
 
 
