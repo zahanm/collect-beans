@@ -32,10 +32,10 @@ class Inserter:
                 print_stderr(f"Skipping {account}")
                 continue
             print_stderr(f"Processing {account}")
-            insert_lineno = self._find_last_balance_lineno(account) + 1
-            print_stderr(f"Insert at -> {insert_lineno}")
+            insert_pos = self._find_last_balance_lineno(account) + 1  # for a newline
+            print_stderr(f"Insert at -> {insert_pos}")
             destination_lines = self.destination.splitlines()
-            destination_lines[insert_lineno:insert_lineno] = _format_entries(
+            destination_lines[insert_pos:insert_pos] = _format_entries(
                 directives
             ).splitlines()
             self.destination = "\n".join(destination_lines)
@@ -82,6 +82,7 @@ def _accounts(entry):
 def _format_entries(entries: Entries):
     outf = StringIO()
     printer.print_entries(entries, file=outf)
+    outf.write("\n")  # add a newline
     return outf.getvalue()
 
 
