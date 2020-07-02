@@ -2,11 +2,12 @@ import argparse
 from typing import List
 from io import StringIO
 import shelve
-import sys
 
 from beancount import loader
 from beancount.core.data import Entries, Directive, Transaction, Balance, Pad
 from beancount.parser import printer
+
+from lib.utils import print_stderr, pretty_print_stderr
 
 
 class Inserter:
@@ -28,13 +29,18 @@ class Inserter:
                 [type(entry) in SUPPORTED_DIRECTIVES for entry in directives]
             )
             if not has_useful_entries:
+                print_stderr(f"Skipping {account}")
                 continue
+            print_stderr(f"Processing {account}")
             insert_lineno = self._find_last_balance_lineno(account) + 1
+            print_stderr(f"Insert at -> {insert_lineno}")
             destination_lines = self.destination.splitlines()
             destination_lines[insert_lineno:insert_lineno] = _format_entries(
                 directives
             ).splitlines()
             self.destination = "\n".join(destination_lines)
+            print_stderr(f"Total lines {len(destination_lines)}")
+        print(self.destination)
 
     def _parse_shelf(self, filename) -> shelve.Shelf:
         return shelve.open(filename)
