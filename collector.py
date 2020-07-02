@@ -2,7 +2,7 @@ from beancount.core import flags
 from beancount.core.number import D
 from beancount.core.amount import Amount
 from beancount.core import data
-from beancount.core.data import Transaction, Balance, Pad
+from beancount.core.data import Transaction, Balance, Pad, Posting
 from beancount.ingest import similar
 from beancount.parser import printer
 from beancount import loader
@@ -168,7 +168,7 @@ class Collector:
                 amount = D(transaction["amount"])
                 # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
                 amount = round(amount, 2)
-                posting = data.Posting(
+                posting = Posting(
                     account["name"], Amount(-amount, currency), None, None, None, None
                 )
                 ref = data.new_metadata("foo", 0)
