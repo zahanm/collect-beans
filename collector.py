@@ -79,7 +79,7 @@ class Collector:
             r_log.propagate = True
         else:
             logging.getLogger().setLevel(logging.INFO)
-        if self.output_mode is "db":
+        if self.output_mode == "db":
             self.output = shelve.open(self.output_filename())
 
     def run(self):
@@ -123,7 +123,7 @@ class Collector:
                 elif self.sync_mode == "balance":
                     self.fetch_balance(name, item, access_token)
         finally:
-            if self.output_mode is "db":
+            if self.output_mode == "db":
                 # close the database
                 self.output.close()
                 print(f"{self.output_filename()}.db")
@@ -201,7 +201,7 @@ class Collector:
                 )
                 ledger.append(entry)
             ledger.reverse()  # API returns transactions in reverse chronological order
-            if self.output_mode is "text":
+            if self.output_mode == "text":
                 # print entries to stdout
                 print("; = {}, {} =".format(account["name"], currency))
                 print("; {} transactions\n".format(len(ledger)))
@@ -227,11 +227,11 @@ class Collector:
                         diff_amount=None,
                     )
                     ledger.append(entry)
-            if self.output_mode is "db":
+            if self.output_mode == "db":
                 # write the account's ledger to intermediate output, pickled file
                 self.output[account["name"]] = ledger
             else:
-                assert self.output_mode is "text"
+                assert self.output_mode == "text"
                 # print out all the entries
                 for entry in ledger:
                     out = printer.format_entry(entry)
@@ -240,7 +240,7 @@ class Collector:
                     print(out)
 
         logging.info("Done %s", name)
-        if self.output_mode is "text":
+        if self.output_mode == "text":
             print()  # newline
 
     def fetch_balance(self, name, item, access_token):
@@ -299,16 +299,16 @@ class Collector:
             ledger = []
             ledger.append(self.pad(meta, account_def["name"]))
             ledger.append(balance_entry)
-            if self.output_mode is "text":
+            if self.output_mode == "text":
                 print(f"; = {account_def['name']}, {account_def['currency']} =")
                 for entry in ledger:
                     out = printer.format_entry(entry)
                     print(out)
             else:
-                assert self.output_mode is "db"
+                assert self.output_mode == "db"
                 self.output[account_def["name"]] = ledger
         logging.info("Done %s", name)
-        if self.output_mode is "text":
+        if self.output_mode == "text":
             print()  # newline
 
     def pad(self, meta, account):
