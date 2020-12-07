@@ -61,9 +61,8 @@ class Collector:
         self.client = plaid.Client(
             client_id=PLAID_CLIENT_ID,
             secret=PLAID_SECRET,
-            public_key=PLAID_PUBLIC_KEY,
             environment=PLAID_ENV,
-            api_version="2019-05-29",
+            api_version="2020-09-14",
         )
         if args.existing:
             self.existing_entries, _, _ = loader.load_file(self.args.existing)
@@ -364,7 +363,7 @@ class Collector:
         try:
             # pyre-fixme[16] it doesn't know types for beancount client
             response = self.client.Institutions.get_by_id(
-                item["institution-id"], _options={"include_status": True}
+                item["institution-id"], ["US"], _options={"include_status": True}
             )
         except plaid.errors.PlaidError as e:
             logging.warning("Plaid error: %s", e.message)
