@@ -55,14 +55,11 @@ def index_scripts():
     )
 
 
-access_token = None
-
 # Exchange token flow - exchange a Link public_token for
 # an API access_token
 # https://plaid.com/docs/#exchange-token-flow
 @app.route("/get_access_token", methods=["POST"])
 def get_access_token():
-    global access_token
     public_token = request.form["public_token"]
     try:
         exchange_response = client.Item.public_token.exchange(public_token)
@@ -70,7 +67,6 @@ def get_access_token():
         return jsonify(format_error(e))
 
     pretty_print_response(exchange_response)
-    access_token = exchange_response["access_token"]
     return jsonify(exchange_response)
 
 
@@ -79,7 +75,7 @@ def get_access_token():
 @app.route("/auth", methods=["GET"])
 def get_auth():
     try:
-        auth_response = client.Auth.get(access_token)
+        auth_response = client.Auth.get(request.args["access_token"])
     except plaid.errors.PlaidError as e:
         return jsonify(
             {
@@ -103,7 +99,7 @@ def get_transactions():
     end_date = "{:%Y-%m-%d}".format(datetime.datetime.now())
     try:
         transactions_response = client.Transactions.get(
-            access_token, start_date, end_date
+            request.args["access_token"], start_date, end_date
         )
     except plaid.errors.PlaidError as e:
         return jsonify(format_error(e))
@@ -116,7 +112,7 @@ def get_transactions():
 @app.route("/identity", methods=["GET"])
 def get_identity():
     try:
-        identity_response = client.Identity.get(access_token)
+        identity_response = client.Identity.get(request.args["access_token"])
     except plaid.errors.PlaidError as e:
         return jsonify(
             {
@@ -136,7 +132,7 @@ def get_identity():
 @app.route("/balance", methods=["GET"])
 def get_balance():
     try:
-        balance_response = client.Accounts.balance.get(access_token)
+        balance_response = client.Accounts.balance.get(request.args["access_token"])
     except plaid.errors.PlaidError as e:
         return jsonify(
             {
@@ -156,7 +152,7 @@ def get_balance():
 @app.route("/accounts", methods=["GET"])
 def get_accounts():
     try:
-        accounts_response = client.Accounts.get(access_token)
+        accounts_response = client.Accounts.get(request.args["access_token"])
     except plaid.errors.PlaidError as e:
         return jsonify(
             {
@@ -178,7 +174,9 @@ def get_accounts():
 @app.route("/assets", methods=["GET"])
 def get_assets():
     try:
-        asset_report_create_response = client.AssetReport.create([access_token], 10)
+        asset_report_create_response = client.AssetReport.create(
+            [request.args["access_token"]], 10
+        )
     except plaid.errors.PlaidError as e:
         return jsonify(
             {
@@ -255,7 +253,7 @@ def get_assets():
 @app.route("/holdings", methods=["GET"])
 def get_holdings():
     try:
-        holdings_response = client.Holdings.get(access_token)
+        holdings_response = client.Holdings.get(request.args["access_token"])
     except plaid.errors.PlaidError as e:
         return jsonify(
             {
@@ -279,7 +277,7 @@ def get_investment_transactions():
     end_date = "{:%Y-%m-%d}".format(datetime.datetime.now())
     try:
         investment_transactions_response = client.InvestmentTransactions.get(
-            access_token, start_date, end_date
+            request.args["access_token"], start_date, end_date
         )
     except plaid.errors.PlaidError as e:
         return jsonify(format_error(e))
@@ -293,7 +291,7 @@ def get_investment_transactions():
 # https://plaid.com/docs/#retrieve-item
 @app.route("/item", methods=["GET"])
 def item():
-    item_response = client.Item.get(access_token)
+    item_response = client.Item.get(request.args["access_token"])
     institution_response = client.Institutions.get_by_id(
         item_response["item"]["institution_id"], country_codes=PLAID_COUNTRY_CODES
     )
@@ -308,14 +306,6 @@ def item():
     )
 
 
-@app.route("/set_access_token", methods=["POST"])
-def set_access_token():
-    global access_token
-    access_token = request.form["access_token"]
-    item = client.Item.get(access_token)
-    return jsonify({"error": None, "item_id": item["item"]["item_id"]})
-
-
 # Create link_token flow - make a temporary link_token
 # that the client Link will use to talk to Plaid
 # https://plaid.com/docs/api/tokens/#linktokencreate
@@ -328,8 +318,8 @@ def create_link_token():
         "country_codes": PLAID_COUNTRY_CODES,
         "language": PLAID_LANGUAGE,
     }
-    if access_token != None:
-        configs["access_token"] = access_token
+    if "access_token" in request.args:
+        configs["access_token"] = request.args["access_token"]
     try:
         create_response = client.LinkToken.create(configs)
     except plaid.errors.PlaidError as e:
