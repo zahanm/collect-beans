@@ -29,7 +29,6 @@ from lib.utils import print_stderr, pretty_print_stderr
 # Get Plaid API keys from https://dashboard.plaid.com/account/keys
 PLAID_CLIENT_ID = getenv("PLAID_CLIENT_ID")
 PLAID_SECRET = getenv("PLAID_SECRET")
-PLAID_PUBLIC_KEY = getenv("PLAID_PUBLIC_KEY")
 # Use 'sandbox' to test with Plaid's Sandbox environment (username: user_good,
 # password: pass_good)
 # Use `development` to test with live users and credentials and `production`

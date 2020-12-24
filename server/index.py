@@ -10,7 +10,6 @@ import plaid
 # Get Plaid API keys from https://dashboard.plaid.com/account/keys
 PLAID_CLIENT_ID = os.getenv("PLAID_CLIENT_ID")
 PLAID_SECRET = os.getenv("PLAID_SECRET")
-PLAID_PUBLIC_KEY = os.getenv("PLAID_PUBLIC_KEY")
 # Use 'sandbox' to test with Plaid's Sandbox environment (username: user_good,
 # password: pass_good)
 # Use `development` to test with live users and credentials and `production`
@@ -19,18 +18,25 @@ PLAID_ENV = os.getenv("PLAID_ENV", "sandbox")
 # PLAID_PRODUCTS is a comma-separated list of products to use when initializing
 # Link. Note that this list must contain 'assets' in order for the app to be
 # able to create and retrieve asset reports.
-PLAID_PRODUCTS = os.getenv("PLAID_PRODUCTS", "transactions")
+PLAID_PRODUCTS = [
+    pp.strip() for pp in os.getenv("PLAID_PRODUCTS", "transactions").split(",")
+]
 
 # PLAID_COUNTRY_CODES is a comma-separated list of countries for which users
 # will be able to select institutions from.
-PLAID_COUNTRY_CODES = os.getenv("PLAID_COUNTRY_CODES", "US")
+PLAID_COUNTRY_CODES = [
+    cc.strip() for cc in os.getenv("PLAID_COUNTRY_CODES", "US").split(",")
+]
+
+
+PLAID_CLIENT_NAME = "Bean Collector"
+PLAID_LANGUAGE = "en"
 
 client = plaid.Client(
     client_id=PLAID_CLIENT_ID,
     secret=PLAID_SECRET,
-    public_key=PLAID_PUBLIC_KEY,
     environment=PLAID_ENV,
-    api_version="2019-05-29",
+    api_version="2020-09-14",
 )
 
 app = Flask(__name__)
@@ -40,10 +46,7 @@ app = Flask(__name__)
 def index():
     return render_template(
         "index.ejs",
-        plaid_public_key=PLAID_PUBLIC_KEY,
-        plaid_environment=PLAID_ENV,
-        plaid_products=PLAID_PRODUCTS,
-        plaid_country_codes=PLAID_COUNTRY_CODES,
+        plaid_products=",".join(PLAID_PRODUCTS),
     )
 
 
@@ -287,7 +290,7 @@ def get_investment_transactions():
 def item():
     item_response = client.Item.get(access_token)
     institution_response = client.Institutions.get_by_id(
-        item_response["item"]["institution_id"]
+        item_response["item"]["institution_id"], country_codes=PLAID_COUNTRY_CODES
     )
     pretty_print_response(item_response)
     pretty_print_response(institution_response)
@@ -308,23 +311,22 @@ def set_access_token():
     return jsonify({"error": None, "item_id": item["item"]["item_id"]})
 
 
-# Create public_token flow - exchange an API access_token
-# for a Link public_token to use in Link's update flow
-# https://plaid.com/docs/#creating-public-tokens
-@app.route("/create_public_token", methods=["POST"])
-def create_public_token():
-    if access_token is None:
-        return jsonify(
-            {
-                "error": {
-                    "display_message": "No access_token is set to create a public_token",
-                    "error_code": 1,
-                    "error_type": "NO_TOKEN",
-                }
-            }
-        )
+# Create link_token flow - make a temporary link_token
+# that the client Link will use to talk to Plaid
+# https://plaid.com/docs/api/tokens/#linktokencreate
+@app.route("/create_link_token", methods=["POST"])
+def create_link_token():
+    configs = {
+        "user": {"client_user_id": "1"},
+        "products": PLAID_PRODUCTS,
+        "client_name": PLAID_CLIENT_NAME,
+        "country_codes": PLAID_COUNTRY_CODES,
+        "language": PLAID_LANGUAGE,
+    }
+    if access_token != None:
+        configs["access_token"] = access_token
     try:
-        create_response = client.Item.public_token.create(access_token)
+        create_response = client.LinkToken.create(configs)
     except plaid.errors.PlaidError as e:
         return jsonify(format_error(e))
     pretty_print_response(create_response)
@@ -348,4 +350,3 @@ def format_error(e):
 
 if __name__ == "__main__":
     app.run(port=os.getenv("PORT", 5000))
-

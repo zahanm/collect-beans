@@ -286,20 +286,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
   <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
   <script>
-    (function ($) {
+    (async function ($) {
       var products = '{{ plaid_products }}'.split(',');
       if (products.includes('assets')) {
         $('#assets').show();
       }
 
-      const handler = Plaid.create({
-        apiVersion: 'v2',
-        clientName: 'Bean Collector',
-        env: '{{ plaid_environment }}',
-        product: products,
-        key: '{{ plaid_public_key }}',
-        countryCodes: '{{ plaid_country_codes }}'.split(','),
-        onSuccess: function (public_token) {
+      const fetchLinkToken = async () => {
+        const response = await fetch("/create_link_token", { method: 'POST' });
+        const responseJSON = await response.json();
+        if (responseJSON.error) {
+          displayError(this, responseJSON.error);
+          throw new Error(responseJSON.error.error_message);
+        }
+        return responseJSON.link_token;
+      };
+
+      const configs = {
+        token: await fetchLinkToken(),
+        onSuccess: async function (public_token, metadata) {
           $.post('/get_access_token', {
             public_token: public_token
           }, function (data) {
@@ -311,7 +316,25 @@
             });
           });
         },
-      });
+        onExit: async function(err, metadata) {
+          // Gracefully handle the invalid link token error. A link token
+          // can become invalidated if it expires, has already been used
+          // for a link session, or is associated with too many invalid logins.
+          if (err != null && err.error_code === 'INVALID_LINK_TOKEN') {
+            linkHandler.destroy();
+            linkHandler = Plaid.create({
+              ...configs,
+              token: await fetchLinkToken(),
+            });
+          }
+          if (err != null) {
+            // Handle any other types of errors.
+            displayError(this, err);
+          }
+        },
+      };
+      var linkHandler = Plaid.create(configs);
+
       var accessToken = qs('access_token');
       if (accessToken != null && accessToken != '') {
         $.post('/set_access_token', {
@@ -336,38 +359,24 @@
         window.location.search = searchParams.toString();
       });
 
-      $('#update-mode-btn').on('click', function (e) {
-        $.post('/create_public_token', {}, function (data) {
-          if (data.error != null) {
-            displayError(this, data.error);
-            return;
-          }
-
-          const handler = Plaid.create({
-            apiVersion: 'v2',
-            clientName: 'Bean Collector',
-            env: '{{ plaid_environment }}',
-            product: products,
-            key: '{{ plaid_public_key }}',
-            countryCodes: '{{ plaid_country_codes }}'.split(','),
-            token: data.public_token,
-            onSuccess: function (public_token, metadata) {
-              // notify the user that all is good
-              console.log("Updated Plaid Item authentication");
-            },
-            onExit: function (err, metadata) {
-              if (err != null) {
-                // The user encountered a Plaid API error prior
-                // to exiting.
-                displayError(this, err);
-                return;
-              }
-              // nothing to do
-            },
-          });
-          handler.open();
-        });
-
+      $('#update-mode-btn').on('click', async function (e) {
+        const updateConfigs = {
+          token: await fetchLinkToken(),
+          onSuccess: function (public_token, metadata) {
+            // notify the user that all is good
+            console.log("Updated Plaid Item authentication");
+          },
+          onExit: function (err, metadata) {
+            if (err != null) {
+              // The user encountered a Plaid API error prior
+              // to exiting.
+              displayError(this, err);
+            }
+          },
+        };
+        linkHandler.destroy();
+        linkHandler = Plaid.create(updateConfigs);
+        linkHandler.open();
       });
 
       $('#get-accounts-btn').on('click', function (e) {
