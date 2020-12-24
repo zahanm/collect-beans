@@ -4,7 +4,7 @@ import json
 import os
 import time
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import plaid
 
 # Get Plaid API keys from https://dashboard.plaid.com/account/keys
@@ -44,8 +44,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    return send_file("static/index.html")
+
+
+@app.route("/index.js")
+def index_scripts():
     return render_template(
-        "index.ejs",
+        "index.js",
         plaid_products=",".join(PLAID_PRODUCTS),
     )
 
