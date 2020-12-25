@@ -80,7 +80,7 @@
   var linkHandler = Plaid.create(configs);
 
   $("#link-btn").on("click", function (e) {
-    handler.open();
+    linkHandler.open();
   });
 
   $("#relink-btn").on("click", function (e) {
