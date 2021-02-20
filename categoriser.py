@@ -30,7 +30,7 @@ class Categoriser:
         try:
             for account, entries in self.source.items():
                 print_stderr(f"Processing {account}")
-                self.destination[account] = []
+                new_entries = []
                 for entry in entries:
                     if type(entry) in SUPPORTED_DIRECTIVES:
                         categorised_account = self.attempt_categorise(entry)
@@ -53,7 +53,9 @@ class Categoriser:
                         )
                     else:
                         new_entry = entry
-                    self.destination[account].append(new_entry)
+                    new_entries.append(new_entry)
+                # this assignment needs to happen just once
+                self.destination[account] = new_entries
         finally:
             # close the database
             self.destination.close()
@@ -61,11 +63,12 @@ class Categoriser:
 
     @staticmethod
     def _open_shelf(filename) -> shelve.Shelf:
-        # the shelf module doesn't like the suffix, since it adds it automatically
-        return shelve.open(filename.rstrip(".db"))
+        return shelve.open(filename)
 
     def attempt_categorise(self, entry) -> Optional[str]:
         for pat, account in self.patterns.items():
+            # TODO: make this into a regex check.
+            # It should check word bounds
             if pat in entry.payee.lower():
                 return account
         return None

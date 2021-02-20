@@ -44,7 +44,8 @@ class Inserter:
             print_stderr(f"Insert at -> {insert_pos}")
             destination_lines = self.destination.splitlines()
             destination_lines[insert_pos:insert_pos] = _format_entries(
-                directives, _indentation_at(destination_lines, lineno),
+                directives,
+                _indentation_at(destination_lines, lineno),
             ).splitlines()
             self.destination = "\n".join(destination_lines)
             print_stderr(f"Total lines {len(destination_lines)}")
@@ -55,7 +56,7 @@ class Inserter:
 
     def _parse_shelf(self, filename) -> shelve.Shelf:
         # the shelf module doesn't like the suffix, since it adds it automatically
-        return shelve.open(filename.rstrip(".db"))
+        return shelve.open(filename)
 
     def _parse_journal_entries(self, journal) -> Entries:
         entries, _errors, _options_map = loader.load_file(journal)
