@@ -38,7 +38,11 @@ class Inserter:
                 print_stderr(f"Skipping {account}")
                 continue
             print_stderr(f"Processing {account}")
-            lineno = self._find_last_balance_lineno(account)
+            last_balance = self._find_last_balance_entry(account)
+            if _is_same_balance_entry(last_balance, directives):
+                print_stderr(f"No updates, skipping {account}")
+                continue
+            lineno = last_balance.meta["lineno"]
             # +1 since we're going from line number to position, and +1 for a newline
             insert_pos = lineno + 1
             print_stderr(f"Insert at -> {insert_pos}")
@@ -66,7 +70,7 @@ class Inserter:
         entries, _errors, _options_map = loader.load_string(journal)
         return entries
 
-    def _find_last_balance_lineno(self, account: str) -> int:
+    def _find_last_balance_entry(self, account: str) -> Balance:
         """
         Looks for the last "balance" directive for this account in the destination.
         The assumption (which is safe in my journal) is that each account ends its dedicated section with a "balance" entry.
@@ -75,8 +79,8 @@ class Inserter:
         destination_entries = self._parse_entries_from_string(self.destination)
         for entry in reversed(destination_entries):
             if type(entry) is Balance and account in _accounts(entry):
-                # it's the first entry after the account was found, use the lineno from the last entry
-                return entry.meta["lineno"]
+                # it's the last balance entry which the account was found in
+                return entry
         # could not find a balance entry for this account
         raise RuntimeError(f"No balance entry for {account}")
 
@@ -87,6 +91,13 @@ def _accounts(entry) -> Set[str]:
     if type(entry) in {Pad, Balance}:
         return {entry.account}
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
+
+
+def _is_same_balance_entry(last_balance: Balance, directives: [Directive]) -> bool:
+    if len(directives) != 1 or type(directives[0]) != Balance:
+        return False
+    balance = directives[0]
+    return last_balance.date == balance.date and last_balance.amount == balance.amount
 
 
 def _indentation_at(lines, lineno) -> str:
