@@ -124,7 +124,7 @@ class Collector:
             if self.output_mode == "db":
                 # close the database
                 self.output.close()
-                print(f"{self.output_filename()}.db")
+                print(self.output_filename())
 
     def fetch_transactions(self, name, item, access_token):
         # Pull transactions for the last 30 days
