@@ -28,6 +28,8 @@ class Categoriser:
 
     def run(self):
         try:
+            # remove anything that was there previously
+            self.destination.clear()
             for account, entries in self.source.items():
                 print_stderr(f"Processing {account}")
                 new_entries = []
