@@ -89,6 +89,9 @@ class Collector:
             if any(acc["downloader"] == "plaid" for acc in importers.values()):
                 self.check_that_op_is_present()
 
+            # remove anything that was there previously
+            self.output.clear()
+
             # look up and download for each
             for name, item in importers.items():
                 if item["downloader"] != "plaid":
