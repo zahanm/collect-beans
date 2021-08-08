@@ -98,6 +98,9 @@ class Collector:
                     continue
                 logging.info("Item: %s", name)
                 assert "accounts" in item
+                if self.args.only != None and name != self.args.only:
+                    logging.info("%s: skip (not in --only)", name)
+                    continue
                 if self.sync_mode == "transactions":
                     if not any(
                         acc.get("sync") == "transactions" for acc in item["accounts"]
@@ -442,6 +445,12 @@ def extract_args():
     )
     parser.add_argument(
         "--debug", action="store_true", help="Debug the request and responses"
+    )
+    parser.add_argument(
+        "--only",
+        metavar="IMPORTER_NAME",
+        default=None,
+        help="Only this importer will be run (optional - useful for debugging)",
     )
     return parser.parse_args()
 
