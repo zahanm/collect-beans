@@ -379,6 +379,11 @@ class Collector:
             logging.debug(inst_status)
             if "transactions_updates" in inst_status:
                 if "status" in inst_status["transactions_updates"]:
+                    if inst_status["transactions_updates"]["status"] == "DEGRADED":
+                        logging.warning(
+                            "%s: degraded status, proceeding with fetch", name
+                        )
+                        return True
                     return inst_status["transactions_updates"]["status"] == "HEALTHY"
         return False
 
