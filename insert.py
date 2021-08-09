@@ -6,6 +6,7 @@ import textwrap
 
 from beancount import loader
 from beancount.core.data import Entries, Directive, Transaction, Balance, Pad
+from beancount.core.display_context import DisplayContext
 from beancount.parser import printer
 from beancount.scripts.format import align_beancount
 
@@ -93,7 +94,7 @@ def _accounts(entry) -> Set[str]:
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
 
 
-def _is_same_balance_entry(last_balance: Balance, directives: [Directive]) -> bool:
+def _is_same_balance_entry(last_balance: Balance, directives: List[Directive]) -> bool:
     if len(directives) != 1 or type(directives[0]) != Balance:
         return False
     balance = directives[0]
@@ -106,10 +107,14 @@ def _indentation_at(lines, lineno) -> str:
     return " " * num
 
 
+DISPLAY_CONTEXT = DisplayContext()
+DISPLAY_CONTEXT.set_commas(True)
+
+
 def _format_entries(entries: Entries, indent: str) -> str:
     outf = StringIO()
     for entry in entries:
-        outs = printer.format_entry(entry)
+        outs = printer.format_entry(entry, DISPLAY_CONTEXT)
         if DUPLICATE_META in entry.meta:
             outs = textwrap.indent(outs, "; ")
         outf.write(textwrap.indent(outs, indent))
