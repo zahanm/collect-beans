@@ -57,6 +57,9 @@ class Collector:
 
     def __init__(self, args):
         self.args = args
+        if PLAID_CLIENT_ID is None:
+            logging.critical("You didn't source the environment variables necessary")
+            raise RuntimeError("Missing PLAID_CLIENT_ID")
         self.client = plaid.Client(
             client_id=PLAID_CLIENT_ID,
             secret=PLAID_SECRET,
