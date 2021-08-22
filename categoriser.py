@@ -61,7 +61,7 @@ class Categoriser:
         finally:
             # close the database
             self.destination.close()
-            print_stderr("Written to $destination")
+            print_stderr("Categorised written to db file")
 
     @staticmethod
     def _open_shelf(filename) -> shelve.Shelf:
