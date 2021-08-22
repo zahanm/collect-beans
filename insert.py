@@ -3,6 +3,7 @@ from typing import List, Set
 from io import StringIO
 import shelve
 import textwrap
+from os import path
 
 from beancount import loader
 from beancount.core.data import Entries, Directive, Transaction, Balance, Pad
@@ -28,6 +29,8 @@ class Inserter:
         # in-memory string to write as the destination file
         with open(self.args.destination, mode="r") as destination_file:
             self.destination = destination_file.read()
+        with open(self.args.journal, mode="r") as journal_file:
+            self.journal = journal_file.read()
 
     def run(self):
         source = self._parse_shelf(self.args.source)
@@ -77,13 +80,26 @@ class Inserter:
         The assumption (which is safe in my journal) is that each account ends its dedicated section with a "balance" entry.
         "destination_entries" itself is a date-ordered list of directives.
         """
-        destination_entries = self._parse_entries_from_string(self.destination)
-        for entry in reversed(destination_entries):
-            if type(entry) is Balance and account in _accounts(entry):
-                # it's the last balance entry which the account was found in
-                return entry
-        # could not find a balance entry for this account
-        raise RuntimeError(f"No balance entry for {account}")
+        all_entries = self._parse_entries_from_string(self.journal)
+        balance_entries = [
+            entry
+            for entry in all_entries
+            if type(entry) is Balance and account in _accounts(entry)
+        ]
+        if len(balance_entries) == 0:
+            # could not find a balance entry for this account
+            raise RuntimeError(f"No balance entry for {account}")
+        newest_balance = max(
+            balance_entries,
+            key=lambda entry: entry.date,
+        )
+        if path.basename(self.args.destination) != path.basename(
+            newest_balance.meta["filename"]
+        ):
+            # make sure that it's in the correct file
+            raise RuntimeError(f"Balance entry is not in destination file")
+        # it's the last balance entry which the account was found in
+        return newest_balance
 
 
 def _accounts(entry) -> Set[str]:
@@ -129,6 +145,7 @@ def _extract_args():
     parser.add_argument("config", help="YAML file with accounts configured")
     parser.add_argument("source", help="Pickled DB file to copy postings from")
     parser.add_argument("destination", help="Beancount file to put postings in")
+    parser.add_argument("journal", help="main beancount file which includes the others")
     parser.add_argument(
         "--debug", action="store_true", help="Debug the request and responses"
     )
