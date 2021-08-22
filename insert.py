@@ -26,11 +26,6 @@ class Inserter:
 
     def __init__(self, args: argparse.Namespace):
         self.args = args
-        # in-memory string to write as the destination file
-        with open(self.args.destination, mode="r") as destination_file:
-            self.destination = destination_file.read()
-        with open(self.args.journal, mode="r") as journal_file:
-            self.journal = journal_file.read()
 
     def run(self):
         source = self._parse_shelf(self.args.source)
@@ -50,17 +45,21 @@ class Inserter:
             # +1 since we're going from line number to position, and +1 for a newline
             insert_pos = lineno + 1
             print_stderr(f"Insert at -> {insert_pos}")
-            destination_lines = self.destination.splitlines()
+            with open(self.args.destination, mode="r") as destination:
+                destination_lines = destination.read().splitlines()
             destination_lines[insert_pos:insert_pos] = _format_entries(
                 directives,
                 _indentation_at(destination_lines, lineno),
             ).splitlines()
-            self.destination = "\n".join(destination_lines)
+            with open(self.args.destination, mode="w") as destination:
+                destination.write("\n".join(destination_lines))
             print_stderr(f"Total lines {len(destination_lines)}")
         # run bean-format on the final results
         print_stderr("Formatting")
-        self.destination = align_beancount(self.destination)
-        print(self.destination)
+        with open(self.args.destination, mode="r") as destination:
+            formatted_contents = align_beancount(destination.read())
+        with open(self.args.destination, mode="w") as destination:
+            destination.write(formatted_contents)
 
     def _parse_shelf(self, filename) -> shelve.Shelf:
         # the shelf module doesn't like the suffix, since it adds it automatically
@@ -80,7 +79,7 @@ class Inserter:
         The assumption (which is safe in my journal) is that each account ends its dedicated section with a "balance" entry.
         "destination_entries" itself is a date-ordered list of directives.
         """
-        all_entries = self._parse_entries_from_string(self.journal)
+        all_entries = self._parse_journal_entries(self.args.journal)
         balance_entries = [
             entry
             for entry in all_entries
