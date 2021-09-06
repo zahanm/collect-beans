@@ -1,15 +1,11 @@
+#!/usr/bin/env python3
 """Import configuration."""
 
 from itertools import chain
 from os import path
-import sys
 import yaml
 
-from beancount.ingest import extract
-from beancount.ingest.scripts_utils import ingest
-
 from importers import ofx, csv, pdf, dummy
-import collector
 
 # import argparse
 # parser = argparse.ArgumentParser(description="Collecting beans")
@@ -22,7 +18,7 @@ import collector
 # FIXME: hard-coded for now, see beancount issue https://bitbucket.org/blais/beancount/issues/358/
 fname = path.join(path.dirname(__file__), "../accounts/CONFIG.yaml")
 with open(fname) as f:
-    CONFIG = yaml.full_load(f)
+    CONFIGyaml = yaml.full_load(f)
 
 # go through the regular `bean-{identify,extract,file}` flow
 
@@ -52,8 +48,7 @@ def make_importers(item):
 
 
 # the list(..) turns this from an iterable to a materialized list
-importers = list(
+CONFIG = list(
     # aka, flatten(..)
-    chain.from_iterable(map(make_importers, CONFIG["importers"].items()))
+    chain.from_iterable(map(make_importers, CONFIGyaml["importers"].items()))
 )
-ingest(importers)
