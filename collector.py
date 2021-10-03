@@ -91,6 +91,13 @@ class Collector:
 
             if any(acc["downloader"] == "plaid" for acc in importers.values()):
                 self.check_that_op_is_present()
+                logging.info(
+                    "\nClient ID: %s App: %s\nSecret: %s\nEnv: %s",
+                    self.client.client_id,
+                    self.client.client_app,
+                    self.client.secret,
+                    self.client.environment,
+                )
 
             # remove anything that was there previously
             self.output.clear()
