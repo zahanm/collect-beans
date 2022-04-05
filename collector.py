@@ -7,6 +7,16 @@ from beancount.ingest import similar
 from beancount.parser import printer
 from beancount import loader
 import plaid
+from plaid.api import plaid_api
+from plaid.model.transactions_get_request import TransactionsGetRequest
+from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
+from plaid.model.accounts_get_request import AccountsGetRequest
+from plaid.model.institutions_get_by_id_request import InstitutionsGetByIdRequest
+from plaid.model.institutions_get_by_id_request_options import (
+    InstitutionsGetByIdRequestOptions,
+)
+from plaid.model.account_type import AccountType
+from plaid.model.country_code import CountryCode
 import yaml
 
 import argparse
@@ -39,10 +49,6 @@ PLAID_ENV = getenv("PLAID_ENV", "sandbox")
 # able to create and retrieve asset reports.
 PLAID_PRODUCTS = getenv("PLAID_PRODUCTS", "transactions")
 
-# PLAID_COUNTRY_CODES is a comma-separated list of countries for which users
-# will be able to select institutions from.
-PLAID_COUNTRY_CODES = getenv("PLAID_COUNTRY_CODES", "US")
-
 # Name of metadata field to be set to indicate that the entry is a likely duplicate.
 DUPLICATE_META = "__duplicate__"
 
@@ -60,12 +66,16 @@ class Collector:
         if PLAID_CLIENT_ID is None:
             logging.critical("You didn't source the environment variables necessary")
             raise RuntimeError("Missing PLAID_CLIENT_ID")
-        self.client = plaid.Client(
-            client_id=PLAID_CLIENT_ID,
-            secret=PLAID_SECRET,
-            environment=PLAID_ENV,
-            api_version="2020-09-14",
+        configuration = plaid.Configuration(
+            host=plaid.Environment.Development,
+            api_key={
+                "clientId": PLAID_CLIENT_ID,
+                "secret": PLAID_SECRET,
+                "plaidVersion": "2020-09-14",
+            },
         )
+        api_client = plaid.ApiClient(configuration)
+        self.client = plaid_api.PlaidApi(api_client)
         if args.existing:
             self.existing_entries, _, _ = loader.load_file(self.args.existing)
         else:
@@ -91,13 +101,6 @@ class Collector:
 
             if any(acc["downloader"] == "plaid" for acc in importers.values()):
                 self.check_that_op_is_present()
-                logging.info(
-                    "\nClient ID: %s App: %s\nSecret: %s\nEnv: %s",
-                    self.client.client_id,
-                    self.client.client_app,
-                    self.client.secret,
-                    self.client.environment,
-                )
 
             # remove anything that was there previously
             self.output.clear()
@@ -144,10 +147,8 @@ class Collector:
 
     def fetch_transactions(self, name, item, access_token):
         # Pull transactions for the last 30 days
-        start_date = "{:%Y-%m-%d}".format(
-            datetime.now() + timedelta(days=-self.args.days)
-        )
-        end_date = "{:%Y-%m-%d}".format(datetime.now())
+        start_date = date.today() - timedelta(days=self.args.days)
+        end_date = date.today()
 
         # the transactions in the response are paginated, so make multiple calls while increasing the offset to
         # retrieve all transactions
@@ -156,18 +157,29 @@ class Collector:
         first_response = None
         while len(transactions) < total_transactions:
             try:
-                response = self.client.Transactions.get(
-                    access_token, start_date, end_date, offset=len(transactions)
+                opts = TransactionsGetRequestOptions()
+                opts.offset = len(transactions)
+                req = TransactionsGetRequest(
+                    access_token=access_token,
+                    start_date=start_date,
+                    end_date=end_date,
+                    options=opts,
                 )
-            except plaid.errors.PlaidError as e:
-                logging.warning("Plaid error: %s", e.message)
+                logging.debug(
+                    json.dumps(req.to_dict(), indent=2, sort_keys=True, default=str)
+                )
+                response = self.client.transactions_get(req)
+            except plaid.ApiException as e:
+                logging.warning("Plaid error: %s", e.body)
                 return
             transactions.extend(response["transactions"])
             if first_response is None:
                 first_response = response
                 total_transactions = response["total_transactions"]
-            if self.args.debug:
-                pretty_print_stderr(response)
+            logging.debug(
+                "> FETCH TXNS: %s",
+                json.dumps(response.to_dict(), indent=2, sort_keys=True, default=str),
+            )
 
         if "accounts" not in first_response:
             logging.warning("No accounts, aborting")
@@ -205,7 +217,7 @@ class Collector:
                 ref = data.new_metadata("foo", 0)
                 entry = Transaction(  # pylint: disable=not-callable
                     meta=ref,
-                    date=date.fromisoformat(transaction["date"]),
+                    date=transaction["date"],
                     flag=flags.FLAG_OKAY,
                     payee=transaction["name"],
                     narration="",
@@ -226,7 +238,8 @@ class Collector:
                 bal = D(t_account["balances"]["current"])
                 # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
                 bal = round(bal, 2)
-                if t_account["type"] in {"credit", "loan"}:
+                ac_type = t_account["type"]
+                if ac_type == AccountType("CREDIT") or ac_type == AccountType("LOAN"):
                     # the balance is a liability in the case of credit cards, and loans
                     # https://plaid.com/docs/#account-types
                     bal = -bal
@@ -259,12 +272,15 @@ class Collector:
 
     def fetch_balance(self, name, item, access_token):
         try:
-            response = self.client.Accounts.get(access_token)
-        except plaid.errors.PlaidError as e:
-            logging.warning("Plaid error: %s", e.message)
+            req = AccountsGetRequest(access_token=access_token)
+            response = self.client.accounts_get(req)
+        except plaid.ApiException as e:
+            logging.warning("Plaid error: %s", e.body)
             return
-        if self.args.debug:
-            pretty_print_stderr(response)
+        logging.debug(
+            "> FETCH BALANCE: %s",
+            json.dumps(response.to_dict(), indent=2, sort_keys=True, default=str),
+        )
 
         if "accounts" not in response:
             logging.warning("No accounts, aborting")
@@ -375,18 +391,28 @@ class Collector:
 
     def check_institution_status(self, name, item) -> bool:
         assert self.client
+        if self.args.skip_status:
+            # there's currently an issue with status for First Republic, AmEx
+            # see my Plaid support cases
+            return True
         try:
-            # pyre-fixme[16] it doesn't know types for beancount client
-            response = self.client.Institutions.get_by_id(
-                item["institution-id"], ["US"], _options={"include_status": True}
+            opts = InstitutionsGetByIdRequestOptions(include_status=True)
+            req = InstitutionsGetByIdRequest(
+                institution_id=item["institution-id"],
+                country_codes=[CountryCode("US")],
+                options=opts,
             )
-        except plaid.errors.PlaidError as e:
-            logging.warning("Plaid error: %s", e.message)
+            response = self.client.institutions_get_by_id(req)
+        except plaid.ApiException as e:
+            logging.warning("Plaid error: %s", e.body)
             return False
+        logging.debug(
+            "> INST STATUS: %s",
+            json.dumps(response.to_dict(), indent=2, sort_keys=True, default=str),
+        )
         assert "institution" in response
         if "status" in response["institution"]:
             inst_status = response["institution"]["status"]
-            logging.debug(inst_status)
             if "transactions_updates" in inst_status:
                 if "status" in inst_status["transactions_updates"]:
                     if inst_status["transactions_updates"]["status"] == "DEGRADED":
@@ -466,6 +492,11 @@ def extract_args():
         metavar="IMPORTER_NAME",
         default=None,
         help="Only this importer will be run (optional - useful for debugging)",
+    )
+    parser.add_argument(
+        "--skip-status",
+        action="store_true",
+        help="Skip checking instituition update status before pulling updates",
     )
     return parser.parse_args()
 
