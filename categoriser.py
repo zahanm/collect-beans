@@ -11,6 +11,7 @@ from lib.utils import print_stderr, pretty_print_stderr
 
 
 SUPPORTED_DIRECTIVES = {Transaction}
+TODO_ACCOUNT = "Equity:TODO"
 
 
 class Categoriser:
@@ -73,7 +74,7 @@ class Categoriser:
             # It should check word bounds
             if pat in entry.payee.lower():
                 return account
-        return None
+        return TODO_ACCOUNT
 
 
 def _extract_args():
