@@ -6,6 +6,16 @@ import time
 
 from flask import Flask, render_template, request, jsonify, send_file
 import plaid
+from plaid.api import plaid_api
+from plaid.model.link_token_create_request import LinkTokenCreateRequest
+from plaid.model.products import Products
+from plaid.model.country_code import CountryCode
+from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
+from plaid.model.item_public_token_exchange_request import (
+    ItemPublicTokenExchangeRequest,
+)
+from plaid.model.auth_get_request import AuthGetRequest
+from plaid.model.transactions_get_request import TransactionsGetRequest
 
 # Get Plaid API keys from https://dashboard.plaid.com/account/keys
 PLAID_CLIENT_ID = os.getenv("PLAID_CLIENT_ID")
@@ -32,12 +42,16 @@ PLAID_COUNTRY_CODES = [
 PLAID_CLIENT_NAME = "Bean Collector"
 PLAID_LANGUAGE = "en"
 
-client = plaid.Client(
-    client_id=PLAID_CLIENT_ID,
-    secret=PLAID_SECRET,
-    environment=PLAID_ENV,
-    api_version="2020-09-14",
+configuration = plaid.Configuration(
+    host=plaid.Environment.Development,
+    api_key={
+        "clientId": PLAID_CLIENT_ID,
+        "secret": PLAID_SECRET,
+        "plaidVersion": "2020-09-14",
+    },
 )
+api_client = plaid.ApiClient(configuration)
+client = plaid_api.PlaidApi(api_client)
 
 app = Flask(__name__)
 
@@ -60,10 +74,10 @@ def index_scripts():
 # https://plaid.com/docs/#exchange-token-flow
 @app.route("/get_access_token", methods=["POST"])
 def get_access_token():
-    public_token = request.form["public_token"]
+    req = ItemPublicTokenExchangeRequest(public_token=request.form["public_token"])
     try:
-        exchange_response = client.Item.public_token.exchange(public_token)
-    except plaid.errors.PlaidError as e:
+        exchange_response = client.item_public_token_exchange(req)
+    except plaid.ApiException as e:
         return jsonify(format_error(e))
 
     pretty_print_response(exchange_response)
@@ -74,18 +88,11 @@ def get_access_token():
 # https://plaid.com/docs/#auth
 @app.route("/auth", methods=["GET"])
 def get_auth():
+    req = AuthGetRequest(access_token=request.args["access_token"])
     try:
-        auth_response = client.Auth.get(request.args["access_token"])
-    except plaid.errors.PlaidError as e:
-        return jsonify(
-            {
-                "error": {
-                    "display_message": e.display_message,
-                    "error_code": e.code,
-                    "error_type": e.type,
-                }
-            }
-        )
+        auth_response = client.auth_get(req)
+    except plaid.ApiException as e:
+        return jsonify(format_error(e))
     pretty_print_response(auth_response)
     return jsonify({"error": None, "auth": auth_response})
 
@@ -95,16 +102,17 @@ def get_auth():
 @app.route("/transactions", methods=["GET"])
 def get_transactions():
     # Pull transactions for the last 30 days
-    start_date = "{:%Y-%m-%d}".format(datetime.datetime.now() + datetime.timedelta(-30))
-    end_date = "{:%Y-%m-%d}".format(datetime.datetime.now())
+    req = TransactionsGetRequest(
+        access_token=request.args["access_token"],
+        start_date=datetime.date.today() - datetime.timedelta(days=30),
+        end_date=datetime.date.today(),
+    )
     try:
-        transactions_response = client.Transactions.get(
-            request.args["access_token"], start_date, end_date
-        )
-    except plaid.errors.PlaidError as e:
+        transactions_response = client.transactions_get(req)
+    except plaid.ApiException as e:
         return jsonify(format_error(e))
     pretty_print_response(transactions_response)
-    return jsonify({"error": None, "transactions": transactions_response})
+    return jsonify({"error": None, "transactions": transactions_response.to_dict()})
 
 
 # Retrieve Identity data for an Item
@@ -311,31 +319,44 @@ def item():
 # https://plaid.com/docs/api/tokens/#linktokencreate
 @app.route("/create_link_token", methods=["POST"])
 def create_link_token():
-    configs = {
-        "user": {"client_user_id": "1"},
-        "products": PLAID_PRODUCTS,
-        "client_name": PLAID_CLIENT_NAME,
-        "country_codes": PLAID_COUNTRY_CODES,
-        "language": PLAID_LANGUAGE,
-    }
+    # Get the client_user_id by searching for the current user
+    client_user_id = "itsme"
+    # Create a link_token for the given user
     if "access_token" in request.args:
-        configs["access_token"] = request.args["access_token"]
+        request = LinkTokenCreateRequest(
+            client_name=PLAID_CLIENT_NAME,
+            country_codes=[CountryCode("US")],
+            language=PLAID_LANGUAGE,
+            access_token=request.args["access_token"],
+            user=LinkTokenCreateRequestUser(client_user_id=client_user_id),
+        )
+    else:
+        request = LinkTokenCreateRequest(
+            products=[Products("transactions")],
+            client_name=PLAID_CLIENT_NAME,
+            country_codes=[CountryCode("US")],
+            language=PLAID_LANGUAGE,
+            user=LinkTokenCreateRequestUser(client_user_id=client_user_id),
+        )
+
     try:
-        create_response = client.LinkToken.create(configs)
-    except plaid.errors.PlaidError as e:
+        response = client.link_token_create(request)
+    except plaid.ApiException as e:
         return jsonify(format_error(e))
-    pretty_print_response(create_response)
-    return jsonify(create_response)
+
+    # Send the data to the client
+    pretty_print_response(response)
+    return jsonify(response.to_dict())
 
 
 def pretty_print_response(response):
-    print(json.dumps(response, indent=2, sort_keys=True))
+    print(json.dumps(response.to_dict(), indent=2, sort_keys=True))
 
 
 def format_error(e):
     return {
         "error": {
-            "display_message": e.display_message,
+            "display_message": e.body,
             "error_code": e.code,
             "error_type": e.type,
             "error_message": e.message,
