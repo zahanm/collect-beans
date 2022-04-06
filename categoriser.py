@@ -66,7 +66,7 @@ class Categoriser:
 
     @staticmethod
     def _open_shelf(filename) -> shelve.Shelf:
-        return shelve.open(filename.rstrip(".db"))
+        return shelve.open(filename)
 
     def attempt_categorise(self, entry) -> Optional[str]:
         for pat, account in self.patterns.items():
