@@ -308,6 +308,10 @@ class Collector:
             bal = D(account_res["balances"]["current"])
             # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
             bal = round(bal, 2)
+            if account_res["type"] in {"credit", "loan"}:
+                # the balance is a liability in the case of credit cards, and loans
+                # https://plaid.com/docs/#account-types
+                bal = -bal
             meta = data.new_metadata("foo", 0)
             balance_entry = Balance(  # pylint: disable=not-callable
                 meta=meta,
