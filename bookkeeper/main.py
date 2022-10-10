@@ -12,11 +12,11 @@ class Runner:
 
     def __init__(self, config: str):
         with open(config) as f:
-            self.config = f.read()  # yaml.full_load(f)
+            self.config = yaml.full_load(f)
 
     def run(self):
         print(sys.argv)
-        print(self.config[:25])
+        print(list(self.config["categories"].keys())[0])
 
 
 if __name__ == "__main__":
