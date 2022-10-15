@@ -9,5 +9,5 @@ Commands to run
 
 ```
 docker build --tag fava .
-docker run --rm --volume "$(pwd)/../accounts:/data" -p 5000:5000 -it fava
+docker run --volume "$(pwd)/../accounts:/data" -p 5000:5000 -it fava
 ```
