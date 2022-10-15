@@ -7,11 +7,9 @@ Config
 
 ```
 docker build --tag bookkeeper .
-docker run --rm --volume "$(pwd)/../accounts:/data" --volume "$(pwd):/src" -it bookkeeper collect-and-so
-rt /data/CONFIG.yaml
+docker run --rm --volume "$(pwd)/../accounts:/data" --volume "$(pwd):/src" -it bookkeeper /data/CONFIG.yaml
 ```
 
-Note that there are two positional arguments:
+These are the positional arguments:
 
-1. The operations to run
 1. The location of the `CONFIG.yaml` file.
