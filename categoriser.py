@@ -1,4 +1,4 @@
-from beancount.core.data import Transaction, Posting
+from beancount.core.data import Transaction, Posting, Amount
 
 import argparse
 from os import path
@@ -39,7 +39,12 @@ class Categoriser:
                         categorised_account = self.attempt_categorise(entry)
                         if categorised_account:
                             posting = Posting(
-                                categorised_account, None, None, None, None, None
+                                categorised_account,
+                                Amount(None, None),
+                                None,
+                                None,
+                                None,
+                                None,
                             )
                             new_postings = entry.postings + [posting]
                         else:

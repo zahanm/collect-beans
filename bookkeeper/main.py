@@ -27,6 +27,12 @@ class Runner:
             self.sort()
         print(list(self.config["categories"].keys())[0])
 
+    def collect(self):
+        print("collect")
+
+    def sort(self):
+        print("sort")
+
     def _get_op(self) -> str:
         print(
             """Which operations should we run?
@@ -35,15 +41,9 @@ class Runner:
 3. collect-only"""
         )
         op = input("Pick a choice? [1]: ").strip() or "1"
-        if op not in [str(x) for x in range(1, 4)]:
+        if op not in {str(x) for x in range(1, 4)}:
             raise RuntimeError("Invalid choice")
         return op
-
-    def sort(self):
-        print("sort")
-
-    def collect(self):
-        print("collect")
 
     def _extract_args(self):
         parser = argparse.ArgumentParser(
