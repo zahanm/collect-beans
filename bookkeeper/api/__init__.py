@@ -50,13 +50,31 @@ def create_app():
         if request.method == "POST":
             # store the submitted categorisations in-memory
             pass
-        # Load the journal file, look for all the TODOs, find the $max most promising and return that here
-        assert cache.main_file is not None
-        entries = _parse_journal(str(Path("/data") / cache.main_file))
-        todos = [entry for entry in entries if is_sortable(cache, entry)]
+        # look for all the TODOs, find the $max most promising and return that here
+        if cache.all_entries is None:
+            # Load the journal file
+            assert cache.main_file is not None and cache.destination_file is not None
+            cache.all_entries = _parse_journal(str(Path("/data") / cache.main_file))
+            with open(Path("/data") / cache.destination_file, "r") as dest:
+                cache.destination_lines = dest.read().splitlines()
+        todos = [entry for entry in cache.all_entries if is_sortable(cache, entry)]
         max_txns = request.args.get("max", 20)
         return [_txn_to_json(txn) for txn in todos[:max_txns]]
         # return _format_entries(todos[:max_txns], "")
+
+    @app.route("/commit", methods=["POST"])
+    def commit():
+        """
+        Pass ?write=True for this to actually write out to the file
+        """
+        assert (
+            cache.destination_lines is not None and cache.destination_file is not None
+        )
+        dest_output = "\n".join(cache.destination_lines)
+        if request.args.get("write", False):
+            with open(cache.destination_file, mode="w") as dest:
+                dest.write(dest_output)
+        return {"after": dest_output}
 
     return app
 
@@ -135,11 +153,14 @@ class Cache:
     op: Optional[str] = None
     destination_file: Optional[str] = None
     main_file: Optional[str] = None
+    all_entries: Optional[Entries] = None
+    destination_lines: Optional[List[str]] = None
 
     def reset(self):
         self.op = None
         self.destination_file = None
         self.main_file = None
+        self.all_entries = None
 
 
 def is_sortable(cache: Cache, entry: Directive) -> bool:
