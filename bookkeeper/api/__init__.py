@@ -48,19 +48,18 @@ def create_app():
     @app.route("/next_sort", methods=["GET", "POST"])
     def next_sort():
         if request.method == "POST":
-            # store the submitted categorisations in-memory
+            # store the submitted categorisations. insert in the right place to in-memory store
             pass
-        # look for all the TODOs, find the $max most promising and return that here
         if cache.all_entries is None:
             # Load the journal file
             assert cache.main_file is not None and cache.destination_file is not None
             cache.all_entries = _parse_journal(str(Path("/data") / cache.main_file))
             with open(Path("/data") / cache.destination_file, "r") as dest:
                 cache.destination_lines = dest.read().splitlines()
+        # look for all the TODOs, find the $max most promising and return that here
         todos = [entry for entry in cache.all_entries if is_sortable(cache, entry)]
         max_txns = request.args.get("max", 20)
-        return [_txn_to_json(txn) for txn in todos[:max_txns]]
-        # return _format_entries(todos[:max_txns], "")
+        return {"to_sort": [_txn_to_json(txn) for txn in todos[:max_txns]]}
 
     @app.route("/commit", methods=["POST"])
     def commit():
