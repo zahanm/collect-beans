@@ -1,9 +1,7 @@
-from decimal import Decimal
-from typing import Optional, Set, TypedDict, List
+from typing import Optional, Set, List
 from pathlib import Path
 from io import StringIO
 import textwrap
-import datetime
 
 import yaml
 from flask import Flask, request
@@ -14,11 +12,11 @@ from beancount.core.data import (
     Pad,
     Balance,
     Directive,
-    Posting,
-    Amount,
 )
 from beancount.core.display_context import DisplayContext
 from beancount.parser import printer
+
+from .serialise import txn_to_json
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
@@ -59,7 +57,7 @@ def create_app():
         # look for all the TODOs, find the $max most promising and return that here
         todos = [entry for entry in cache.all_entries if is_sortable(cache, entry)]
         max_txns = request.args.get("max", 20)
-        return {"to_sort": [_txn_to_json(txn) for txn in todos[:max_txns]]}
+        return {"to_sort": [txn_to_json(txn) for txn in todos[:max_txns]]}
 
     @app.route("/commit", methods=["POST"])
     def commit():
@@ -102,50 +100,6 @@ def _format_entries(entries: Entries, indent: str) -> str:
         outf.write(textwrap.indent(outs, indent))
         outf.write("\n")  # add a newline
     return outf.getvalue()
-
-
-class AmountJSON(TypedDict):
-    number: Optional[Decimal]
-    currency: str
-
-
-class PostingJSON(TypedDict):
-    account: str
-    units: AmountJSON
-
-
-class DirectiveJSON(TypedDict):
-    date: datetime.date
-    filename: str
-    lineno: int
-    payee: str
-    narration: str
-    postings: List[PostingJSON]
-
-
-def _amount_to_json(amt: Amount) -> AmountJSON:
-    return {
-        "number": amt.number,
-        "currency": amt.currency,
-    }
-
-
-def _posting_to_json(posting: Posting) -> PostingJSON:
-    return {
-        "account": posting.account,
-        "units": _amount_to_json(posting.units),
-    }
-
-
-def _txn_to_json(entry: Directive) -> DirectiveJSON:
-    return {
-        "date": entry.date,
-        "filename": entry.meta["filename"],
-        "lineno": entry.meta["lineno"],
-        "payee": entry.payee,
-        "narration": entry.narration,
-        "postings": [_posting_to_json(p) for p in entry.postings],
-    }
 
 
 class Cache:
