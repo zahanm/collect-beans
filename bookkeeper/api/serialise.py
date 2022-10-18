@@ -1,6 +1,4 @@
-import datetime
-from decimal import Decimal
-from typing import Optional, TypedDict, List
+from typing import Any, Dict
 
 from beancount.core.data import (
     Directive,
@@ -9,45 +7,55 @@ from beancount.core.data import (
 )
 
 
-class AmountJSON(TypedDict):
-    number: Optional[Decimal]
-    currency: str
+# class AmountJSON(TypedDict):
+#     number: Optional[Decimal]
+#     currency: str
 
 
-class PostingJSON(TypedDict):
-    account: str
-    units: AmountJSON
+# class PostingJSON(TypedDict):
+#     account: str
+#     units: AmountJSON
+#     flag: Optional[str]
+#     # cost
+#     # price
 
 
-class DirectiveJSON(TypedDict):
-    date: datetime.date
-    filename: str
-    lineno: int
-    payee: str
-    narration: str
-    postings: List[PostingJSON]
+# Matches the definition of beancount.core.data.Transaction
+# class DirectiveJSON(TypedDict):
+#     date: datetime.date
+#     filename: str
+#     lineno: int
+#     payee: Optional[str]
+#     narration: str
+#     postings: List[PostingJSON]
+#     flag: str
+#     tags: Set[str]
+#     links: Set[str]
 
 
-def _amount_to_json(amt: Amount) -> AmountJSON:
-    return {
-        "number": amt.number,
-        "currency": amt.currency,
-    }
-
-
-def _posting_to_json(posting: Posting) -> PostingJSON:
-    return {
-        "account": posting.account,
-        "units": _amount_to_json(posting.units),
-    }
-
-
-def txn_to_json(entry: Directive) -> DirectiveJSON:
-    return {
-        "date": entry.date,
-        "filename": entry.meta["filename"],
-        "lineno": entry.meta["lineno"],
-        "payee": entry.payee,
-        "narration": entry.narration,
-        "postings": [_posting_to_json(p) for p in entry.postings],
-    }
+def to_dict(item: Any) -> Dict:
+    if isinstance(item, Directive):
+        return {
+            "date": item.date,
+            "filename": item.meta["filename"],
+            "lineno": item.meta["lineno"],
+            "payee": item.payee,
+            "narration": item.narration,
+            "postings": [to_dict(p) for p in item.postings],
+            "flag": item.flag,
+            "tags": list(item.tags),  # set is not serialisable
+            "links": list(item.links),
+        }
+    elif isinstance(item, Posting):
+        return {
+            "account": item.account,
+            "units": to_dict(item.units),
+            "flag": item.flag,
+        }
+    elif isinstance(item, Amount):
+        return {
+            "number": item.number,
+            "currency": item.currency,
+        }
+    else:
+        raise RuntimeError("Unexpected type passed to_dict(): {}".format(type(item)))

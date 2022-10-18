@@ -16,7 +16,7 @@ from beancount.core.data import (
 from beancount.core.display_context import DisplayContext
 from beancount.parser import printer
 
-from .serialise import txn_to_json
+from .serialise import to_dict
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
@@ -57,7 +57,7 @@ def create_app():
         # look for all the TODOs, find the $max most promising and return that here
         todos = [entry for entry in cache.all_entries if is_sortable(cache, entry)]
         max_txns = request.args.get("max", 20)
-        return {"to_sort": [txn_to_json(txn) for txn in todos[:max_txns]]}
+        return {"to_sort": [to_dict(txn) for txn in todos[:max_txns]]}
 
     @app.route("/commit", methods=["POST"])
     def commit():
