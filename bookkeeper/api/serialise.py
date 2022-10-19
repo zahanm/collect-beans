@@ -33,8 +33,22 @@ from beancount.core.data import (
 #     links: Set[str]
 
 
+class DirectiveWithID:
+    id: int
+    entry: Directive
+
+    def __init__(self, id: int, entry: Directive) -> None:
+        self.id = id
+        self.entry = entry
+
+
 def to_dict(item: Any) -> Dict:
-    if isinstance(item, Directive):
+    if isinstance(item, DirectiveWithID):
+        return {
+            "id": item.id,
+            "entry": to_dict(item.entry),
+        }
+    elif isinstance(item, Directive):
         return {
             "date": item.date,
             "filename": item.meta["filename"],

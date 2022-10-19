@@ -16,7 +16,7 @@ from beancount.core.data import (
 from beancount.core.display_context import DisplayContext
 from beancount.parser import printer
 
-from .serialise import to_dict
+from .serialise import DirectiveWithID, to_dict
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
@@ -47,17 +47,27 @@ def create_app():
     def next_sort():
         if request.method == "POST":
             # store the submitted categorisations. insert in the right place to in-memory store
-            pass
-        if cache.all_entries is None:
+            assert request.json is not None
+            txns = request.json["sorted"]
+            # TODO remove from cache.entries_to_sort
+            # TODO replace in cache.destination_lines
+        if cache.all_entries is None or cache.to_sort is None:
             # Load the journal file
             assert cache.main_file is not None and cache.destination_file is not None
             cache.all_entries = _parse_journal(str(Path("/data") / cache.main_file))
+            # Load destination file
             with open(Path("/data") / cache.destination_file, "r") as dest:
                 cache.destination_lines = dest.read().splitlines()
-        # look for all the TODOs, find the $max most promising and return that here
-        todos = [entry for entry in cache.all_entries if is_sortable(cache, entry)]
+            # TODO Rank TODOs by most promising
+            to_sort = [
+                entry for entry in cache.all_entries if is_sortable(cache, entry)
+            ]
+            cache.to_sort = [
+                DirectiveWithID(id=i, entry=entry) for (i, entry) in enumerate(to_sort)
+            ]
+        # find the $max most promising and return that here
         max_txns = request.args.get("max", 20)
-        return {"to_sort": [to_dict(txn) for txn in todos[:max_txns]]}
+        return {"to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]]}
 
     @app.route("/commit", methods=["POST"])
     def commit():
@@ -107,6 +117,7 @@ class Cache:
     destination_file: Optional[str] = None
     main_file: Optional[str] = None
     all_entries: Optional[Entries] = None
+    to_sort: Optional[List[DirectiveWithID]] = None
     destination_lines: Optional[List[str]] = None
 
     def reset(self):
