@@ -1,4 +1,5 @@
-from typing import Optional, Set, List
+from itertools import chain, groupby
+from typing import Any, Dict, Optional, Set, List
 from pathlib import Path
 
 import yaml
@@ -14,7 +15,7 @@ from beancount.core.data import (
 )
 
 from .formatting import format_postings, indentation_at
-from .serialise import DirectiveWithID, from_dict, to_dict
+from .serialise import DirectiveForSort, from_dict, to_dict
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
@@ -97,11 +98,12 @@ def create_app():
             with open(Path("/data") / cache.destination_file, "r") as dest:
                 cache.destination_lines = dest.read().splitlines()
             to_sort = [entry for entry in all_entries if _is_sortable(cache, entry)]
-            # TODO Rank TODOs by most promising
-            cache.to_sort = [
-                DirectiveWithID(id=str(i), entry=entry)
+            # Rank todos by most promising
+            categorised = [
+                _auto_categorise(config, str(i), entry)
                 for (i, entry) in enumerate(to_sort)
             ]
+            cache.to_sort = _rank_order(categorised)
         # find the $max most promising and return that here
         max_txns = request.args.get("max", 20)
         return {"to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]]}
@@ -138,11 +140,40 @@ def _accounts(entry: Directive) -> Set[str]:
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
 
 
+def _auto_categorise(
+    config: Dict[str, Any], id: str, entry: Directive
+) -> DirectiveForSort:
+    for pat, account in config["categories"].items():
+        if pat.lower() in entry.payee.lower():
+            return DirectiveForSort(id=id, entry=entry, autocat=account)
+    return DirectiveForSort(id=id, entry=entry)
+
+
+def _rank_order(entries: List[DirectiveForSort]) -> List[DirectiveForSort]:
+    key_autocat = lambda ent: ent.auto_category or ""
+    key_payee = lambda ent: ent.entry.payee
+    # order by the auto_category
+    entries.sort(key=key_autocat)
+    # group by the auto_category, and save it in a list of lists
+    groups = [list(txns) for k, txns in groupby(entries, key_autocat)]
+    # order list of lists by number of txns (desc)
+    groups.sort(key=len, reverse=True)
+    # sort by payee within a given category
+    for g in groups:
+        g.sort(key=key_payee)
+    # move the group of txns that have no category to the end
+    for i in range(len(groups)):
+        if groups[i][0].auto_category is None:
+            groups.append(groups.pop(i))
+    # flatten
+    return list(chain.from_iterable(groups))
+
+
 class Cache:
     op: Optional[str] = None
     destination_file: Optional[str] = None
     main_file: Optional[str] = None
-    to_sort: Optional[List[DirectiveWithID]] = None
+    to_sort: Optional[List[DirectiveForSort]] = None
     destination_lines: Optional[List[str]] = None
 
     def reset(self):
@@ -162,7 +193,7 @@ def _is_sortable(cache: Cache, entry: Directive) -> bool:
     )
 
 
-def _index_of(items: List[DirectiveWithID], id: str) -> int:
+def _index_of(items: List[DirectiveForSort], id: str) -> int:
     found = -1
     for i, item in enumerate(items):
         if item.id == id:

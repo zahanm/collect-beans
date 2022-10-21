@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, Dict, Set, Type, TypeVar, TypedDict
+from typing import Any, Dict, Optional, Set, Type, TypeVar, TypedDict
 
 from beancount.core.data import (
     Directive,
@@ -34,19 +34,24 @@ from beancount.core.data import (
 #     links: Set[str]
 
 
-class DirectiveWithID:
+class DirectiveForSort:
     id: str
     entry: Directive
+    auto_category: Optional[str]
 
-    def __init__(self, id: str, entry: Directive) -> None:
+    def __init__(
+        self, id: str, entry: Directive, autocat: Optional[str] = None
+    ) -> None:
         self.id = id
         self.entry = entry
+        self.auto_category = autocat
 
 
 def to_dict(item: Any) -> Dict:
-    if isinstance(item, DirectiveWithID):
+    if isinstance(item, DirectiveForSort):
         return {
             "id": item.id,
+            "auto_category": item.auto_category,
             "entry": to_dict(item.entry),
         }
     elif isinstance(item, Directive):
