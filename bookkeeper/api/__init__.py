@@ -14,6 +14,7 @@ from beancount.core.data import (
     Posting,
     Open,
 )
+from beancount.scripts.format import align_beancount
 
 from .formatting import format_postings, indentation_at
 from .serialise import DirectiveForSort, from_dict, to_dict
@@ -124,11 +125,12 @@ def create_app():
             cache.destination_lines is not None and cache.destination_file is not None
         )
         dest_output = "\n".join(cache.destination_lines)
-        # TODO Run the beancount auto-formatter
+        # Run the beancount auto-formatter
+        formatted_output = align_beancount(dest_output)
         if request.args.get("write", False):
             with open(cache.destination_file, mode="w") as dest:
-                dest.write(dest_output)
-        return {"after": dest_output}
+                dest.write(formatted_output)
+        return {"after": formatted_output}
 
     return app
 
