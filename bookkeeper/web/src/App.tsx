@@ -1,6 +1,8 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Link } from "react-router-dom";
+
+import logo from "./logo.svg";
+import "./App.css";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         >
           Learn React
         </a>
+        <p>Steps to take</p>
+        <Link to={`sort`}>Sort</Link>
       </header>
     </div>
   );

@@ -1,15 +1,42 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import reportWebVitals from "./reportWebVitals";
+import App from "./App";
+import ErrorPage from "./ErrorPage";
+import SortOptions from "./SortOptions";
+import SortChoose from "./SortChoose";
+import SortCommit from "./SortCommit";
+
+import "./index.css";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/sort",
+    element: <SortOptions />,
+  },
+  {
+    path: "/sort/choose",
+    element: <SortChoose />,
+  },
+  {
+    path: "/sort/commit",
+    element: <SortCommit />,
+  },
+]);
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
