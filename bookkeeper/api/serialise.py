@@ -1,11 +1,11 @@
-from decimal import Decimal
-from typing import Any, Dict, Optional, Set, Type, TypeVar, TypedDict
+from typing import Any, Dict, Optional, Set, TypedDict
 
 from beancount.core.data import (
     Directive,
     Posting,
     Amount,
 )
+from beancount.core.number import D
 
 
 # class AmountJSON(TypedDict):
@@ -123,7 +123,7 @@ def _posting_from_dict(item: Any) -> Posting:
     return Posting(
         account=item["account"],
         units=Amount(
-            number=item["units"]["number"],
+            number=D(item["units"]["number"]),
             currency=item["units"]["currency"],
         ),
         # flag=item["flag"],

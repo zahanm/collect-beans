@@ -130,7 +130,8 @@ def create_app():
         if request.args.get("write", False):
             with open(cache.destination_file, mode="w") as dest:
                 dest.write(formatted_output)
-        return {"after": formatted_output}
+        # NOTE this is a raw text response, not JSON
+        return formatted_output
 
     return app
 
@@ -218,13 +219,13 @@ def _index_of(items: List[DirectiveForSort], id: str) -> int:
     return found
 
 
-def _replace_todo_with(cache: Cache, entry: Directive, replacements: Set[Posting]):
+def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):
     """
     Replace the todo posting with the $replacements in $destination_lines
     $entry is unchanged, because it will be deleted now
     """
     lineno = None
-    for posting in entry.postings:
+    for posting in drs.entry.postings:
         if posting.account == TODO_ACCOUNT:
             lineno = posting.meta["lineno"]
             break
