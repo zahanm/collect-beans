@@ -12,6 +12,7 @@ from beancount.core.data import (
     Balance,
     Directive,
     Posting,
+    Open,
 )
 
 from .formatting import format_postings, indentation_at
@@ -43,12 +44,17 @@ def create_app():
             cache.op = "sort"
             cache.destination_file = request.form.get("destination_file")
             cache.main_file = request.form.get("main_file")
+        expenses = []
         data = Path("/data")
+        if cache.main_file is not None:
+            all_entries = _parse_journal(str(data / cache.main_file))
+            expenses = [entry.account for entry in all_entries if _is_expense(entry)]
+            expenses.sort()
         return {
             "destination_file": cache.destination_file,
             "main_file": cache.main_file,
             "journal_files": [p.name for p in data.glob("*.beancount")],
-            # TODO Also include all "Expense:" accounts here
+            "expense_accounts": expenses,
         }
 
     @app.route("/next_sort", methods=["GET", "POST"])
@@ -138,6 +144,12 @@ def _accounts(entry: Directive) -> Set[str]:
     if type(entry) in {Pad, Balance}:
         return {entry.account}
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
+
+
+def _is_expense(entry: Directive) -> bool:
+    if type(entry) is Open:
+        return entry.account.startswith("Expenses:")
+    return False
 
 
 def _auto_categorise(
