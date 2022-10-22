@@ -20,7 +20,7 @@ function App() {
         >
           Learn React
         </a>
-        <p>Steps to take</p>
+        <p className="text-3xl font-bold underline">Steps to take</p>
         <Link to={`sort`}>Sort</Link>
       </header>
     </div>
