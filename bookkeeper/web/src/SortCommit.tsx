@@ -5,7 +5,9 @@ function SortCommit() {
   return (
     <div>
       <p>Commit the edits</p>
-      <Link to={`/`}>Done</Link>
+      <Link to={`/`} className="text-sky-400">
+        Done
+      </Link>
     </div>
   );
 }

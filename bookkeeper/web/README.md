@@ -31,10 +31,10 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 To quickly serve this up
 
 ```
-python3 -m http.server --directory build/
+npx serve build/
 ```
 
-And open [http://localhost:8000](http://localhost:8000)
+And open [http://localhost:3000](http://localhost:3000)
 
 ### `yarn eject`
 

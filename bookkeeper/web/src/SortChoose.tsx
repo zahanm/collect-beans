@@ -5,7 +5,9 @@ function SortChoose() {
   return (
     <div>
       <p>Actual choose flow</p>
-      <Link to={`/sort/commit`}>Commit</Link>
+      <Link to={`/sort/commit`} className="text-sky-400">
+        Commit
+      </Link>
     </div>
   );
 }

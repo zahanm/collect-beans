@@ -5,7 +5,9 @@ function SortOptions() {
   return (
     <div>
       <p>Set sort options</p>
-      <Link to={`/sort/choose`}>Next</Link>
+      <Link to={`/sort/choose`} className="text-sky-400">
+        Next
+      </Link>
     </div>
   );
 }
