@@ -2,3 +2,4 @@ pyyaml==6.0
 beancount==2.3.5
 plaid-python==10.0.0
 flask==2.2.2
+flask-cors==3.0.10

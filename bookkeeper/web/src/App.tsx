@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function App() {
   return (
-    <div className="h-screen flex flex-col items-center justify-center text-2xl">
+    <div className="min-h-screen flex flex-col items-center justify-center text-2xl">
       <h2 className="text-5xl">Collecting Beans</h2>
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import yaml
 from flask import Flask, request
+from flask_cors import CORS
 from beancount import loader
 from beancount.core.data import (
     Entries,
@@ -29,6 +30,9 @@ def create_app():
 
     with open("/data/CONFIG.yaml") as f:
         config = yaml.full_load(f)
+
+    # Make sure each API is available from other origins
+    CORS(app)
 
     @app.route("/progress", methods=["GET", "POST"])
     def progress():
