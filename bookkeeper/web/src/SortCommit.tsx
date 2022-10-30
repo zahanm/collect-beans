@@ -22,7 +22,6 @@ function SortCommit() {
           Accept: "application/json",
         },
       });
-      // NOTE that this is a plain text repsonse unlike the others
       const data = (await resp.json()) as ICommitResponse;
       console.log("GET", data);
       setBefore(data.before);
@@ -31,6 +30,25 @@ function SortCommit() {
 
     fetchData().catch(errorHandler);
   }, []);
+
+  const sendData = async () => {
+    const params = new URLSearchParams();
+    // TODO: uncomment this in order to actually write to the file
+    // params.append("write", "true");
+    const url = new URL(COMMIT_API);
+    url.search = params.toString();
+    const resp = await fetch(url, {
+      // TODO: uncomment this too
+      // method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    const data = (await resp.json()) as ICommitResponse;
+    console.log("POST", data);
+    setBefore(data.before);
+    setAfter(data.after);
+  };
 
   return (
     <div>
@@ -44,9 +62,17 @@ function SortCommit() {
           compareMethod={DiffMethod.LINES}
         />
       </div>
-      <Link to={`/`} className="text-sky-400">
-        Done
-      </Link>
+      <div className="mt-3 text-center">
+        <button
+          className="border-solid border-2 rounded-full p-2 mr-6 hover:bg-white hover:text-black"
+          onClick={() => sendData().catch(errorHandler)}
+        >
+          Write Changes
+        </button>
+        <Link to={`/`} className="text-sky-400">
+          Abort
+        </Link>
+      </div>
     </div>
   );
 }
