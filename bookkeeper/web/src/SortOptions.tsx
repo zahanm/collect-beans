@@ -1,24 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const errorHandler = (err: Error) => console.error(err);
+const PROGRESS_API = "http://localhost:5005/progress";
+
+interface IProgressResponse {
+  journal_files: Array<string>;
+  main_file: string | null;
+  destination_file: string | null;
+  expense_accounts: Array<string>;
+}
+
 function SortOptions() {
   const [journalFiles, setJournalFiles] = useState<Array<string>>([]);
   const [mainFile, setMainFile] = useState<string>();
   const [destFile, setDestFile] = useState<string>();
 
+  function setStateFromAPI(data: IProgressResponse) {
+    setJournalFiles(data.journal_files);
+    data.main_file && setMainFile(data.main_file);
+    data.destination_file && setDestFile(data.destination_file);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await fetch("http://localhost:5005/progress", {
+      const resp = await fetch(PROGRESS_API, {
         headers: {
           Accept: "application/json",
         },
       });
       const data = await resp.json();
-      console.log(data);
-      setJournalFiles(data.journal_files);
+      console.log("GET", data);
+      setStateFromAPI(data);
     };
 
-    fetchData().catch((err) => console.error(err));
+    fetchData().catch(errorHandler);
   }, []);
   // The empty array of dependencies is important. It tells the
   // effect to only run once.
@@ -30,6 +46,22 @@ function SortOptions() {
         onSubmit={(ev) => {
           ev.preventDefault();
           console.log("submitting form", ev);
+          const sendData = async () => {
+            console.log("sending data");
+            const body = new FormData(ev.target as HTMLFormElement);
+            const resp = await fetch(PROGRESS_API, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+              },
+              body,
+            });
+            const data = await resp.json();
+            console.log("POST response", data);
+            setStateFromAPI(data);
+          };
+
+          sendData().catch(errorHandler);
         }}
       >
         <p className="py-1">
@@ -51,11 +83,11 @@ function SortOptions() {
           </select>
         </p>
         <p className="py-1">
-          <label htmlFor="dest_file" className="mr-1">
+          <label htmlFor="destination_file" className="mr-1">
             Destination file:
           </label>
           <select
-            name="dest_file"
+            name="destination_file"
             value={destFile}
             onChange={(ev) => setDestFile(ev.target.value)}
             required
