@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const errorHandler = (err: Error) => console.error(err);
-const PROGRESS_API = "http://localhost:5005/progress";
+import { errorHandler } from "./utilities";
 
+const PROGRESS_API = "http://localhost:5005/progress";
 interface IProgressResponse {
   journal_files: Array<string>;
   main_file: string | null;
@@ -29,7 +29,7 @@ function SortOptions() {
           Accept: "application/json",
         },
       });
-      const data = await resp.json();
+      const data = (await resp.json()) as IProgressResponse;
       console.log("GET", data);
       setStateFromAPI(data);
     };
@@ -56,7 +56,7 @@ function SortOptions() {
               },
               body,
             });
-            const data = await resp.json();
+            const data = (await resp.json()) as IProgressResponse;
             console.log("POST response", data);
             setStateFromAPI(data);
           };
