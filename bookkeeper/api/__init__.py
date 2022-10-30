@@ -119,7 +119,7 @@ def create_app():
         max_txns = request.args.get("max", 20)
         return {"to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]]}
 
-    @app.route("/commit", methods=["POST"])
+    @app.route("/commit", methods=["GET", "POST"])
     def commit():
         """
         POST
@@ -128,14 +128,19 @@ def create_app():
         assert (
             cache.destination_lines is not None and cache.destination_file is not None
         )
+        with open(Path("/data") / cache.destination_file) as dest:
+            before = dest.read()
         dest_output = "\n".join(cache.destination_lines)
         # Run the beancount auto-formatter
         formatted_output = align_beancount(dest_output)
         if request.args.get("write", False):
-            with open(cache.destination_file, mode="w") as dest:
+            assert request.method == "POST"
+            with open(Path("/data") / cache.destination_file, mode="w") as dest:
                 dest.write(formatted_output)
-        # NOTE this is a raw text response, not JSON
-        return formatted_output
+        return {
+            "before": before,
+            "after": formatted_output,
+        }
 
     return app
 
