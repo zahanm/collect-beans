@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 
 import { errorHandler } from "./utilities";
 
@@ -34,17 +35,14 @@ function SortCommit() {
   return (
     <div>
       <p>Commit the edits</p>
-      <div>
-        <p>Before</p>
-        <pre className="max-h-96 overflow-y-auto border-solid border-2">
-          <code>{before}</code>
-        </pre>
-      </div>
-      <div>
-        <p>After</p>
-        <pre className="max-h-96 overflow-y-auto border-solid border-2">
-          <code>{after}</code>
-        </pre>
+      <div className="max-h-[90vh] overflow-y-auto">
+        <ReactDiffViewer
+          oldValue={before}
+          newValue={after}
+          splitView={true}
+          useDarkTheme={true}
+          compareMethod={DiffMethod.LINES}
+        />
       </div>
       <Link to={`/`} className="text-sky-400">
         Done
