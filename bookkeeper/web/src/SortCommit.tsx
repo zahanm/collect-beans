@@ -63,15 +63,15 @@ function SortCommit() {
         />
       </div>
       <div className="mt-3 text-center">
+        <Link to={`/`} className="text-sky-400 mr-6">
+          Abort
+        </Link>
         <button
-          className="border-solid border-2 rounded-full p-2 mr-6 hover:bg-white hover:text-black"
+          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
           onClick={() => sendData().catch(errorHandler)}
         >
           Write Changes
         </button>
-        <Link to={`/`} className="text-sky-400">
-          Abort
-        </Link>
       </div>
     </div>
   );

@@ -43,6 +43,7 @@ function SortOptions() {
     <div className="min-h-screen flex flex-col items-center justify-center">
       <h2 className="text-xl">Start Sort</h2>
       <form
+        className="my-2"
         onSubmit={(ev) => {
           ev.preventDefault();
           console.log("submitting form", ev);
@@ -100,11 +101,16 @@ function SortOptions() {
             ))}
           </select>
         </p>
-        <p className="py-1 text-center">
-          <button type="submit">Save</button>
+        <p className="text-center">
+          <button
+            type="submit"
+            className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+          >
+            Save in-memory
+          </button>
         </p>
       </form>
-      <div>
+      <div className="mt-2">
         <Link to={`/`} className="text-sky-400 mr-10">
           Cancel
         </Link>

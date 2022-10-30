@@ -22,11 +22,15 @@ function App() {
       <p>
         The following will update <code>data/*.beancount</code> when complete.
       </p>
-      <Link to={`collect`} className="text-sky-400">
-        Collect New
+      <Link to={`collect`} className="my-1">
+        <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
+          Collect New
+        </button>
       </Link>
-      <Link to={`sort`} className="text-sky-400">
-        Sort Transactions
+      <Link to={`sort`} className="my-1">
+        <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
+          Sort Transactions
+        </button>
       </Link>
     </div>
   );
