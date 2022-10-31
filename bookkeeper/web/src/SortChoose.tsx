@@ -60,10 +60,11 @@ export default function SortChoose() {
 
   return (
     <div>
-      <p>Actual choose flow</p>
-      {unsorted.size > 0 && (
+      <h2 className="text-2xl">Categorise Transactions</h2>
+      {unsorted.map((dir) => (
         <Transaction
-          txn={unsorted.get(0)!}
+          txn={dir}
+          key={dir.id}
           onSort={(newMods) => {
             // Add in the new "mods"
             setMods(mods.concat(newMods.map((mod) => [mod.id, mod])));
@@ -74,7 +75,7 @@ export default function SortChoose() {
             setUnsorted(unsorted.filterNot(modIDsHas));
           }}
         />
-      )}
+      ))}
       <p className="text-center">
         <button
           className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"

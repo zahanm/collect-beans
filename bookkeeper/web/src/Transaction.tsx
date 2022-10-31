@@ -9,7 +9,7 @@ export default function Transaction(props: {
 }) {
   const entry = props.txn.entry;
   return (
-    <section>
+    <section className="my-2">
       <pre>
         <code className="text-lime-300">
           {dayjs(entry.date).format("YYYY-MM-DD")}
@@ -21,14 +21,14 @@ export default function Transaction(props: {
         &nbsp;
         <code className="text-orange-300">&quot;{entry.narration}&quot;</code>
       </pre>
-      {entry.postings.map((posting) => (
-        <pre>
-          &nbsp;&nbsp;
+      {entry.postings.map((posting, idx) => (
+        <pre key={idx} className="max-w-[86ch] ml-[2ch]">
           <Account name={posting.account} />
-          &nbsp;&nbsp;&nbsp;
-          <code className="text-lime-300">{posting.units.number}</code>
-          &nbsp;
-          <code>{posting.units.currency}</code>
+          <span className="float-right">
+            <code className="text-lime-300">{posting.units.number}</code>
+            &nbsp;
+            <code>{posting.units.currency}</code>
+          </span>
         </pre>
       ))}
     </section>
