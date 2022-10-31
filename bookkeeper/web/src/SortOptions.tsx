@@ -12,7 +12,7 @@ interface IProgressResponse {
   expense_accounts: Array<string>;
 }
 
-function SortOptions() {
+export default function SortOptions() {
   const [journalFiles, setJournalFiles] = useState<Array<string>>([]);
   const [mainFile, setMainFile] = useState<string>();
   const [destFile, setDestFile] = useState<string>();
@@ -129,5 +129,3 @@ function SortOptions() {
     </div>
   );
 }
-
-export default SortOptions;

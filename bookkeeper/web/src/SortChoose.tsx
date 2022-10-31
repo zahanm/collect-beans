@@ -33,7 +33,7 @@ interface IAmount {
   currency: string;
 }
 
-function SortChoose() {
+export default function SortChoose() {
   useEffect(() => {
     const fetchData = async () => {
       const resp = await fetch(NEXT_API, {
@@ -57,5 +57,3 @@ function SortChoose() {
     </div>
   );
 }
-
-export default SortChoose;

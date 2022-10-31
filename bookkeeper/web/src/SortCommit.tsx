@@ -11,7 +11,7 @@ interface ICommitResponse {
   after: string;
 }
 
-function SortCommit() {
+export default function SortCommit() {
   const [before, setBefore] = useState<string>();
   const [after, setAfter] = useState<string>();
 
@@ -76,5 +76,3 @@ function SortCommit() {
     </div>
   );
 }
-
-export default SortCommit;
