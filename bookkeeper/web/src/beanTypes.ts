@@ -3,7 +3,7 @@ export interface IDirectiveForSort {
   auto_category: string | null;
   entry: IDirective;
 }
-export interface IDirective {
+interface IDirective {
   date: string;
   filename: string;
   lineno: number;
@@ -14,7 +14,7 @@ export interface IDirective {
   links: Array<string>;
   postings: Array<IPosting>;
 }
-export interface IPosting {
+interface IPosting {
   account: string;
   units: IAmount;
 }

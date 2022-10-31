@@ -56,7 +56,7 @@ def to_dict(item: Any) -> Dict:
         }
     elif isinstance(item, Directive):
         return {
-            "date": item.date,
+            "date": item.date.isoformat(),
             "filename": item.meta["filename"],
             "lineno": item.meta["lineno"],
             "payee": item.payee,
