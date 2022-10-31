@@ -65,7 +65,11 @@ export default function SortChoose() {
         <Transaction
           txn={dir}
           key={dir.id}
-          onSort={(newMods) => {
+          priorMod={mods.get(dir.id, null)}
+          onSave={(newMod) => {
+            // Turning this into a list to slightly future-proof the logic for when
+            // I have batch operations
+            const newMods = [newMod];
             // Add in the new "mods"
             setMods(mods.concat(newMods.map((mod) => [mod.id, mod])));
             // Update "unsorted" and "sorted"

@@ -5,9 +5,10 @@ import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
 
 export default function Transaction(props: {
   txn: IDirectiveForSort;
+  priorMod: IDirectiveMod | null;
   // TODO: take in an "priorMods" to initialise the local "mods" state to
   // TODO: take an "isEditing" to know whether this one is focussed
-  onSort: (mods: Array<IDirectiveMod>) => void;
+  onSave: (mod: IDirectiveMod) => void;
 }) {
   const entry = props.txn.entry;
   return (
@@ -26,6 +27,10 @@ export default function Transaction(props: {
       {entry.postings.map((posting, idx) => (
         <Posting key={idx} posting={posting} />
       ))}
+      {props.priorMod &&
+        props.priorMod.postings.map((posting, idx) => (
+          <Posting key={idx} posting={posting} />
+        ))}
       <EditPosting />
     </section>
   );
