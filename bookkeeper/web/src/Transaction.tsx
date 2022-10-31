@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import dayjs from "dayjs";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
@@ -59,42 +59,50 @@ function Account(props: { name: string; isTodo: boolean }) {
 }
 
 function EditPosting(props: {}) {
+  const [numPostings, setNumPostings] = useState(1);
+
   return (
-    <div className="my-1">
-      <form
-        onSubmit={(ev) => {
-          ev.preventDefault();
-          console.log("submit", ev);
-        }}
-      >
-        <pre className="w-[86ch] ml-[2ch] text-black inline-block">
-          <input
-            type="text"
-            className="min-w-[48ch] mr-2 p-1"
-            name="account"
-            required
-          />
-          <span className="float-right">
+    <form
+      onSubmit={(ev) => {
+        ev.preventDefault();
+        console.log("submit", ev);
+      }}
+    >
+      {arrayRange(numPostings).map((ii) => (
+        <div className="my-1" key={ii}>
+          <pre className="w-[86ch] ml-[2ch] text-black inline-block">
             <input
               type="text"
-              className="max-w-[11ch] mr-[1ch] p-1 text-right"
-              name="units-number"
-              placeholder="(optional)"
-            />
-            <input
-              type="text"
-              className="max-w-[4ch] p-1"
-              name="units-currency"
+              className="min-w-[48ch] mr-2 p-1"
+              name={String(ii) + "-account"}
               required
             />
-          </span>
-        </pre>
-        <Save />
-        {/* TODO: give an icon to add another Posting.
-        But it won't have a Save button.
-        Use the plus-circle icon. */}
-      </form>
-    </div>
+            <span className="float-right">
+              <input
+                type="text"
+                className="max-w-[11ch] mr-[1ch] p-1 text-right"
+                name={String(ii) + "-units-number"}
+                placeholder="(optional)"
+              />
+              <input
+                type="text"
+                className="max-w-[4ch] p-1"
+                name={String(ii) + "-units-currency"}
+                required
+              />
+            </span>
+          </pre>
+          {ii === 0 ? (
+            <>
+              <Save />
+              <Add onClick={() => setNumPostings(numPostings + 1)} />
+            </>
+          ) : (
+            <Minus onClick={() => setNumPostings(numPostings - 1)} />
+          )}
+        </div>
+      ))}
+    </form>
   );
 }
 
@@ -111,4 +119,46 @@ function Save() {
       </svg>
     </button>
   );
+}
+
+function Add(props: { onClick: () => void }) {
+  return (
+    <button onClick={props.onClick}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        className="w-5 h-5 inline ml-[1ch]"
+      >
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </button>
+  );
+}
+
+function Minus(props: { onClick: () => void }) {
+  return (
+    <button onClick={props.onClick}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        className="w-5 h-5 inline ml-[1ch]"
+      >
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.75 9.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </button>
+  );
+}
+
+function arrayRange(num: number): Array<number> {
+  return [...Array(num).fill(0)].map((_, ii) => ii);
 }
