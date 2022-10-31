@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { errorHandler } from "./utilities";
+import DisplayProgress, { TProgress } from "./DisplayProgress";
 
 const PROGRESS_API = "http://localhost:5005/progress";
 interface IProgressResponse {
@@ -15,6 +16,7 @@ function SortOptions() {
   const [journalFiles, setJournalFiles] = useState<Array<string>>([]);
   const [mainFile, setMainFile] = useState<string>();
   const [destFile, setDestFile] = useState<string>();
+  const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
 
   function setStateFromAPI(data: IProgressResponse) {
     setJournalFiles(data.journal_files);
@@ -47,6 +49,7 @@ function SortOptions() {
         onSubmit={(ev) => {
           ev.preventDefault();
           console.log("submitting form", ev);
+          setAsyncProgress("in-process");
           const sendData = async () => {
             console.log("sending data");
             const body = new FormData(ev.target as HTMLFormElement);
@@ -60,9 +63,13 @@ function SortOptions() {
             const data = (await resp.json()) as IProgressResponse;
             console.log("POST response", data);
             setStateFromAPI(data);
+            setAsyncProgress("success");
           };
 
-          sendData().catch(errorHandler);
+          sendData().catch((err) => {
+            setAsyncProgress("error");
+            errorHandler(err);
+          });
         }}
       >
         <p className="py-1">
@@ -108,6 +115,7 @@ function SortOptions() {
           >
             Save in-memory
           </button>
+          <DisplayProgress progress={asyncProgress} className="ml-2" />
         </p>
       </form>
       <div className="mt-2">
