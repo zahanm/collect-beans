@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { List, Map, Set } from "immutable";
 
+import { IDirectiveForSort, IDirectiveMod } from "./beanTypes";
+import Transaction from "./Transaction";
+import DisplayProgress, { TProgress } from "./DisplayProgress";
 import { errorHandler } from "./utilities";
 
 const NEXT_API = "http://localhost:5005/next_sort";
@@ -8,67 +12,83 @@ const NEXT_API = "http://localhost:5005/next_sort";
 interface INextResponse {
   to_sort: Array<IDirectiveForSort>;
 }
-interface IDirectiveForSort {
-  id: string;
-  auto_category: string | null;
-  entry: IDirective;
-}
-interface IDirective {
-  date: string;
-  filename: string;
-  lineno: number;
-  payee: string;
-  narration: string;
-  flag: string;
-  tags: Array<string>;
-  links: Array<string>;
-  postings: Array<IPosting>;
-}
-interface IPosting {
-  account: string;
-  units: IAmount;
-}
-interface IAmount {
-  number: string;
-  currency: string;
-}
 
 interface ISortedRequest {
   sorted: Array<IDirectiveMod>;
 }
-interface IDirectiveMod {
-  // ID of the transaction from IDirectiveToSort
-  id: string;
-  // Only the _new_ postings that will replace the equity:todo posting.
-  postings: Array<IPosting>;
-}
 
 export default function SortChoose() {
+  const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
   // "unsorted" and "sorted" are mutually exclusive. A txn is moved from one to the
   //  other as it is handled in the UI.
-  const [unsorted, setUnsorted] = useState<Array<IDirectiveForSort>>([]);
-  const [sorted, setSorted] = useState<Array<IDirectiveForSort>>([]);
+  const [unsorted, setUnsorted] = useState<List<IDirectiveForSort>>(List());
+  const [sorted, setSorted] = useState<List<IDirectiveForSort>>(List());
   // "mods" contains a single entry for each txn in "sorted".
-  const [mods, setMods] = useState<Record<string, IDirectiveMod>>({});
+  const [mods, setMods] = useState<Map<string, IDirectiveMod>>(Map());
 
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await fetch(NEXT_API, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const resp = await fetch(NEXT_API);
       const data = (await resp.json()) as INextResponse;
       console.log("GET", data);
-      setUnsorted(data.to_sort);
+      setUnsorted(List(data.to_sort));
     };
 
     fetchData().catch(errorHandler);
   }, []);
 
+  const saveChanges = async () => {
+    setAsyncProgress("in-process");
+    const body: ISortedRequest = {
+      sorted: mods.valueSeq().toArray(),
+    };
+    const resp = await fetch(NEXT_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    const data = (await resp.json()) as INextResponse;
+    console.log("POST", data);
+    setUnsorted(List(data.to_sort));
+    setAsyncProgress("success");
+    setTimeout(() => {
+      setAsyncProgress("idle");
+    }, 5000);
+  };
+
   return (
     <div>
       <p>Actual choose flow</p>
+      {unsorted.size > 0 && (
+        <Transaction
+          txn={unsorted.get(0)!}
+          onSort={(newMods) => {
+            // Add in the new "mods"
+            setMods(mods.concat(newMods.map((mod) => [mod.id, mod])));
+            // Update "unsorted" and "sorted"
+            const modIDs = Set(newMods.map((mod) => mod.id));
+            const modIDsHas = (dir: IDirectiveForSort) => modIDs.has(dir.id);
+            setSorted(sorted.concat(unsorted.filter(modIDsHas)));
+            setUnsorted(unsorted.filterNot(modIDsHas));
+          }}
+        />
+      )}
+      <p className="text-center">
+        <button
+          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+          onClick={() =>
+            saveChanges().catch((err) => {
+              setAsyncProgress("error");
+              errorHandler(err);
+            })
+          }
+        >
+          Save Changes
+        </button>
+        <DisplayProgress progress={asyncProgress} className="ml-2" />
+      </p>
       <Link to={`/sort`} className="text-sky-400">
         Options
       </Link>

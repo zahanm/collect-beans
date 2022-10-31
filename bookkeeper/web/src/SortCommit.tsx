@@ -17,11 +17,7 @@ export default function SortCommit() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await fetch(COMMIT_API, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const resp = await fetch(COMMIT_API);
       const data = (await resp.json()) as ICommitResponse;
       console.log("GET", data);
       setBefore(data.before);
@@ -40,9 +36,6 @@ export default function SortCommit() {
     const resp = await fetch(url, {
       // TODO: uncomment this too
       // method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
     });
     const data = (await resp.json()) as ICommitResponse;
     console.log("POST", data);

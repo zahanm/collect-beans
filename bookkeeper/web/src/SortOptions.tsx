@@ -26,11 +26,7 @@ export default function SortOptions() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await fetch(PROGRESS_API, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const resp = await fetch(PROGRESS_API);
       const data = (await resp.json()) as IProgressResponse;
       console.log("GET", data);
       setStateFromAPI(data);
@@ -55,13 +51,10 @@ export default function SortOptions() {
             const body = new FormData(ev.target as HTMLFormElement);
             const resp = await fetch(PROGRESS_API, {
               method: "POST",
-              headers: {
-                Accept: "application/json",
-              },
               body,
             });
             const data = (await resp.json()) as IProgressResponse;
-            console.log("POST response", data);
+            console.log("POST", data);
             setStateFromAPI(data);
             setAsyncProgress("success");
           };
