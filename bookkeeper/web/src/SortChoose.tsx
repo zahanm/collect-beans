@@ -17,6 +17,8 @@ interface ISortedRequest {
   sorted: Array<IDirectiveMod>;
 }
 
+const MAX_TXNS = 20;
+
 export default function SortChoose() {
   const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
   // "unsorted" and "sorted" are mutually exclusive. A txn is moved from one to the
@@ -36,8 +38,10 @@ export default function SortChoose() {
       setUnsorted(List(data.to_sort).filterNot((dir) => modIds.has(dir.id)));
     };
 
-    fetchData().catch(errorHandler);
-  }, []);
+    if (sorted.size + unsorted.size < MAX_TXNS) {
+      fetchData().catch(errorHandler);
+    }
+  }, [sorted, unsorted, mods]);
 
   const saveChanges = async () => {
     setAsyncProgress("in-process");
