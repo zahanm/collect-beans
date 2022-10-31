@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
+import { Set } from "immutable";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
 
@@ -10,6 +11,9 @@ export default function Transaction(props: {
   onSave: (mod: IDirectiveMod) => void;
 }) {
   const entry = props.txn.entry;
+  const currency = Set(entry.postings.map((p) => p.units.currency)).first(
+    "USD"
+  );
   return (
     <section className="my-2">
       <pre>
@@ -31,7 +35,12 @@ export default function Transaction(props: {
           <Posting key={idx} posting={posting} />
         ))
       ) : (
-        <EditPosting id={props.txn.id} onSave={props.onSave} />
+        <EditPosting
+          id={props.txn.id}
+          autocat={props.txn.auto_category}
+          currency={currency}
+          onSave={props.onSave}
+        />
       )}
     </section>
   );
@@ -66,6 +75,8 @@ function Account(props: { name: string; isTodo: boolean }) {
 
 function EditPosting(props: {
   id: string;
+  autocat: string | null;
+  currency: string;
   onSave: (mod: IDirectiveMod) => void;
 }) {
   const [numPostings, setNumPostings] = useState(1);
@@ -101,6 +112,9 @@ function EditPosting(props: {
               className="min-w-[48ch] mr-2 p-1"
               name={`${ii}-account`}
               required
+              defaultValue={
+                ii === 0 && props.autocat ? props.autocat : undefined
+              }
             />
             <span className="float-right">
               <input
@@ -114,6 +128,7 @@ function EditPosting(props: {
                 className="max-w-[4ch] p-1"
                 name={`${ii}-units-currency`}
                 required
+                defaultValue={props.currency}
               />
             </span>
           </pre>
