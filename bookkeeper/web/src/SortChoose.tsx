@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { errorHandler } from "./utilities";
@@ -33,7 +33,24 @@ interface IAmount {
   currency: string;
 }
 
+interface ISortedRequest {
+  sorted: Array<IDirectiveMod>;
+}
+interface IDirectiveMod {
+  // ID of the transaction from IDirectiveToSort
+  id: string;
+  // Only the _new_ postings that will replace the equity:todo posting.
+  postings: Array<IPosting>;
+}
+
 export default function SortChoose() {
+  // "unsorted" and "sorted" are mutually exclusive. A txn is moved from one to the
+  //  other as it is handled in the UI.
+  const [unsorted, setUnsorted] = useState<Array<IDirectiveForSort>>([]);
+  const [sorted, setSorted] = useState<Array<IDirectiveForSort>>([]);
+  // "mods" contains a single entry for each txn in "sorted".
+  const [mods, setMods] = useState<Record<string, IDirectiveMod>>({});
+
   useEffect(() => {
     const fetchData = async () => {
       const resp = await fetch(NEXT_API, {
@@ -43,6 +60,7 @@ export default function SortChoose() {
       });
       const data = (await resp.json()) as INextResponse;
       console.log("GET", data);
+      setUnsorted(data.to_sort);
     };
 
     fetchData().catch(errorHandler);
@@ -51,7 +69,10 @@ export default function SortChoose() {
   return (
     <div>
       <p>Actual choose flow</p>
-      <Link to={`/sort/commit`} className="text-sky-400">
+      <Link to={`/sort`} className="text-sky-400">
+        Options
+      </Link>
+      <Link to={`/sort/commit`} className="text-sky-400 ml-2">
         Commit
       </Link>
     </div>
