@@ -31,7 +31,9 @@ export default function SortChoose() {
       const resp = await fetch(NEXT_API);
       const data = (await resp.json()) as INextResponse;
       console.log("GET", data);
-      setUnsorted(List(data.to_sort));
+      const modIds = mods.keySeq().toSet();
+      // Can be added to unsorted as long as it's not already sorted locally
+      setUnsorted(List(data.to_sort).filterNot((dir) => modIds.has(dir.id)));
     };
 
     fetchData().catch(errorHandler);
@@ -51,17 +53,19 @@ export default function SortChoose() {
     });
     const data = (await resp.json()) as INextResponse;
     console.log("POST", data);
-    setUnsorted(List(data.to_sort));
     setAsyncProgress("success");
     setTimeout(() => {
+      setUnsorted(List(data.to_sort));
+      setSorted(List());
+      setMods(Map());
       setAsyncProgress("idle");
-    }, 5000);
+    }, 3000);
   };
 
   return (
     <div>
       <h2 className="text-2xl">Categorise Transactions</h2>
-      {unsorted.map((dir) => (
+      {sorted.concat(unsorted).map((dir) => (
         <Transaction
           txn={dir}
           key={dir.id}
@@ -82,7 +86,8 @@ export default function SortChoose() {
       ))}
       <p className="text-center">
         <button
-          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
+          disabled={mods.size === 0}
           onClick={() =>
             saveChanges().catch((err) => {
               setAsyncProgress("error");

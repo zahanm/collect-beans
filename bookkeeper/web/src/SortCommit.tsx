@@ -50,7 +50,7 @@ export default function SortCommit() {
         <ReactDiffViewer
           oldValue={before}
           newValue={after}
-          splitView={true}
+          splitView={false}
           useDarkTheme={true}
           compareMethod={DiffMethod.LINES}
         />

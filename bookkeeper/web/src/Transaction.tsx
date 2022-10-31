@@ -6,7 +6,6 @@ import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
 export default function Transaction(props: {
   txn: IDirectiveForSort;
   priorMod: IDirectiveMod | null;
-  // TODO: take in an "priorMods" to initialise the local "mods" state to
   // TODO: take an "isEditing" to know whether this one is focussed
   onSave: (mod: IDirectiveMod) => void;
 }) {
@@ -27,11 +26,13 @@ export default function Transaction(props: {
       {entry.postings.map((posting, idx) => (
         <Posting key={idx} posting={posting} />
       ))}
-      {props.priorMod &&
+      {props.priorMod ? (
         props.priorMod.postings.map((posting, idx) => (
           <Posting key={idx} posting={posting} />
-        ))}
-      <EditPosting />
+        ))
+      ) : (
+        <EditPosting id={props.txn.id} onSave={props.onSave} />
+      )}
     </section>
   );
 }
@@ -63,7 +64,10 @@ function Account(props: { name: string; isTodo: boolean }) {
   );
 }
 
-function EditPosting(props: {}) {
+function EditPosting(props: {
+  id: string;
+  onSave: (mod: IDirectiveMod) => void;
+}) {
   const [numPostings, setNumPostings] = useState(1);
 
   return (
@@ -71,6 +75,22 @@ function EditPosting(props: {}) {
       onSubmit={(ev) => {
         ev.preventDefault();
         console.log("submit", ev);
+        const form = ev.target as HTMLFormElement;
+        // Construct IDirectiveMod
+        props.onSave({
+          id: props.id,
+          postings: arrayRange(numPostings).map((ii) => {
+            const number = form[`${ii}-units-number`].value || null;
+            return {
+              account: form[`${ii}-account`].value,
+              units: {
+                number,
+                currency:
+                  number !== null ? form[`${ii}-units-currency`].value : "",
+              },
+            };
+          }),
+        });
       }}
     >
       {arrayRange(numPostings).map((ii) => (
@@ -79,20 +99,20 @@ function EditPosting(props: {}) {
             <input
               type="text"
               className="min-w-[48ch] mr-2 p-1"
-              name={String(ii) + "-account"}
+              name={`${ii}-account`}
               required
             />
             <span className="float-right">
               <input
                 type="text"
                 className="max-w-[11ch] mr-[1ch] p-1 text-right"
-                name={String(ii) + "-units-number"}
+                name={`${ii}-units-number`}
                 placeholder="(optional)"
               />
               <input
                 type="text"
                 className="max-w-[4ch] p-1"
-                name={String(ii) + "-units-currency"}
+                name={`${ii}-units-currency`}
                 required
               />
             </span>

@@ -8,6 +8,7 @@ from beancount.core.data import (
     Entries,
     Posting,
 )
+from beancount.core.number import ZERO
 
 DISPLAY_CONTEXT = DisplayContext()
 DISPLAY_CONTEXT.set_commas(True)
@@ -25,10 +26,13 @@ def format_entries(entries: Entries, indent: str) -> str:
 def format_postings(postings: Set[Posting], indent: str) -> str:
     outl = []
     for posting in postings:
-        # Don't need to get this exactly right because auto-formatter will fix it
-        outs = "{}  {:,.2f} {}".format(
-            posting.account, posting.units.number, posting.units.currency
-        )
+        if posting.units.number == ZERO:
+            outs = posting.account
+        else:
+            # Don't need to get this exactly right because auto-formatter will fix it
+            outs = "{}  {:,.2f} {}".format(
+                posting.account, posting.units.number, posting.units.currency
+            )
         outl.append(textwrap.indent(outs, indent))
     return "\n".join(outl)
 

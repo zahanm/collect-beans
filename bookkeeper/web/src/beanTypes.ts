@@ -19,7 +19,7 @@ export interface IPosting {
   units: IAmount;
 }
 interface IAmount {
-  number: string;
+  number: string | null;
   currency: string;
 }
 
