@@ -14,7 +14,7 @@ interface IDirective {
   links: Array<string>;
   postings: Array<IPosting>;
 }
-interface IPosting {
+export interface IPosting {
   account: string;
   units: IAmount;
 }
