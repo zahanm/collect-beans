@@ -11,6 +11,7 @@ const NEXT_API = "http://localhost:5005/next_sort";
 
 interface INextResponse {
   to_sort: Array<IDirectiveForSort>;
+  accounts: Array<string>;
 }
 
 interface ISortedRequest {
@@ -27,6 +28,8 @@ export default function SortChoose() {
   const [sorted, setSorted] = useState<List<IDirectiveForSort>>(List());
   // "mods" contains a single entry for each txn in "sorted".
   const [mods, setMods] = useState<Map<string, IDirectiveMod>>(Map());
+  // "accounts" is used for auto-complete
+  const [accounts, setAccounts] = useState<Set<string>>(Set());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +39,7 @@ export default function SortChoose() {
       const modIds = mods.keySeq().toSet();
       // Can be added to unsorted as long as it's not already sorted locally
       setUnsorted(List(data.to_sort).filterNot((dir) => modIds.has(dir.id)));
+      setAccounts(Set(data.accounts));
     };
 
     if (sorted.size + unsorted.size < MAX_TXNS) {
@@ -60,6 +64,7 @@ export default function SortChoose() {
     setAsyncProgress("success");
     setTimeout(() => {
       setUnsorted(List(data.to_sort));
+      setAccounts(Set(data.accounts));
       setSorted(List());
       setMods(Map());
       setAsyncProgress("idle");
@@ -74,6 +79,7 @@ export default function SortChoose() {
           txn={dir}
           key={dir.id}
           priorMod={mods.get(dir.id, null)}
+          accounts={accounts}
           onSave={(newMod) => {
             // Turning this into a list to slightly future-proof the logic for when
             // I have batch operations

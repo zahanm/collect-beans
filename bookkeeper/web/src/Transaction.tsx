@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
 import { Set } from "immutable";
+import { Combobox } from "@headlessui/react";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
 
 export default function Transaction(props: {
   txn: IDirectiveForSort;
   priorMod: IDirectiveMod | null;
+  accounts: Set<string>;
   // TODO: take an "isEditing" to know whether this one is focussed
   onSave: (mod: IDirectiveMod) => void;
 }) {
@@ -39,6 +41,7 @@ export default function Transaction(props: {
           id={props.txn.id}
           autocat={props.txn.auto_category}
           currency={currency}
+          accounts={props.accounts}
           onSave={props.onSave}
         />
       )}
@@ -77,6 +80,7 @@ function EditPosting(props: {
   id: string;
   autocat: string | null;
   currency: string;
+  accounts: Set<string>;
   onSave: (mod: IDirectiveMod) => void;
 }) {
   const [numPostings, setNumPostings] = useState(1);
@@ -107,14 +111,10 @@ function EditPosting(props: {
       {arrayRange(numPostings).map((ii) => (
         <div className="my-1" key={ii}>
           <pre className="w-[86ch] ml-[2ch] text-black inline-block">
-            <input
-              type="text"
-              className="min-w-[48ch] mr-2 p-1"
+            <AccountSelector
               name={`${ii}-account`}
-              required
-              defaultValue={
-                ii === 0 && props.autocat ? props.autocat : undefined
-              }
+              accounts={props.accounts}
+              initValue={ii === 0 ? props.autocat : null}
             />
             <span className="float-right">
               <input
@@ -143,6 +143,40 @@ function EditPosting(props: {
         </div>
       ))}
     </form>
+  );
+}
+
+function AccountSelector(props: {
+  accounts: Set<string>;
+  name: string;
+  initValue: string | null;
+}) {
+  const { accounts } = props;
+
+  const [query, setQuery] = useState("");
+
+  const filteredAccounts =
+    query === ""
+      ? accounts
+      : accounts.filter((account) => {
+          return account.toLowerCase().includes(query.toLowerCase());
+        });
+
+  return (
+    <Combobox name={props.name} defaultValue={props.initValue}>
+      <Combobox.Input
+        className="min-w-[48ch] mr-2 p-1"
+        required
+        onChange={(event) => setQuery(event.target.value)}
+      />
+      <Combobox.Options>
+        {filteredAccounts.map((account) => (
+          <Combobox.Option key={account} value={account}>
+            {account}
+          </Combobox.Option>
+        ))}
+      </Combobox.Options>
+    </Combobox>
   );
 }
 
