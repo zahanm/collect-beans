@@ -49,17 +49,10 @@ def create_app():
             cache.op = "sort"
             cache.destination_file = request.form.get("destination_file")
             cache.main_file = request.form.get("main_file")
-        expenses = []
-        data = Path("/data")
-        if cache.main_file is not None:
-            all_entries = _parse_journal(str(data / cache.main_file))
-            expenses = [entry.account for entry in all_entries if _is_expense(entry)]
-            expenses.sort()
         return {
             "destination_file": cache.destination_file,
             "main_file": cache.main_file,
-            "journal_files": [p.name for p in data.glob("*.beancount")],
-            "expense_accounts": expenses,
+            "journal_files": [p.name for p in Path("/data").glob("*.beancount")],
         }
 
     @app.route("/next_sort", methods=["GET", "POST"])
@@ -101,6 +94,12 @@ def create_app():
                 _replace_todo_with(cache, entry, mod["postings"])
                 # remove sorted item from cache
                 del cache.to_sort[mod_idx]
+        if cache.accounts is None:
+            assert cache.main_file is not None
+            all_entries = _parse_journal(str(Path("/data") / cache.main_file))
+            cache.accounts = sorted(
+                [entry.account for entry in all_entries if _is_expense(entry)]
+            )
         if cache.to_sort is None:
             # Load the journal file
             assert cache.main_file is not None and cache.destination_file is not None
@@ -117,7 +116,10 @@ def create_app():
             cache.to_sort = _rank_order(categorised)
         # find the $max most promising and return that here
         max_txns = request.args.get("max", 20)
-        return {"to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]]}
+        return {
+            "to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]],
+            "accounts": cache.accounts,
+        }
 
     @app.route("/commit", methods=["GET", "POST"])
     def commit():
@@ -199,6 +201,7 @@ class Cache:
     main_file: Optional[str] = None
     to_sort: Optional[List[DirectiveForSort]] = None
     destination_lines: Optional[List[str]] = None
+    accounts: Optional[List[str]] = None
 
     def reset(self):
         self.op = None
@@ -206,6 +209,7 @@ class Cache:
         self.main_file = None
         self.to_sort = None
         self.destination_lines = None
+        self.accounts = None
 
 
 def _is_sortable(cache: Cache, entry: Directive) -> bool:
