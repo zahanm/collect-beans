@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, Set, List
 from pathlib import Path
 
 import yaml
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_cors import CORS
 from beancount import loader
 from beancount.core.data import (
@@ -143,6 +143,13 @@ def create_app():
             "before": before,
             "after": formatted_output,
         }
+
+    # Needed so that it sees my edits to the template file once this app is running
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+    @app.route("/collect.py")
+    def collect_script():
+        return render_template("collect.py.jinja", name="Zahan")
 
     return app
 
