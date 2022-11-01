@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { errorHandler } from "./utilities";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
 
-const PROGRESS_API = "http://localhost:5005/progress";
+const PROGRESS_API = "http://localhost:5005/sort/progress";
 interface IProgressResponse {
   journal_files: Array<string>;
   main_file: string | null;

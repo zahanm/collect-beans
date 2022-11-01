@@ -4,7 +4,7 @@ import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 
 import { errorHandler } from "./utilities";
 
-const COMMIT_API = "http://localhost:5005/commit";
+const COMMIT_API = "http://localhost:5005/sort/commit";
 
 interface ICommitResponse {
   before: string;

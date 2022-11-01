@@ -7,7 +7,7 @@ import Transaction from "./Transaction";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
 import { errorHandler } from "./utilities";
 
-const NEXT_API = "http://localhost:5005/next_sort";
+const NEXT_API = "http://localhost:5005/sort/next";
 
 interface INextResponse {
   to_sort: Array<IDirectiveForSort>;

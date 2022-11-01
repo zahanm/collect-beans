@@ -34,8 +34,8 @@ def create_app():
     # Make sure each API is available from other origins
     CORS(app)
 
-    @app.route("/progress", methods=["GET", "POST"])
-    def progress():
+    @app.route("/sort/progress", methods=["GET", "POST"])
+    def sort_progress():
         """
         GET
         Call this to init the UI. Gives the various files and accounts info needed.
@@ -55,7 +55,7 @@ def create_app():
             "journal_files": [p.name for p in Path("/data").glob("*.beancount")],
         }
 
-    @app.route("/next_sort", methods=["GET", "POST"])
+    @app.route("/sort/next", methods=["GET", "POST"])
     def next_sort():
         """
         GET
@@ -121,8 +121,8 @@ def create_app():
             "accounts": cache.accounts,
         }
 
-    @app.route("/commit", methods=["GET", "POST"])
-    def commit():
+    @app.route("/sort/commit", methods=["GET", "POST"])
+    def commit_sort():
         """
         POST
         Args: write=True for this to actually write out to the file
