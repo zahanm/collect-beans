@@ -115,42 +115,44 @@ function EditPosting(props: {
     >
       {arrayRange(numPostings).map((ii) => (
         <div className="my-1" key={ii}>
-          <pre className="w-[86ch] ml-[2ch] text-black inline-block">
+          <pre className="w-[86ch] ml-[2ch] text-black inline-flex justify-between">
             <AccountSelector
               name={`${ii}-account`}
               accounts={props.accounts}
               initValue={ii === 0 ? props.autocat : null}
             />
-            <span className="float-right">
+            <span className="text-right">
               <input
                 type="text"
-                className="max-w-[11ch] mr-[1ch] p-1 text-right rounded-lg"
+                className="w-[11ch] mr-[1ch] p-1 text-right rounded-lg"
                 name={`${ii}-units-number`}
                 placeholder="(optional)"
               />
               <input
                 type="text"
-                className="max-w-[4ch] p-1 rounded-lg"
+                className="w-[4ch] p-1 rounded-lg"
                 name={`${ii}-units-currency`}
                 required
                 defaultValue={props.currency}
               />
             </span>
           </pre>
-          {ii === 0 ? (
-            <>
-              <button type="submit">
-                <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
+          <span className="inline-block">
+            {ii === 0 ? (
+              <>
+                <button type="submit">
+                  <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
+                </button>
+                <button onClick={() => setNumPostings(numPostings + 1)}>
+                  <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
+                </button>
+              </>
+            ) : (
+              <button onClick={() => setNumPostings(numPostings - 1)}>
+                <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
               </button>
-              <button onClick={() => setNumPostings(numPostings + 1)}>
-                <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
-              </button>
-            </>
-          ) : (
-            <button onClick={() => setNumPostings(numPostings - 1)}>
-              <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
-            </button>
-          )}
+            )}
+          </span>
         </div>
       ))}
     </form>
