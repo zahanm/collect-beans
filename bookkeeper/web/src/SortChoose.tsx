@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { List, Map, Set } from "immutable";
+import { List, Map as ImmMap, Set } from "immutable";
 
 import { IDirectiveForSort, IDirectiveMod } from "./beanTypes";
 import Transaction from "./Transaction";
@@ -27,7 +27,7 @@ export default function SortChoose() {
   const [unsorted, setUnsorted] = useState<List<IDirectiveForSort>>(List());
   const [sorted, setSorted] = useState<List<IDirectiveForSort>>(List());
   // "mods" contains a single entry for each txn in "sorted".
-  const [mods, setMods] = useState<Map<string, IDirectiveMod>>(Map());
+  const [mods, setMods] = useState<ImmMap<string, IDirectiveMod>>(ImmMap());
   // "accounts" is used for auto-complete
   const [accounts, setAccounts] = useState<Set<string>>(Set());
 
@@ -66,20 +66,41 @@ export default function SortChoose() {
       setUnsorted(List(data.to_sort));
       setAccounts(Set(data.accounts));
       setSorted(List());
-      setMods(Map());
+      setMods(ImmMap());
       setAsyncProgress("idle");
     }, 3000);
   };
 
+  const refs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+  useEffect(() => {
+    // Focus on the first Transaction, every time the list of Txns is modified
+    let res = null;
+    const values = refs.current.values();
+    do {
+      res = values.next();
+    } while (!res.value && !res.done);
+    const nextVal = res.value;
+    nextVal && nextVal.focus();
+  }, [unsorted]);
+
   return (
     <div>
       <h2 className="text-2xl">Categorise Transactions</h2>
-      {sorted.concat(unsorted).map((dir) => (
+      {sorted.map((dir) => (
         <Transaction
           txn={dir}
           key={dir.id}
-          priorMod={mods.get(dir.id, null)}
+          priorMod={mods.get(dir.id)!}
           accounts={accounts}
+        />
+      ))}
+      {unsorted.map((dir) => (
+        <Transaction
+          txn={dir}
+          key={dir.id}
+          accounts={accounts}
+          ref={refs}
           onSave={(newMod) => {
             // Turning this into a list to slightly future-proof the logic for when
             // I have batch operations

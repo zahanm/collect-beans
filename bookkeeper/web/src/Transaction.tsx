@@ -1,4 +1,10 @@
-import React, { Fragment, useState } from "react";
+import React, {
+  ForwardedRef,
+  forwardRef,
+  Fragment,
+  MutableRefObject,
+  useState,
+} from "react";
 import dayjs from "dayjs";
 import { Set } from "immutable";
 import { Combobox, Transition } from "@headlessui/react";
@@ -11,14 +17,20 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
+import { arrayRange } from "./utilities";
 
-export default function Transaction(props: {
+type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
+type OnSaveFn = (mod: IDirectiveMod) => void;
+
+interface IProps {
   txn: IDirectiveForSort;
-  priorMod: IDirectiveMod | null;
   accounts: Set<string>;
+  // Must provide either "priodMod" or "onSave". Mutually exclusive.
+  priorMod?: IDirectiveMod;
+  onSave?: OnSaveFn;
   // TODO: take an "isEditing" to know whether this one is focussed
-  onSave: (mod: IDirectiveMod) => void;
-}) {
+}
+const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;
   const currency = Set(entry.postings.map((p) => p.units.currency)).first(
     "USD"
@@ -46,15 +58,17 @@ export default function Transaction(props: {
       ) : (
         <EditPosting
           id={props.txn.id}
+          ref={ref}
           autocat={props.txn.auto_category}
           currency={currency}
           accounts={props.accounts}
-          onSave={props.onSave}
+          onSave={props.onSave!}
         />
       )}
     </section>
   );
-}
+});
+export default Transaction;
 
 function Posting(props: { posting: IPosting }) {
   const { posting } = props;
@@ -83,13 +97,14 @@ function Account(props: { name: string; isTodo: boolean }) {
   );
 }
 
-function EditPosting(props: {
+interface IEditProps {
   id: string;
   autocat: string | null;
   currency: string;
   accounts: Set<string>;
-  onSave: (mod: IDirectiveMod) => void;
-}) {
+  onSave: OnSaveFn;
+}
+const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
   const [numPostings, setNumPostings] = useState(1);
 
   return (
@@ -119,7 +134,9 @@ function EditPosting(props: {
         <div className="my-1" key={ii}>
           <pre className="w-[86ch] ml-[2ch] text-black inline-flex justify-between">
             <AccountSelector
+              id={props.id}
               name={`${ii}-account`}
+              ref={ref}
               accounts={props.accounts}
               initValue={ii === 0 ? props.autocat : null}
             />
@@ -142,7 +159,8 @@ function EditPosting(props: {
           <span className="inline-block">
             {ii === 0 ? (
               <>
-                <button type="submit">
+                {/* Don't want this selected through tabbing since I can hit enter anywhere else to submit */}
+                <button type="submit" tabIndex={-1}>
                   <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
                 <button onClick={() => setNumPostings(numPostings + 1)}>
@@ -159,13 +177,15 @@ function EditPosting(props: {
       ))}
     </form>
   );
-}
+});
 
-function AccountSelector(props: {
+interface IASProps {
+  id: string;
   accounts: Set<string>;
   name: string;
   initValue: string | null;
-}) {
+}
+const AccountSelector = forwardRef((props: IASProps, refs: FwdInputsRef) => {
   const { accounts } = props;
 
   const [query, setQuery] = useState("");
@@ -184,6 +204,13 @@ function AccountSelector(props: {
           <Combobox.Input
             className="mr-2 p-1 w-full"
             required
+            ref={(el: HTMLInputElement) => {
+              const refsObj = refs as MutableRefObject<
+                Map<string, HTMLInputElement>
+              >;
+              // Need a consistent indexing mechanism, so using the ID
+              refsObj.current.set(props.id, el);
+            }}
             onChange={(event) => setQuery(event.target.value)}
             onFocus={(ev: any) => ev.target.select()}
           />
@@ -242,8 +269,4 @@ function AccountSelector(props: {
       </div>
     </Combobox>
   );
-}
-
-function arrayRange(num: number): Array<number> {
-  return [...Array(num).fill(0)].map((_, ii) => ii);
-}
+});
