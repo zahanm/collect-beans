@@ -124,13 +124,13 @@ function EditPosting(props: {
             <span className="float-right">
               <input
                 type="text"
-                className="max-w-[11ch] mr-[1ch] p-1 text-right"
+                className="max-w-[11ch] mr-[1ch] p-1 text-right rounded-lg"
                 name={`${ii}-units-number`}
                 placeholder="(optional)"
               />
               <input
                 type="text"
-                className="max-w-[4ch] p-1"
+                className="max-w-[4ch] p-1 rounded-lg"
                 name={`${ii}-units-currency`}
                 required
                 defaultValue={props.currency}
@@ -175,11 +175,15 @@ function AccountSelector(props: {
 
   return (
     <Combobox name={props.name} defaultValue={props.initValue}>
-      <Combobox.Input
-        className="min-w-[48ch] mr-2 p-1"
-        required
-        onChange={(event) => setQuery(event.target.value)}
-      />
+      <div className="relative w-[48ch] inline-block">
+        <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left shadow-md">
+          <Combobox.Input
+            className="mr-2 p-1 w-full"
+            required
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+      </div>
       <Combobox.Options>
         {filteredAccounts.map((account) => (
           <Combobox.Option key={account} value={account}>
