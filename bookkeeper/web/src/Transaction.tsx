@@ -28,7 +28,6 @@ interface IProps {
   // Must provide either "priodMod" or "onSave". Mutually exclusive.
   priorMod?: IDirectiveMod;
   onSave?: OnSaveFn;
-  // TODO: take an "isEditing" to know whether this one is focussed
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;

@@ -98,7 +98,7 @@ def create_app():
             assert cache.main_file is not None
             all_entries = _parse_journal(str(Path("/data") / cache.main_file))
             cache.accounts = sorted(
-                [entry.account for entry in all_entries if _is_expense(entry)]
+                [entry.account for entry in all_entries if _is_open_account(entry)]
             )
         if cache.to_sort is None:
             # Load the journal file
@@ -167,10 +167,12 @@ def _accounts(entry: Directive) -> Set[str]:
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
 
 
-def _is_expense(entry: Directive) -> bool:
-    if type(entry) is Open:
-        return entry.account.startswith("Expenses:")
-    return False
+def _is_open_account(entry: Directive) -> bool:
+    """
+    We include all accounts, including the closed ones, because you never know if
+    I'm editing an old transaction.
+    """
+    return type(entry) is Open
 
 
 def _auto_categorise(
