@@ -185,12 +185,10 @@ function AccountSelector(props: {
             className="mr-2 p-1 w-full"
             required
             onChange={(event) => setQuery(event.target.value)}
+            onFocus={(ev: any) => ev.target.select()}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon
-              className="h-5 w-5 text-gray-400"
-              aria-hidden="true"
-            />
+            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
           </Combobox.Button>
         </div>
         <Transition
