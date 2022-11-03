@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { List, Map as ImmMap, Set } from "immutable";
+import { CircularProgressbarWithChildren } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 import { IDirectiveForSort, IDirectiveMod } from "./beanTypes";
 import Transaction from "./Transaction";
@@ -84,6 +86,8 @@ export default function SortChoose() {
     nextVal && nextVal.focus();
   }, [unsorted]);
 
+  const percentage = (100 * 12) / 50;
+
   return (
     <div>
       <h2 className="text-2xl">Categorise Transactions</h2>
@@ -136,6 +140,11 @@ export default function SortChoose() {
       <Link to={`/sort/commit`} className="text-sky-400 ml-2">
         Commit
       </Link>
+      <div className="w-20 h-20">
+        <CircularProgressbarWithChildren value={percentage}>
+          <small className="text-center w-1/2">12/50 {percentage}%</small>
+        </CircularProgressbarWithChildren>
+      </div>
     </div>
   );
 }
