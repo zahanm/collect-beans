@@ -114,11 +114,15 @@ def create_app():
                 for (i, entry) in enumerate(to_sort)
             ]
             cache.to_sort = _rank_order(categorised)
+            cache.total = len(cache.to_sort)
+        assert cache.total is not None
         # find the $max most promising and return that here
         max_txns = request.args.get("max", 20)
         return {
             "to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]],
             "accounts": cache.accounts,
+            "count_total": cache.total,
+            "count_sorted": cache.total - len(cache.to_sort),
         }
 
     @app.route("/sort/commit", methods=["GET", "POST"])
@@ -211,6 +215,7 @@ class Cache:
     to_sort: Optional[List[DirectiveForSort]] = None
     destination_lines: Optional[List[str]] = None
     accounts: Optional[List[str]] = None
+    total: Optional[int] = None
 
     def reset(self):
         self.op = None
@@ -219,6 +224,7 @@ class Cache:
         self.to_sort = None
         self.destination_lines = None
         self.accounts = None
+        self.total = None
 
 
 def _is_sortable(cache: Cache, entry: Directive) -> bool:

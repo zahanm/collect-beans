@@ -14,6 +14,8 @@ const NEXT_API = "http://localhost:5005/sort/next";
 interface INextResponse {
   to_sort: Array<IDirectiveForSort>;
   accounts: Array<string>;
+  count_total: number;
+  count_sorted: number;
 }
 
 interface ISortedRequest {
@@ -32,6 +34,8 @@ export default function SortChoose() {
   const [mods, setMods] = useState<ImmMap<string, IDirectiveMod>>(ImmMap());
   // "accounts" is used for auto-complete
   const [accounts, setAccounts] = useState<Set<string>>(Set());
+  const [totalToSort, setTotalToSort] = useState<number>(0);
+  const [numSorted, setNumSorted] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +46,8 @@ export default function SortChoose() {
       // Can be added to unsorted as long as it's not already sorted locally
       setUnsorted(List(data.to_sort).filterNot((dir) => modIds.has(dir.id)));
       setAccounts(Set(data.accounts));
+      setTotalToSort(data.count_total);
+      setNumSorted(data.count_sorted);
     };
 
     if (sorted.size + unsorted.size < MAX_TXNS) {
@@ -64,6 +70,8 @@ export default function SortChoose() {
     const data = (await resp.json()) as INextResponse;
     console.log("POST", data);
     setAsyncProgress("success");
+    setTotalToSort(data.count_total);
+    setNumSorted(data.count_sorted);
     setTimeout(() => {
       setUnsorted(List(data.to_sort));
       setAccounts(Set(data.accounts));
@@ -86,15 +94,20 @@ export default function SortChoose() {
     nextVal && nextVal.focus();
   }, [unsorted]);
 
-  const percentage = (100 * 12) / 50;
+  const percent = (100 * numSorted) / totalToSort;
+  const percentFmted = new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 1,
+  }).format(percent);
 
   return (
     <div className="max-w-screen-lg mx-auto py-5">
       <header className="flex justify-between">
         <h2 className="text-2xl">Categorise Transactions</h2>
         <div className="w-20 h-20">
-          <CircularProgressbarWithChildren value={percentage}>
-            <small className="text-center w-1/2">12/50 {percentage}%</small>
+          <CircularProgressbarWithChildren value={percent}>
+            <small className="text-center w-1/2">
+              {numSorted}/{totalToSort} {percentFmted}%
+            </small>
           </CircularProgressbarWithChildren>
         </div>
       </header>
@@ -123,6 +136,7 @@ export default function SortChoose() {
             const modIDsHas = (dir: IDirectiveForSort) => modIDs.has(dir.id);
             setSorted(sorted.concat(unsorted.filter(modIDsHas)));
             setUnsorted(unsorted.filterNot(modIDsHas));
+            setNumSorted(numSorted + 1);
           }}
         />
       ))}
