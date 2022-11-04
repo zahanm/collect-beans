@@ -89,8 +89,15 @@ export default function SortChoose() {
   const percentage = (100 * 12) / 50;
 
   return (
-    <div>
-      <h2 className="text-2xl">Categorise Transactions</h2>
+    <div className="max-w-screen-lg mx-auto py-5">
+      <header className="flex justify-between">
+        <h2 className="text-2xl">Categorise Transactions</h2>
+        <div className="w-20 h-20">
+          <CircularProgressbarWithChildren value={percentage}>
+            <small className="text-center w-1/2">12/50 {percentage}%</small>
+          </CircularProgressbarWithChildren>
+        </div>
+      </header>
       {sorted.map((dir) => (
         <Transaction
           txn={dir}
@@ -119,31 +126,25 @@ export default function SortChoose() {
           }}
         />
       ))}
-      <p className="text-center">
-        <button
-          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
-          disabled={mods.size === 0}
-          onClick={() =>
-            saveChanges().catch((err) => {
-              setAsyncProgress("error");
-              errorHandler(err);
-            })
-          }
-        >
-          Save Changes
+      <div className="flex justify-between py-4">
+        <span className="text-center">
+          <button
+            className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
+            disabled={mods.size === 0}
+            onClick={() =>
+              saveChanges().catch((err) => {
+                setAsyncProgress("error");
+                errorHandler(err);
+              })
+            }
+          >
+            Save Changes
+          </button>
+          <DisplayProgress progress={asyncProgress} className="ml-2" />
+        </span>
+        <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
+          <Link to={`/sort/commit`}>Commit</Link>
         </button>
-        <DisplayProgress progress={asyncProgress} className="ml-2" />
-      </p>
-      <Link to={`/sort`} className="text-sky-400">
-        Options
-      </Link>
-      <Link to={`/sort/commit`} className="text-sky-400 ml-2">
-        Commit
-      </Link>
-      <div className="w-20 h-20">
-        <CircularProgressbarWithChildren value={percentage}>
-          <small className="text-center w-1/2">12/50 {percentage}%</small>
-        </CircularProgressbarWithChildren>
       </div>
     </div>
   );
