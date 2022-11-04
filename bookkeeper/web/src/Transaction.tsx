@@ -22,6 +22,8 @@ import { arrayRange } from "./utilities";
 type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
 type OnSaveFn = (mod: IDirectiveMod) => void;
 
+const JOURNAL_WIDTH = "w-11/12";
+
 interface IProps {
   txn: IDirectiveForSort;
   accounts: Set<string>;
@@ -73,7 +75,7 @@ function Posting(props: { posting: IPosting }) {
   const { posting } = props;
   const isTodo = posting.account === "Equity:TODO";
   return (
-    <pre className="w-[86ch] ml-[2ch]">
+    <pre className={`${JOURNAL_WIDTH} ml-[2ch]`}>
       <Account name={posting.account} isTodo={isTodo} />
       {!isTodo && (
         <span className="float-right">
@@ -131,7 +133,9 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
     >
       {arrayRange(numPostings).map((ii) => (
         <div className="my-1" key={ii}>
-          <pre className="w-[86ch] ml-[2ch] text-black inline-flex justify-between">
+          <pre
+            className={`${JOURNAL_WIDTH} ml-[2ch] text-black inline-flex justify-between`}
+          >
             <AccountSelector
               id={props.id}
               name={`${ii}-account`}

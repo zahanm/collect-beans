@@ -141,6 +141,9 @@ export default function SortChoose() {
         />
       ))}
       <div className="flex justify-between py-4">
+        <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
+          <Link to={`/sort/commit`}>Commit</Link>
+        </button>
         <span className="text-center">
           <button
             className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
@@ -156,9 +159,6 @@ export default function SortChoose() {
           </button>
           <DisplayProgress progress={asyncProgress} className="ml-2" />
         </span>
-        <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
-          <Link to={`/sort/commit`}>Commit</Link>
-        </button>
       </div>
     </div>
   );
