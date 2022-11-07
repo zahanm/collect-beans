@@ -331,12 +331,12 @@ def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Po
 
 def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
     lineno = drs.entry.meta["lineno"]
-    tags = drs.entry.tags or set()
-    tags.add(TAG_SKIP_SORT)
+    old_tags = drs.entry.tags or set()
+    drs.entry = drs.entry._replace(tags=old_tags.union({TAG_SKIP_SORT}))
     replace_pos = lineno - 1
     assert cache.destination_lines is not None
     indent = indentation_at(cache.destination_lines[replace_pos])
     formatted = printer.format_entry(drs.entry, DISPLAY_CONTEXT)
     with_indent = textwrap.indent(formatted, indent)
     # Only want the first line, because that's where tha tag will go
-    cache.destination_lines[replace_pos] = with_indent[0]
+    cache.destination_lines[replace_pos] = with_indent.splitlines()[0]
