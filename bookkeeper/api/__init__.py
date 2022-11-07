@@ -296,6 +296,7 @@ def _is_sortable(cache: Cache, entry: Directive) -> bool:
         type(entry) in SUPPORTED_DIRECTIVES
         and TODO_ACCOUNT in _accounts(entry)
         and Path(entry.meta["filename"]).name == cache.destination_file
+        and TAG_SKIP_SORT not in entry.tags
     )
 
 
