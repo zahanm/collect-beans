@@ -1,6 +1,7 @@
 from itertools import chain, groupby
 from shutil import copy
 from tempfile import TemporaryDirectory
+import textwrap
 from typing import Any, Dict, Optional, Set, List
 from pathlib import Path
 from hashlib import sha1
@@ -22,11 +23,12 @@ from beancount.scripts.format import align_beancount
 from beancount.ops import validation
 from beancount.parser import printer
 
-from .formatting import format_postings, indentation_at
-from .serialise import DirectiveForSort, from_dict, to_dict
+from .formatting import DISPLAY_CONTEXT, format_postings, indentation_at
+from .serialise import DirectiveForSort, mod_from_dict, to_dict, skip_from_dict
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
+TAG_SKIP_SORT = "skip-sort"
 
 
 def create_app():
@@ -69,7 +71,8 @@ def create_app():
 
         POST
         Called when submitting categorisations that have been made, along with returning the next page of entries.
-        Body (JSON): sorted -- See DirectiveMod. This is a JSON object which includes only the _new_ postings that will replace the equity:todo posting.
+        Body (JSON): "sorted" and "skipped"
+        Re: "sorted" -- See DirectiveMod. This is a JSON object which includes only the _new_ postings that will replace the equity:todo posting.
         {
             "id": str,
             "postings": [
@@ -81,8 +84,13 @@ def create_app():
                     }
                 },
                 ...
-            ]
+            ],
         }
+        Re: "skipped", it is a list of the IDs of the transactions that I don't want to handle right away. We'll set #skip-sort on them.
+        "skipped": [
+            { "id": str },
+            ...
+        ]
         """
         if request.method == "POST":
             # store the submitted categorisations. insert in the right place to in-memory store
@@ -91,7 +99,7 @@ def create_app():
                 and cache.to_sort is not None
                 and cache.destination_lines is not None
             )
-            mods = [from_dict(dct) for dct in request.json["sorted"]]
+            mods = [mod_from_dict(dct) for dct in request.json["sorted"]]
             for mod in mods:
                 mod_idx = _index_of(cache.to_sort, mod["id"])
                 # replace the todo posting
@@ -99,6 +107,13 @@ def create_app():
                 _replace_todo_with(cache, entry, mod["postings"])
                 # remove sorted item from cache
                 del cache.to_sort[mod_idx]
+            skips = [skip_from_dict(dct) for dct in request.json["skipped"]]
+            for skip in skips:
+                idx = _index_of(cache.to_sort, skip["id"])
+                entry = cache.to_sort[idx]
+                _add_skip_tag(cache, entry)
+                # remove skipped item from cache
+                del cache.to_sort[idx]
         if cache.accounts is None:
             assert cache.main_file is not None
             all_entries = _parse_journal(str(Path("/data") / cache.main_file))
@@ -312,3 +327,16 @@ def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Po
     indent = indentation_at(cache.destination_lines[replace_pos])
     formatted = format_postings(replacements, indent)
     cache.destination_lines[replace_pos] = formatted
+
+
+def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
+    lineno = drs.entry.meta["lineno"]
+    tags = drs.entry.tags or set()
+    tags.add(TAG_SKIP_SORT)
+    replace_pos = lineno - 1
+    assert cache.destination_lines is not None
+    indent = indentation_at(cache.destination_lines[replace_pos])
+    formatted = printer.format_entry(drs.entry, DISPLAY_CONTEXT)
+    with_indent = textwrap.indent(formatted, indent)
+    # Only want the first line, because that's where tha tag will go
+    cache.destination_lines[replace_pos] = with_indent[0]

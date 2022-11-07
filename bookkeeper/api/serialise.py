@@ -119,6 +119,10 @@ class DirectiveMod(TypedDict):
     # narration: str
 
 
+class SkipTxn(TypedDict):
+    id: str
+
+
 def _posting_from_dict(item: Any) -> Posting:
     return Posting(
         account=item["account"],
@@ -138,9 +142,13 @@ def _posting_from_dict(item: Any) -> Posting:
     )
 
 
-def from_dict(item: Any) -> DirectiveMod:
+def mod_from_dict(item: Any) -> DirectiveMod:
     pp = set()
     return DirectiveMod(
         id=item["id"],
         postings={_posting_from_dict(p) for p in item["postings"]},
     )
+
+
+def skip_from_dict(item: Any) -> SkipTxn:
+    return SkipTxn(id=item["id"])
