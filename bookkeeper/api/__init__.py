@@ -1,4 +1,6 @@
 from itertools import chain, groupby
+from shutil import copy
+from tempfile import TemporaryDirectory
 from typing import Any, Dict, Optional, Set, List
 from pathlib import Path
 
@@ -16,6 +18,8 @@ from beancount.core.data import (
     Open,
 )
 from beancount.scripts.format import align_beancount
+from beancount.ops import validation
+from beancount.parser import printer
 
 from .formatting import format_postings, indentation_at
 from .serialise import DirectiveForSort, from_dict, to_dict
@@ -146,6 +150,41 @@ def create_app():
         return {
             "before": before,
             "after": formatted_output,
+        }
+
+    @app.route("/sort/check", methods=["POST"])
+    def check_sort():
+        """
+        Check that bean-check passes on the new file contents.
+        It does this by copying the .beancount files to a new temp folder,
+        writing out the new contents, and then running bean-check.
+        Since that is a write operation (though it doesn't touch the original
+        files), this needs to be a POST.
+        """
+        assert (
+            cache.destination_lines is not None
+            and cache.destination_file is not None
+            and cache.main_file is not None
+        )
+        dest_output = "\n".join(cache.destination_lines)
+        formatted_output = align_beancount(dest_output)
+
+        with TemporaryDirectory() as scratch:
+            # copy all the .beancount files to the temp directory
+            for f in Path("/data").glob("*.beancount"):
+                copy(Path("/data") / f, scratch)
+            # override the contents of "dest" with new content
+            with open(Path(scratch) / cache.destination_file, "w") as dest:
+                dest.write(formatted_output)
+            _, errors, _ = loader.load_file(
+                Path(scratch) / cache.main_file,
+                # Force slow and hardcore validations.
+                extra_validations=validation.HARDCORE_VALIDATIONS,
+            )
+
+        return {
+            "check": not errors,
+            "errors": [printer.format_error(err) for err in errors],
         }
 
     # Needed so that it sees my edits to the template file once this app is running
