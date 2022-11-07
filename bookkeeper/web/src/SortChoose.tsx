@@ -20,9 +20,11 @@ interface INextResponse {
 
 interface ISortedRequest {
   sorted: Array<IDirectiveMod>;
+  skipped: Array<{ id: string }>;
 }
 
 const MAX_TXNS = 20;
+const TAG_SKIP_SORT = "skip-sort";
 
 export default function SortChoose() {
   const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
@@ -30,6 +32,7 @@ export default function SortChoose() {
   //  other as it is handled in the UI.
   const [unsorted, setUnsorted] = useState<List<IDirectiveForSort>>(List());
   const [sorted, setSorted] = useState<List<IDirectiveForSort>>(List());
+  const [skipped, setSkipped] = useState<List<IDirectiveForSort>>(List());
   // "mods" contains a single entry for each txn in "sorted".
   const [mods, setMods] = useState<ImmMap<string, IDirectiveMod>>(ImmMap());
   // "accounts" is used for auto-complete
@@ -59,6 +62,11 @@ export default function SortChoose() {
     setAsyncProgress("in-process");
     const body: ISortedRequest = {
       sorted: mods.valueSeq().toArray(),
+      skipped: skipped
+        .map((dir) => ({
+          id: dir.id,
+        }))
+        .toArray(),
     };
     const resp = await fetch(NEXT_API, {
       method: "POST",
@@ -77,6 +85,7 @@ export default function SortChoose() {
       setAccounts(Set(data.accounts));
       setSorted(List());
       setMods(ImmMap());
+      setSkipped(List());
       setAsyncProgress("idle");
     }, 3000);
   };
@@ -117,12 +126,14 @@ export default function SortChoose() {
           key={dir.id}
           priorMod={mods.get(dir.id)!}
           accounts={accounts}
+          editable={false}
         />
       ))}
       {unsorted.map((dir) => (
         <Transaction
           txn={dir}
           key={dir.id}
+          editable={true}
           accounts={accounts}
           ref={refs}
           onSave={(newMod) => {
@@ -136,6 +147,15 @@ export default function SortChoose() {
             const modIDsHas = (dir: IDirectiveForSort) => modIDs.has(dir.id);
             setSorted(sorted.concat(unsorted.filter(modIDsHas)));
             setUnsorted(unsorted.filterNot(modIDsHas));
+            setNumSorted(numSorted + 1);
+          }}
+          onSkip={(skipID) => {
+            const idx = unsorted.findIndex((dir) => dir.id === skipID);
+            const dir = unsorted.get(idx)!;
+            dir.entry.tags.push(TAG_SKIP_SORT);
+            setSorted(sorted.push(unsorted.get(idx)!));
+            setSkipped(skipped.push(unsorted.get(idx)!));
+            setUnsorted(unsorted.remove(idx));
             setNumSorted(numSorted + 1);
           }}
         />

@@ -14,27 +14,35 @@ import {
   MinusCircleIcon,
   CheckIcon,
   ChevronUpDownIcon,
+  ForwardIcon,
 } from "@heroicons/react/20/solid";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
-import { arrayRange } from "./utilities";
+import { arrayRange, invariant } from "./utilities";
 
 type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
 type OnSaveFn = (mod: IDirectiveMod) => void;
+type OnSkipFn = (id: string) => void;
 
-const JOURNAL_WIDTH = "w-11/12";
+const JOURNAL_WIDTH = "w-10/12";
 
 interface IProps {
   txn: IDirectiveForSort;
   accounts: Set<string>;
+  editable: boolean;
   // Must provide either "priodMod" or "onSave". Mutually exclusive.
   priorMod?: IDirectiveMod;
   onSave?: OnSaveFn;
+  onSkip?: OnSkipFn;
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;
   const currency = Set(entry.postings.map((p) => p.units.currency)).first(
     "USD"
+  );
+  invariant(
+    !props.editable || !!ref,
+    "Cannot leave out ref param if this is an editable entry"
   );
   return (
     <section className="my-2">
@@ -48,15 +56,15 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
         <code className="text-orange-300">&quot;{entry.payee}&quot;</code>
         &nbsp;
         <code className="text-orange-300">&quot;{entry.narration}&quot;</code>
+        &nbsp;
+        <code className="text-cyan-500">
+          {entry.tags.map((t) => `#${t}`).join(" ")}
+        </code>
       </pre>
       {entry.postings.map((posting, idx) => (
         <Posting key={idx} posting={posting} />
       ))}
-      {props.priorMod ? (
-        props.priorMod.postings.map((posting, idx) => (
-          <Posting key={idx} posting={posting} />
-        ))
-      ) : (
+      {props.editable ? (
         <EditPosting
           id={props.txn.id}
           ref={ref}
@@ -64,7 +72,13 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
           currency={currency}
           accounts={props.accounts}
           onSave={props.onSave!}
+          onSkip={props.onSkip!}
         />
+      ) : (
+        props.priorMod &&
+        props.priorMod.postings.map((posting, idx) => (
+          <Posting key={idx} posting={posting} />
+        ))
       )}
     </section>
   );
@@ -104,6 +118,7 @@ interface IEditProps {
   currency: string;
   accounts: Set<string>;
   onSave: OnSaveFn;
+  onSkip: OnSkipFn;
 }
 const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
   const [numPostings, setNumPostings] = useState(1);
@@ -168,6 +183,9 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 </button>
                 <button onClick={() => setNumPostings(numPostings + 1)}>
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
+                </button>
+                <button onClick={() => props.onSkip(props.id)} type="button">
+                  <ForwardIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
               </>
             ) : (

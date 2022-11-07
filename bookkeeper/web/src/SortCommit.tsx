@@ -4,7 +4,6 @@ import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import { Map as ImmMap } from "immutable";
 
 import { errorHandler } from "./utilities";
-import DisplayProgress, { TProgress } from "./DisplayProgress";
 
 const COMMIT_API = "http://localhost:5005/sort/commit";
 const CHECK_API = "http://localhost:5005/sort/check";
