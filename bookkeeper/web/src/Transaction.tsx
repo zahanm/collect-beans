@@ -181,7 +181,10 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 <button type="submit" tabIndex={-1}>
                   <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
-                <button onClick={() => setNumPostings(numPostings + 1)}>
+                <button
+                  onClick={() => setNumPostings(numPostings + 1)}
+                  type="button"
+                >
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
                 <button onClick={() => props.onSkip(props.id)} type="button">
@@ -189,7 +192,10 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 </button>
               </>
             ) : (
-              <button onClick={() => setNumPostings(numPostings - 1)}>
+              <button
+                onClick={() => setNumPostings(numPostings - 1)}
+                type="button"
+              >
                 <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
               </button>
             )}

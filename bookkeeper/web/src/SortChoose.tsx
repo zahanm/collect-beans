@@ -161,13 +161,17 @@ export default function SortChoose() {
         />
       ))}
       <div className="flex justify-between py-4">
-        <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
+        <button
+          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+          type="button"
+        >
           <Link to={`/sort/commit`}>Commit</Link>
         </button>
         <span className="text-center">
           <button
             className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
-            disabled={mods.size === 0}
+            disabled={mods.size === 0 && skipped.size === 0}
+            type="button"
             onClick={() =>
               saveChanges().catch((err) => {
                 setAsyncProgress("error");
