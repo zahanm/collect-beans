@@ -3,6 +3,7 @@ from shutil import copy
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, Optional, Set, List
 from pathlib import Path
+from hashlib import sha1
 
 import yaml
 from flask import Flask, request, render_template
@@ -182,9 +183,17 @@ def create_app():
                 extra_validations=validation.HARDCORE_VALIDATIONS,
             )
 
+        def hash_error(error):
+            h = sha1(error.source["filename"].encode())
+            h.update(str(error.source["lineno"]).encode())
+            h.update(error.message.encode())
+            return h.hexdigest()
+
         return {
             "check": not errors,
-            "errors": [printer.format_error(err) for err in errors],
+            "errors": {
+                hash_error(error): printer.format_error(error) for error in errors
+            },
         }
 
     # Needed so that it sees my edits to the template file once this app is running
