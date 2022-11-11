@@ -38,13 +38,11 @@ export default function SortCommit() {
 
   const sendData = async () => {
     const params = new URLSearchParams();
-    // TODO: uncomment this in order to actually write to the file
-    // params.append("write", "true");
+    params.append("write", "true");
     const url = new URL(COMMIT_API);
     url.search = params.toString();
     const resp = await fetch(url, {
-      // TODO: uncomment this too
-      // method: "POST",
+      method: "POST",
     });
     const data = (await resp.json()) as ICommitResponse;
     console.log("POST", data);
