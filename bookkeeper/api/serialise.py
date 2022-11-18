@@ -111,16 +111,13 @@ def to_dict(item: Any) -> Dict:
 
 class DirectiveMod(TypedDict):
     id: str
-    postings: Set[Posting]
+    type: str
+    postings: Optional[Set[Posting]]
     # date: datetime.date
     # filename: str
     # lineno: int
     # payee: Optional[str]
     # narration: str
-
-
-class SkipTxn(TypedDict):
-    id: str
 
 
 def _posting_from_dict(item: Any) -> Posting:
@@ -144,11 +141,11 @@ def _posting_from_dict(item: Any) -> Posting:
 
 def mod_from_dict(item: Any) -> DirectiveMod:
     pp = set()
-    return DirectiveMod(
+    mod = DirectiveMod(
         id=item["id"],
-        postings={_posting_from_dict(p) for p in item["postings"]},
+        type=item["type"],
+        postings={_posting_from_dict(p) for p in item["postings"]}
+        if "postings" in item
+        else None,
     )
-
-
-def skip_from_dict(item: Any) -> SkipTxn:
-    return SkipTxn(id=item["id"])
+    return mod

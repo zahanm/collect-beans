@@ -24,7 +24,7 @@ from beancount.ops import validation
 from beancount.parser import printer
 
 from .formatting import DISPLAY_CONTEXT, format_postings, indentation_at
-from .serialise import DirectiveForSort, mod_from_dict, to_dict, skip_from_dict
+from .serialise import DirectiveForSort, mod_from_dict, to_dict
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
@@ -102,18 +102,14 @@ def create_app():
             mods = [mod_from_dict(dct) for dct in request.json["sorted"]]
             for mod in mods:
                 mod_idx = _index_of(cache.to_sort, mod["id"])
-                # replace the todo posting
                 entry = cache.to_sort[mod_idx]
-                _replace_todo_with(cache, entry, mod["postings"])
+                if mod["type"] is "replace_todo":
+                    assert mod["postings"] is not None
+                    _replace_todo_with(cache, entry, mod["postings"])
+                elif mod["type"] is "skip":
+                    _add_skip_tag(cache, entry)
                 # remove sorted item from cache
                 del cache.to_sort[mod_idx]
-            skips = [skip_from_dict(dct) for dct in request.json["skipped"]]
-            for skip in skips:
-                idx = _index_of(cache.to_sort, skip["id"])
-                entry = cache.to_sort[idx]
-                _add_skip_tag(cache, entry)
-                # remove skipped item from cache
-                del cache.to_sort[idx]
         if cache.accounts is None:
             assert cache.main_file is not None
             all_entries = _parse_journal(str(Path("/data") / cache.main_file))
@@ -314,7 +310,7 @@ def _index_of(items: List[DirectiveForSort], id: str) -> int:
 def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):
     """
     Replace the todo posting with the $replacements in $destination_lines
-    $entry is unchanged, because it will be deleted now
+    We don't bother updating $entry in cache.to_sort, because it will be deleted right after
     """
     lineno = None
     for posting in drs.entry.postings:
@@ -339,5 +335,5 @@ def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
     indent = indentation_at(cache.destination_lines[replace_pos])
     formatted = printer.format_entry(drs.entry, DISPLAY_CONTEXT)
     with_indent = textwrap.indent(formatted, indent)
-    # Only want the first line, because that's where tha tag will go
+    # Only want the first line, because that's where the tag will go
     cache.destination_lines[replace_pos] = with_indent.splitlines()[0]
