@@ -20,7 +20,6 @@ interface INextResponse {
 
 interface ISortedRequest {
   sorted: Array<IDirectiveMod>;
-  skipped: Array<{ id: string }>;
 }
 
 const MAX_TXNS = 20;
@@ -32,7 +31,6 @@ export default function SortChoose() {
   //  other as it is handled in the UI.
   const [unsorted, setUnsorted] = useState<List<IDirectiveForSort>>(List());
   const [sorted, setSorted] = useState<List<IDirectiveForSort>>(List());
-  const [skipped, setSkipped] = useState<List<IDirectiveForSort>>(List());
   // "mods" contains a single entry for each txn in "sorted".
   const [mods, setMods] = useState<ImmMap<string, IDirectiveMod>>(ImmMap());
   // "accounts" is used for auto-complete
@@ -62,11 +60,6 @@ export default function SortChoose() {
     setAsyncProgress("in-process");
     const body: ISortedRequest = {
       sorted: mods.valueSeq().toArray(),
-      skipped: skipped
-        .map((dir) => ({
-          id: dir.id,
-        }))
-        .toArray(),
     };
     const resp = await fetch(NEXT_API, {
       method: "POST",
@@ -85,7 +78,6 @@ export default function SortChoose() {
       setAccounts(Set(data.accounts));
       setSorted(List());
       setMods(ImmMap());
-      setSkipped(List());
       setAsyncProgress("idle");
     }, 3000);
   };
@@ -142,20 +134,21 @@ export default function SortChoose() {
             const newMods = [newMod];
             // Add in the new "mods"
             setMods(mods.concat(newMods.map((mod) => [mod.id, mod])));
-            // Update "unsorted" and "sorted"
             const modIDs = Set(newMods.map((mod) => mod.id));
             const modIDsHas = (dir: IDirectiveForSort) => modIDs.has(dir.id);
+            // Add the "skip" tag for the relevant txns
+            newMods
+              .filter((mod) => mod.type === "skip")
+              .forEach((mod) => {
+                const skipped = unsorted.find((txn) => txn.id === mod.id)!;
+                const tags = skipped.entry.tags;
+                if (!(TAG_SKIP_SORT in tags)) {
+                  tags.push(TAG_SKIP_SORT);
+                }
+              });
+            // Update "unsorted" and "sorted"
             setSorted(sorted.concat(unsorted.filter(modIDsHas)));
             setUnsorted(unsorted.filterNot(modIDsHas));
-            setNumSorted(numSorted + 1);
-          }}
-          onSkip={(skipID) => {
-            const idx = unsorted.findIndex((dir) => dir.id === skipID);
-            const dir = unsorted.get(idx)!;
-            dir.entry.tags.push(TAG_SKIP_SORT);
-            setSorted(sorted.push(unsorted.get(idx)!));
-            setSkipped(skipped.push(unsorted.get(idx)!));
-            setUnsorted(unsorted.remove(idx));
             setNumSorted(numSorted + 1);
           }}
         />
@@ -170,7 +163,7 @@ export default function SortChoose() {
         <span className="text-center">
           <button
             className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
-            disabled={mods.size === 0 && skipped.size === 0}
+            disabled={mods.size === 0}
             type="button"
             onClick={() =>
               saveChanges().catch((err) => {

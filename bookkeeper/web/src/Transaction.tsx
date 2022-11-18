@@ -22,7 +22,6 @@ import { arrayRange, invariant } from "./utilities";
 
 type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
 type OnSaveFn = (mod: IDirectiveMod) => void;
-type OnSkipFn = (id: string) => void;
 
 const JOURNAL_WIDTH = "w-10/12";
 
@@ -33,7 +32,6 @@ interface IProps {
   // Must provide either "priodMod" or "onSave". Mutually exclusive.
   priorMod?: IDirectiveMod;
   onSave?: OnSaveFn;
-  onSkip?: OnSkipFn;
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;
@@ -72,10 +70,10 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
           currency={currency}
           accounts={props.accounts}
           onSave={props.onSave!}
-          onSkip={props.onSkip!}
         />
       ) : (
         props.priorMod &&
+        props.priorMod.postings &&
         props.priorMod.postings.map((posting, idx) => (
           <Posting key={idx} posting={posting} />
         ))
@@ -118,7 +116,6 @@ interface IEditProps {
   currency: string;
   accounts: Set<string>;
   onSave: OnSaveFn;
-  onSkip: OnSkipFn;
 }
 const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
   const [numPostings, setNumPostings] = useState(1);
@@ -132,6 +129,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
         // Construct IDirectiveMod
         props.onSave({
           id: props.id,
+          type: "replace_todo",
           postings: arrayRange(numPostings).map((ii) => {
             const number = form[`${ii}-units-number`].value || null;
             return {
@@ -187,7 +185,16 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 >
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
-                <button onClick={() => props.onSkip(props.id)} type="button">
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Construct IDirectiveMod
+                    props.onSave({
+                      id: props.id,
+                      type: "skip",
+                    });
+                  }}
+                >
                   <ForwardIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
               </>
