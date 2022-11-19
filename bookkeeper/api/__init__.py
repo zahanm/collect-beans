@@ -103,10 +103,10 @@ def create_app():
             for mod in mods:
                 mod_idx = _index_of(cache.to_sort, mod["id"])
                 entry = cache.to_sort[mod_idx]
-                if mod["type"] is "replace_todo":
+                if mod["type"] == "replace_todo":
                     assert mod["postings"] is not None
                     _replace_todo_with(cache, entry, mod["postings"])
-                elif mod["type"] is "skip":
+                elif mod["type"] == "skip":
                     _add_skip_tag(cache, entry)
                 # remove sorted item from cache
                 del cache.to_sort[mod_idx]
