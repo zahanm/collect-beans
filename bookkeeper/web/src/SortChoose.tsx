@@ -119,6 +119,22 @@ export default function SortChoose() {
           priorMod={mods.get(dir.id)!}
           accounts={accounts}
           editable={false}
+          onRevert={(txnID) => {
+            // Remove the "mod"
+            setMods(mods.remove(txnID));
+            const sidx = sorted.findIndex((dir) => dir.id === txnID);
+            const txn = sorted.get(sidx)!;
+            // Remove the "skip" tag
+            const tags = txn.entry.tags;
+            const tidx = tags.findIndex((t) => t === TAG_SKIP_SORT);
+            if (tidx >= 0) {
+              tags.splice(tidx, 1);
+            }
+            // Put this back in the front of "unsorted", and remove from "sorted"
+            setUnsorted(unsorted.unshift(txn));
+            setSorted(sorted.remove(sidx));
+            setNumSorted(numSorted - 1);
+          }}
         />
       ))}
       {unsorted.map((dir) => (

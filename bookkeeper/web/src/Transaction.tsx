@@ -22,6 +22,7 @@ import { arrayRange, invariant } from "./utilities";
 
 type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
 type OnSaveFn = (mod: IDirectiveMod) => void;
+type OnRevertFn = (modID: string) => void;
 
 const JOURNAL_WIDTH = "w-10/12";
 
@@ -32,6 +33,7 @@ interface IProps {
   // Must provide either "priodMod" or "onSave". Mutually exclusive.
   priorMod?: IDirectiveMod;
   onSave?: OnSaveFn;
+  onRevert?: OnRevertFn;
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;
@@ -44,21 +46,11 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   );
   return (
     <section className="my-2">
-      <pre>
-        <code className="text-lime-300">
-          {dayjs(entry.date).format("YYYY-MM-DD")}
-        </code>
-        &nbsp;
-        <code className="text-yellow-300">{entry.flag}</code>
-        &nbsp;
-        <code className="text-orange-300">&quot;{entry.payee}&quot;</code>
-        &nbsp;
-        <code className="text-orange-300">&quot;{entry.narration}&quot;</code>
-        &nbsp;
-        <code className="text-cyan-500">
-          {entry.tags.map((t) => `#${t}`).join(" ")}
-        </code>
-      </pre>
+      <FirstLine
+        txn={props.txn}
+        revertable={!props.editable}
+        onRevert={props.onRevert}
+      />
       {entry.postings.map((posting, idx) => (
         <Posting key={idx} posting={posting} />
       ))}
@@ -82,6 +74,40 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   );
 });
 export default Transaction;
+
+function FirstLine(props: {
+  txn: IDirectiveForSort;
+  revertable: boolean;
+  onRevert?: OnRevertFn;
+}) {
+  const { entry } = props.txn;
+  return (
+    <div>
+      <pre className={`${JOURNAL_WIDTH} inline-block`}>
+        <code className="text-lime-300">
+          {dayjs(entry.date).format("YYYY-MM-DD")}
+        </code>
+        &nbsp;
+        <code className="text-yellow-300">{entry.flag}</code>
+        &nbsp;
+        <code className="text-orange-300">&quot;{entry.payee}&quot;</code>
+        &nbsp;
+        <code className="text-orange-300">&quot;{entry.narration}&quot;</code>
+        &nbsp;
+        <code className="text-cyan-500">
+          {entry.tags.map((t) => `#${t}`).join(" ")}
+        </code>
+      </pre>
+      {props.revertable && (
+        <span className="inline-block ml-[2ch]">
+          <button type="button" onClick={() => props.onRevert!(props.txn.id)}>
+            <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
+          </button>
+        </span>
+      )}
+    </div>
+  );
+}
 
 function Posting(props: { posting: IPosting }) {
   const { posting } = props;
@@ -118,7 +144,7 @@ interface IEditProps {
   onSave: OnSaveFn;
 }
 const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
-  const [numPostings, setNumPostings] = useState(1);
+  const [numEdits, setNumEdits] = useState(1);
 
   return (
     <form
@@ -130,7 +156,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
         props.onSave({
           id: props.id,
           type: "replace_todo",
-          postings: arrayRange(numPostings).map((ii) => {
+          postings: arrayRange(numEdits).map((ii) => {
             const number = form[`${ii}-units-number`].value || null;
             return {
               account: form[`${ii}-account`].value,
@@ -144,7 +170,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
         });
       }}
     >
-      {arrayRange(numPostings).map((ii) => (
+      {arrayRange(numEdits).map((ii) => (
         <div className="my-1" key={ii}>
           <pre
             className={`${JOURNAL_WIDTH} ml-[2ch] text-black inline-flex justify-between`}
@@ -179,10 +205,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 <button type="submit" tabIndex={-1}>
                   <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
-                <button
-                  onClick={() => setNumPostings(numPostings + 1)}
-                  type="button"
-                >
+                <button onClick={() => setNumEdits(numEdits + 1)} type="button">
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
                 <button
@@ -199,10 +222,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 </button>
               </>
             ) : (
-              <button
-                onClick={() => setNumPostings(numPostings - 1)}
-                type="button"
-              >
+              <button onClick={() => setNumEdits(numEdits - 1)} type="button">
                 <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
               </button>
             )}
