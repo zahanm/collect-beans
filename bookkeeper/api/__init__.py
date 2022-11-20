@@ -19,6 +19,7 @@ from beancount.core.data import (
     Posting,
     Open,
 )
+from beancount.core.number import D
 from beancount.scripts.format import align_beancount
 from beancount.ops import validation
 from beancount.parser import printer
@@ -205,6 +206,29 @@ def create_app():
             "errors": {
                 hash_error(error): printer.format_error(error) for error in errors
             },
+        }
+
+    @app.route("/sort/link")
+    def link_sort():
+        """
+        Searches for a linked Transaction
+        """
+        assert cache.to_sort is not None
+        amount = D(request.args.get("amount"))
+        assert amount is not None
+        amount_abs = amount.copy_abs()
+        matching = [
+            txn
+            for txn in cache.to_sort
+            if any(
+                [
+                    (p.units.number.copy_abs() - amount_abs).copy_abs() < 0.02
+                    for p in txn.entry.postings
+                ]
+            )
+        ]
+        return {
+            "results": [to_dict(txn) for txn in matching],
         }
 
     # Needed so that it sees my edits to the template file once this app is running
