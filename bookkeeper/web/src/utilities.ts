@@ -7,7 +7,7 @@ export function arrayRange(num: number): Array<number> {
   return [...Array(num).fill(0)].map((_, ii) => ii);
 }
 
-export function invariant(condition: boolean, message?: string) {
+export function invariant(condition: any, message?: string) {
   if (!condition) {
     throw new InvariantViolationError(message || "Invariant failed");
   }

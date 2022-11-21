@@ -201,12 +201,20 @@ export default function SortChoose() {
         />
       ))}
       <div className="flex justify-between py-4">
-        <button
-          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
-          type="button"
-        >
-          <Link to={`/sort/commit`}>Commit</Link>
-        </button>
+        <span>
+          <button
+            className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+            type="button"
+          >
+            <Link to={`/sort/commit`}>Commit</Link>
+          </button>
+          <button
+            className="ml-2 border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+            type="button"
+          >
+            <Link to={`/sort/review`}>Review</Link>
+          </button>
+        </span>
         <span className="text-center">
           <button
             className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"

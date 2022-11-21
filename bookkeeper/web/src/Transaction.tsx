@@ -31,7 +31,7 @@ const JOURNAL_WIDTH = "w-10/12";
 
 interface IProps {
   txn: IDirectiveForSort;
-  accounts: Set<string>;
+  accounts?: Set<string>;
   editable: boolean;
   // Must provide either "priodMod" or "onSave". Mutually exclusive.
   priorMod?: IDirectiveMod;
@@ -46,8 +46,12 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
     "USD"
   );
   invariant(
-    !props.editable || !!ref,
+    !props.editable || ref,
     "Cannot leave out ref param if this is an editable entry"
+  );
+  invariant(
+    !props.editable || props.accounts,
+    "Must provide accounts if this is an editable entry"
   );
   return (
     <section className="my-2">
@@ -67,7 +71,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
           ref={ref}
           autocat={props.txn.auto_category}
           currency={currency}
-          accounts={props.accounts}
+          accounts={props.accounts!}
           onSave={props.onSave!}
         />
       ) : (
@@ -90,6 +94,10 @@ function FirstLine(props: {
   onLink?: OnLinkFn;
 }) {
   const { entry } = props.txn;
+  invariant(
+    !props.saved || props.onRevert,
+    "Must provide onRevert if saved is true"
+  );
   return (
     <div>
       <pre
@@ -116,9 +124,11 @@ function FirstLine(props: {
           <button type="button" onClick={() => props.onRevert!(props.txn.id)}>
             <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
           </button>
-          <button type="button" onClick={() => props.onLink!(props.txn.id)}>
-            <LinkIcon className="w-5 h-5 inline ml-[1ch]" />
-          </button>
+          {props.onLink && (
+            <button type="button" onClick={() => props.onLink!(props.txn.id)}>
+              <LinkIcon className="w-5 h-5 inline ml-[1ch]" />
+            </button>
+          )}
         </span>
       )}
     </div>

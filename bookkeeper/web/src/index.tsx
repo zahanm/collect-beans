@@ -8,6 +8,7 @@ import ErrorPage from "./ErrorPage";
 import SortOptions from "./SortOptions";
 import SortChoose from "./SortChoose";
 import SortCommit from "./SortCommit";
+import SortReview from "./SortReview";
 
 import "./index.css";
 
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: "/sort/commit",
     element: <SortCommit />,
+  },
+  {
+    path: "/sort/review",
+    element: <SortReview />,
   },
 ]);
 
