@@ -30,6 +30,7 @@ from .serialise import DirectiveForSort, mod_from_dict, to_dict
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
 TAG_SKIP_SORT = "skip-sort"
+DELETED_LINE = "\0"
 
 
 def create_app():
@@ -72,10 +73,11 @@ def create_app():
 
         POST
         Called when submitting categorisations that have been made, along with returning the next page of entries.
-        Body (JSON): "sorted" and "skipped"
-        Re: "sorted" -- See DirectiveMod. This is a JSON object which includes only the _new_ postings that will replace the equity:todo posting.
+        Body (JSON): "sorted"
+        Re: "sorted" -- See DirectiveMod. DirectiveMod is a JSON object which includes only the _new_ postings that will replace the equity:todo posting.
         {
             "id": str,
+            "type": "replace_todo" | "skip" | "delete"
             "postings": [
                 {
                     "account": str,
@@ -87,11 +89,8 @@ def create_app():
                 ...
             ],
         }
-        Re: "skipped", it is a list of the IDs of the transactions that I don't want to handle right away. We'll set #skip-sort on them.
-        "skipped": [
-            { "id": str },
-            ...
-        ]
+        It can have type "skip" or "delete" too, which are hopefully self-explanatory. No new postings included then.
+        Re: "skip", it is a transaction that I don't want to handle right away. We'll set #skip-sort on them.
         """
         if request.method == "POST":
             # store the submitted categorisations. insert in the right place to in-memory store
@@ -109,6 +108,8 @@ def create_app():
                     _replace_todo_with(cache, entry, mod["postings"])
                 elif mod["type"] == "skip":
                     _add_skip_tag(cache, entry)
+                elif mod["type"] == "delete":
+                    _delete_transaction(cache, entry)
                 # remove sorted item from cache
                 del cache.to_sort[mod_idx]
         if cache.accounts is None:
@@ -153,7 +154,7 @@ def create_app():
         )
         with open(Path("/data") / cache.destination_file) as dest:
             before = dest.read()
-        dest_output = "\n".join(cache.destination_lines)
+        dest_output = _create_output(cache.destination_lines)
         # Run the beancount auto-formatter
         formatted_output = align_beancount(dest_output)
         if request.args.get("write", False):
@@ -179,7 +180,7 @@ def create_app():
             and cache.destination_file is not None
             and cache.main_file is not None
         )
-        dest_output = "\n".join(cache.destination_lines)
+        dest_output = _create_output(cache.destination_lines)
         formatted_output = align_beancount(dest_output)
 
         with TemporaryDirectory() as scratch:
@@ -291,6 +292,10 @@ def _rank_order(entries: List[DirectiveForSort]) -> List[DirectiveForSort]:
     return list(chain.from_iterable(groups))
 
 
+def _create_output(lines: List[str]) -> str:
+    return "\n".join([l for l in lines if l != DELETED_LINE])
+
+
 class Cache:
     op: Optional[str] = None
     destination_file: Optional[str] = None
@@ -361,3 +366,16 @@ def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
     with_indent = textwrap.indent(formatted, indent)
     # Only want the first line, because that's where the tag will go
     cache.destination_lines[replace_pos] = with_indent.splitlines()[0]
+
+
+def _delete_transaction(cache: Cache, drs: DirectiveForSort):
+    lineno = drs.entry.meta["lineno"]
+    # -1 since we're going from line number to position
+    rm_pos = lineno - 1
+    # transaction header; postings; newline
+    rm_num = 1 + len(drs.entry.postings) + 1
+    assert cache.destination_lines is not None
+    # note that I cannot just remove these lines because then all subsequent line
+    # number lookups from "entry.meta" will be off
+    # So I remove these later in _create_output()
+    cache.destination_lines[rm_pos : rm_pos + rm_num] = [DELETED_LINE] * rm_num
