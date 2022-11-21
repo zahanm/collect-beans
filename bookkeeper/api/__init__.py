@@ -215,15 +215,17 @@ def create_app():
         Searches for a linked Transaction
         """
         assert cache.to_sort is not None
+        txn_id = request.args.get("txnID")
         amount = D(request.args.get("amount"))
         assert amount is not None
         amount_abs = amount.copy_abs()
         matching = [
             txn
             for txn in cache.to_sort
-            if any(
+            if txn_id != txn.id
+            and any(
                 [
-                    (p.units.number.copy_abs() - amount_abs).copy_abs() < 0.02
+                    (p.units.number.copy_abs() - amount_abs).copy_abs() < 0.01
                     for p in txn.entry.postings
                 ]
             )
