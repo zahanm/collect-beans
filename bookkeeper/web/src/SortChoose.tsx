@@ -96,6 +96,16 @@ export default function SortChoose() {
     const resp = await fetch(url);
     const data = (await resp.json()) as ILinkResponse;
     console.log("GET", data);
+    const seenIDs = sorted
+      .concat(unsorted)
+      .map((drs) => drs.id)
+      .toSet();
+    setUnsorted(
+      // Need to check that we aren't adding dupe transactions to the list.
+      List(data.results)
+        .filter((drs) => !seenIDs.has(drs.id))
+        .concat(unsorted)
+    );
   };
 
   const refs = useRef<Map<string, HTMLInputElement>>(new Map());
