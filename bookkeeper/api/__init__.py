@@ -103,14 +103,14 @@ def create_app():
             )
             mods = [mod_from_dict(dct) for dct in request.json["sorted"]]
             for mod in mods:
-                mod_idx = _index_of(cache.to_sort, mod["id"])
+                mod_idx = _index_of(cache.to_sort, mod.id)
                 entry = cache.to_sort[mod_idx]
-                if mod["type"] == "replace_todo":
-                    assert mod["postings"] is not None
-                    _replace_todo_with(cache, entry, mod["postings"])
-                elif mod["type"] == "skip":
+                if mod.type == "replace_todo":
+                    assert mod.postings is not None
+                    _replace_todo_with(cache, entry, mod.postings)
+                elif mod.type == "skip":
                     _add_skip_tag(cache, entry)
-                elif mod["type"] == "delete":
+                elif mod.type == "delete":
                     _delete_transaction(cache, entry)
                 # remove sorted item from to_sort and put it in sorted
                 cache.sorted.append((cache.to_sort[mod_idx], mod))
@@ -249,7 +249,7 @@ def create_app():
         max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
         return {
             "sorted": [to_dict(drs) for (drs, _) in cache.sorted[:max_txns]],
-            "mods": {mod["id"]: to_dict(mod) for (_, mod) in cache.sorted[:max_txns]},
+            "mods": {mod.id: to_dict(mod) for (_, mod) in cache.sorted[:max_txns]},
         }
 
     # Needed so that it sees my edits to the template file once this app is running

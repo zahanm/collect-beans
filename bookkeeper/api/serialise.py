@@ -1,4 +1,5 @@
-from typing import Any, Dict, Optional, Set, TypedDict
+from dataclasses import dataclass
+from typing import Any, Dict, Optional, Set
 
 from beancount.core.data import (
     Directive,
@@ -54,12 +55,17 @@ def to_dict(item: Any) -> Dict:
             "currency": item.currency,
         }
     elif isinstance(item, DirectiveMod):
-        return {"id": item["id"], "type": item["type"], "postings": item["postings"]}
+        return {
+            "id": item.id,
+            "type": item.type,
+            "postings": [to_dict(p) for p in item.postings] if item.postings else None,
+        }
     else:
         raise RuntimeError("Unexpected type passed to_dict(): {}".format(type(item)))
 
 
-class DirectiveMod(TypedDict):
+@dataclass
+class DirectiveMod:
     id: str
     type: str
     postings: Optional[Set[Posting]]
@@ -71,10 +77,11 @@ class DirectiveMod(TypedDict):
 
 
 def _posting_from_dict(item: Any) -> Posting:
+    number = item["units"]["number"]
     return Posting(
         account=item["account"],
         units=Amount(
-            number=D(item["units"]["number"]),
+            number=D(number) if number else None,
             currency=item["units"]["currency"],
         ),
         # flag=item["flag"],
