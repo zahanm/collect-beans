@@ -53,6 +53,8 @@ def to_dict(item: Any) -> Dict:
             "number": item.number,
             "currency": item.currency,
         }
+    elif isinstance(item, DirectiveMod):
+        return {"id": item["id"], "type": item["type"], "postings": item["postings"]}
     else:
         raise RuntimeError("Unexpected type passed to_dict(): {}".format(type(item)))
 

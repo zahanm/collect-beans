@@ -5,6 +5,7 @@ import textwrap
 from typing import Any, Dict, Optional, Set, List
 from pathlib import Path
 from hashlib import sha1
+from copy import deepcopy
 
 import yaml
 from flask import Flask, request, render_template
@@ -25,12 +26,13 @@ from beancount.ops import validation
 from beancount.parser import printer
 
 from .formatting import DISPLAY_CONTEXT, format_postings, indentation_at
-from .serialise import DirectiveForSort, mod_from_dict, to_dict
+from .serialise import DirectiveForSort, DirectiveMod, mod_from_dict, to_dict
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TODO_ACCOUNT = "Equity:TODO"
 TAG_SKIP_SORT = "skip-sort"
 DELETED_LINE = "\0"
+DEFAULT_MAX_TXNS = 20
 
 
 def create_app():
@@ -110,7 +112,8 @@ def create_app():
                     _add_skip_tag(cache, entry)
                 elif mod["type"] == "delete":
                     _delete_transaction(cache, entry)
-                # remove sorted item from cache
+                # remove sorted item from to_sort and put it in sorted
+                cache.sorted.append((cache.to_sort[mod_idx], mod))
                 del cache.to_sort[mod_idx]
         if cache.accounts is None:
             assert cache.main_file is not None
@@ -135,7 +138,7 @@ def create_app():
             cache.total = len(cache.to_sort)
         assert cache.total is not None
         # find the $max most promising and return that here
-        max_txns = request.args.get("max", 20)
+        max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
         return {
             "to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]],
             "accounts": cache.accounts,
@@ -234,6 +237,21 @@ def create_app():
             "results": [to_dict(txn) for txn in matching],
         }
 
+    @app.route("/sort/sorted")
+    def sorted_sort():
+        """
+        GET
+        Returns the transactions that have already been sorted.
+
+        POST
+        Remove a sorted transaction and put it back in the "to_sort" list
+        """
+        max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
+        return {
+            "sorted": [to_dict(drs) for (drs, _) in cache.sorted[:max_txns]],
+            "mods": {mod["id"]: to_dict(mod) for (_, mod) in cache.sorted[:max_txns]},
+        }
+
     # Needed so that it sees my edits to the template file once this app is running
     app.config["TEMPLATES_AUTO_RELOAD"] = True
 
@@ -306,6 +324,7 @@ class Cache:
     destination_lines: Optional[List[str]] = None
     accounts: Optional[List[str]] = None
     total: Optional[int] = None
+    sorted: List[tuple[DirectiveForSort, DirectiveMod]] = []
 
     def reset(self):
         self.op = None
@@ -315,6 +334,7 @@ class Cache:
         self.destination_lines = None
         self.accounts = None
         self.total = None
+        self.sorted = []
 
 
 def _is_sortable(cache: Cache, entry: Directive) -> bool:
@@ -341,7 +361,7 @@ def _index_of(items: List[DirectiveForSort], id: str) -> int:
 def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):
     """
     Replace the todo posting with the $replacements in $destination_lines
-    We don't bother updating $entry in cache.to_sort, because it will be deleted right after
+    We don't update $entry in cache.to_sort, because it is stored so that we can revert to it
     """
     lineno = None
     for posting in drs.entry.postings:
@@ -358,13 +378,15 @@ def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Po
 
 
 def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
-    lineno = drs.entry.meta["lineno"]
-    old_tags = drs.entry.tags or set()
-    drs.entry = drs.entry._replace(tags=old_tags.union({TAG_SKIP_SORT}))
+    # We make a copy, because the original is stored later so that we can revert to it
+    entry = deepcopy(drs.entry)
+    lineno = entry.meta["lineno"]
+    old_tags = entry.tags or set()
+    entry = entry._replace(tags=old_tags.union({TAG_SKIP_SORT}))
     replace_pos = lineno - 1
     assert cache.destination_lines is not None
     indent = indentation_at(cache.destination_lines[replace_pos])
-    formatted = printer.format_entry(drs.entry, DISPLAY_CONTEXT)
+    formatted = printer.format_entry(entry, DISPLAY_CONTEXT)
     with_indent = textwrap.indent(formatted, indent)
     # Only want the first line, because that's where the tag will go
     cache.destination_lines[replace_pos] = with_indent.splitlines()[0]
