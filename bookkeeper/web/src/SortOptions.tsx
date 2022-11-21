@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { errorHandler } from "./utilities";
+import { API, errorHandler } from "./utilities";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
 
-const PROGRESS_API = "http://localhost:5005/sort/progress";
+const PROGRESS_API = `${API}/sort/progress`;
+
 interface IProgressResponse {
   journal_files: Array<string>;
   main_file: string | null;

@@ -7,10 +7,10 @@ import "react-circular-progressbar/dist/styles.css";
 import { IDirectiveForSort, IDirectiveMod } from "./beanTypes";
 import Transaction from "./Transaction";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
-import { errorHandler } from "./utilities";
+import { API, errorHandler } from "./utilities";
 
-const NEXT_API = "http://localhost:5005/sort/next";
-const LINK_API = "http://localhost:5005/sort/link";
+const NEXT_API = `${API}/sort/next`;
+const LINK_API = `${API}/sort/link`;
 
 interface INextResponse {
   to_sort: Array<IDirectiveForSort>;

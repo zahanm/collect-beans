@@ -19,3 +19,5 @@ class InvariantViolationError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+export const API = "http://localhost:5005";

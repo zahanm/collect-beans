@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import { Map as ImmMap } from "immutable";
 
-import { errorHandler } from "./utilities";
+import { API, errorHandler } from "./utilities";
 
-const COMMIT_API = "http://localhost:5005/sort/commit";
-const CHECK_API = "http://localhost:5005/sort/check";
+const COMMIT_API = `${API}/sort/commit`;
+const CHECK_API = `${API}/sort/check`;
 
 interface ICommitResponse {
   before: string;
