@@ -8,32 +8,6 @@ from beancount.core.data import (
 from beancount.core.number import D
 
 
-# class AmountJSON(TypedDict):
-#     number: Optional[Decimal]
-#     currency: str
-
-
-# class PostingJSON(TypedDict):
-#     account: str
-#     units: AmountJSON
-#     flag: Optional[str]
-#     # cost
-#     # price
-
-
-# Matches the definition of beancount.core.data.Transaction
-# class DirectiveJSON(TypedDict):
-#     date: datetime.date
-#     filename: str
-#     lineno: int
-#     payee: Optional[str]
-#     narration: str
-#     postings: List[PostingJSON]
-#     flag: str
-#     tags: Set[str]
-#     links: Set[str]
-
-
 class DirectiveForSort:
     id: str
     entry: Directive
@@ -81,32 +55,6 @@ def to_dict(item: Any) -> Dict:
         }
     else:
         raise RuntimeError("Unexpected type passed to_dict(): {}".format(type(item)))
-
-
-# T = TypeVar("T", DirectiveWithID, Directive, Posting, Amount)
-
-
-# def from_dict(item: Any, cls: Type[T]) -> T:
-#     if cls == DirectiveWithID:
-#         return DirectiveWithID(id=item["id"], entry=from_dict(item["entry"], Directive))
-#     elif cls == Directive:
-#         return Amount(0, "USD")
-#     elif cls == Posting:
-#         return Amount(0, "USD")
-#     elif cls == Amount:
-#         return Amount(0, "USD")
-#     else:
-#         raise RuntimeError("Unexpected type passed to from_dict(): {}".format(cls))
-
-
-# class AmountMod(TypedDict):
-#     number: Decimal
-#     currency: str
-
-
-# class PostingMod(TypedDict):
-#     account: str
-#     units: AmountMod
 
 
 class DirectiveMod(TypedDict):
