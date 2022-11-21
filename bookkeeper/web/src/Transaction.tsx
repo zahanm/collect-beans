@@ -16,6 +16,7 @@ import {
   ChevronUpDownIcon,
   ForwardIcon,
   TrashIcon,
+  LinkIcon,
 } from "@heroicons/react/20/solid";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
@@ -23,7 +24,8 @@ import { arrayRange, invariant } from "./utilities";
 
 type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
 type OnSaveFn = (mod: IDirectiveMod) => void;
-type OnRevertFn = (modID: string) => void;
+type OnRevertFn = (txnID: string) => void;
+type OnLinkFn = (txnID: string) => void;
 
 const JOURNAL_WIDTH = "w-10/12";
 
@@ -35,6 +37,7 @@ interface IProps {
   priorMod?: IDirectiveMod;
   onSave?: OnSaveFn;
   onRevert?: OnRevertFn;
+  onLink?: OnLinkFn;
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;
@@ -50,9 +53,10 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
     <section className="my-2">
       <FirstLine
         txn={props.txn}
-        revertable={!props.editable}
-        onRevert={props.onRevert}
+        saved={!props.editable}
         deleted={txnDeleted}
+        onRevert={props.onRevert}
+        onLink={props.onLink}
       />
       {entry.postings.map((posting, idx) => (
         <Posting key={idx} posting={posting} deleted={txnDeleted} />
@@ -80,9 +84,10 @@ export default Transaction;
 
 function FirstLine(props: {
   txn: IDirectiveForSort;
-  revertable: boolean;
-  onRevert?: OnRevertFn;
+  saved: boolean;
   deleted: boolean;
+  onRevert?: OnRevertFn;
+  onLink?: OnLinkFn;
 }) {
   const { entry } = props.txn;
   return (
@@ -106,10 +111,13 @@ function FirstLine(props: {
           {entry.tags.map((t) => `#${t}`).join(" ")}
         </code>
       </pre>
-      {props.revertable && (
+      {props.saved && (
         <span className="inline-block ml-[2ch]">
           <button type="button" onClick={() => props.onRevert!(props.txn.id)}>
             <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
+          </button>
+          <button type="button" onClick={() => props.onLink!(props.txn.id)}>
+            <LinkIcon className="w-5 h-5 inline ml-[1ch]" />
           </button>
         </span>
       )}

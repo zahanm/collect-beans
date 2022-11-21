@@ -10,6 +10,7 @@ import DisplayProgress, { TProgress } from "./DisplayProgress";
 import { errorHandler } from "./utilities";
 
 const NEXT_API = "http://localhost:5005/sort/next";
+const LINK_API = "http://localhost:5005/sort/link";
 
 interface INextResponse {
   to_sort: Array<IDirectiveForSort>;
@@ -20,6 +21,10 @@ interface INextResponse {
 
 interface ISortedRequest {
   sorted: Array<IDirectiveMod>;
+}
+
+interface ILinkResponse {
+  results: Array<IDirectiveForSort>;
 }
 
 const MAX_TXNS = 20;
@@ -82,6 +87,17 @@ export default function SortChoose() {
     }, 3000);
   };
 
+  const searchForLinked = async (txnID: string, amount: string) => {
+    const params = new URLSearchParams();
+    params.append("txnID", txnID);
+    params.append("amount", amount);
+    const url = new URL(LINK_API);
+    url.search = params.toString();
+    const resp = await fetch(url);
+    const data = (await resp.json()) as ILinkResponse;
+    console.log("GET", data);
+  };
+
   const refs = useRef<Map<string, HTMLInputElement>>(new Map());
 
   useEffect(() => {
@@ -134,6 +150,11 @@ export default function SortChoose() {
             setUnsorted(unsorted.unshift(txn));
             setSorted(sorted.remove(sidx));
             setNumSorted(numSorted - 1);
+          }}
+          onLink={(txnID) => {
+            const linker = sorted.find((dir) => dir.id === txnID)!;
+            const amount = linker.entry.postings[0].units.number!;
+            searchForLinked(linker.id, amount).catch(errorHandler);
           }}
         />
       ))}
