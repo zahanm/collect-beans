@@ -27,7 +27,7 @@ export interface IDirectiveMod {
   // ID of the transaction from IDirectiveToSort
   id: string;
   // What type of modification are we making?
-  type: "replace_todo" | "skip";
+  type: "replace_todo" | "skip" | "delete";
   // Only the _new_ postings that will replace the equity:todo posting.
   postings?: Array<IPosting>;
 }

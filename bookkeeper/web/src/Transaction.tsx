@@ -15,6 +15,7 @@ import {
   CheckIcon,
   ChevronUpDownIcon,
   ForwardIcon,
+  TrashIcon,
 } from "@heroicons/react/20/solid";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
@@ -37,6 +38,7 @@ interface IProps {
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const entry = props.txn.entry;
+  const txnDeleted = !!(props.priorMod && props.priorMod.type === "delete");
   const currency = Set(entry.postings.map((p) => p.units.currency)).first(
     "USD"
   );
@@ -50,9 +52,10 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
         txn={props.txn}
         revertable={!props.editable}
         onRevert={props.onRevert}
+        deleted={txnDeleted}
       />
       {entry.postings.map((posting, idx) => (
-        <Posting key={idx} posting={posting} />
+        <Posting key={idx} posting={posting} deleted={txnDeleted} />
       ))}
       {props.editable ? (
         <EditPosting
@@ -67,7 +70,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
         props.priorMod &&
         props.priorMod.postings &&
         props.priorMod.postings.map((posting, idx) => (
-          <Posting key={idx} posting={posting} />
+          <Posting key={idx} posting={posting} deleted={txnDeleted} />
         ))
       )}
     </section>
@@ -79,11 +82,16 @@ function FirstLine(props: {
   txn: IDirectiveForSort;
   revertable: boolean;
   onRevert?: OnRevertFn;
+  deleted: boolean;
 }) {
   const { entry } = props.txn;
   return (
     <div>
-      <pre className={`${JOURNAL_WIDTH} inline-block`}>
+      <pre
+        className={`${JOURNAL_WIDTH} inline-block ${
+          props.deleted ? "line-through" : ""
+        }`}
+      >
         <code className="text-lime-300">
           {dayjs(entry.date).format("YYYY-MM-DD")}
         </code>
@@ -109,14 +117,14 @@ function FirstLine(props: {
   );
 }
 
-function Posting(props: { posting: IPosting }) {
+function Posting(props: { posting: IPosting; deleted: boolean }) {
   const { posting } = props;
   const isTodo = posting.account === "Equity:TODO";
   return (
     <pre className={`${JOURNAL_WIDTH} ml-[2ch]`}>
-      <Account name={posting.account} isTodo={isTodo} />
+      <Account name={posting.account} deleted={props.deleted || isTodo} />
       {!isTodo && (
-        <span className="float-right">
+        <span className={`float-right ${props.deleted ? "line-through" : ""}`}>
           <code className="text-lime-300">{posting.units.number}</code>
           &nbsp;
           <code>{posting.units.currency}</code>
@@ -126,10 +134,10 @@ function Posting(props: { posting: IPosting }) {
   );
 }
 
-function Account(props: { name: string; isTodo: boolean }) {
+function Account(props: { name: string; deleted: boolean }) {
   const [toplevel, ...rest] = props.name.split(":");
   return (
-    <span className={props.isTodo ? "line-through" : ""}>
+    <span className={props.deleted ? "line-through" : ""}>
       <code className="text-cyan-500">{toplevel}</code>:
       <code className="text-sky-200">{rest.join(":")}</code>
     </span>
@@ -211,7 +219,6 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 <button
                   type="button"
                   onClick={() => {
-                    // Construct IDirectiveMod
                     props.onSave({
                       id: props.id,
                       type: "skip",
@@ -219,6 +226,17 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                   }}
                 >
                   <ForwardIcon className="w-5 h-5 inline ml-[1ch]" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    props.onSave({
+                      id: props.id,
+                      type: "delete",
+                    });
+                  }}
+                >
+                  <TrashIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
               </>
             ) : (
