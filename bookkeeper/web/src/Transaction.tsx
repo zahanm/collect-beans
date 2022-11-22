@@ -1,4 +1,5 @@
 import React, {
+  FormEvent,
   ForwardedRef,
   forwardRef,
   Fragment,
@@ -41,11 +42,6 @@ interface IProps {
   onLink?: OnLinkFn;
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
-  const entry = props.txn.entry;
-  const txnDeleted = !!(props.priorMod && props.priorMod.type === "delete");
-  const currency = Set(entry.postings.map((p) => p.units.currency)).first(
-    "USD"
-  );
   invariant(
     !props.editable || ref,
     "Cannot leave out ref param if this is an editable entry"
@@ -54,34 +50,66 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
     !props.editable || props.accounts,
     "Must provide accounts if this is an editable entry"
   );
+
+  const entry = props.txn.entry;
+  const currency = Set(entry.postings.map((p) => p.units.currency)).first(
+    "USD"
+  );
+  const [numNewPosts, setNumNewPosts] = useState(1);
+
+  const saveChanges = (ev: FormEvent<HTMLFormElement>) => {
+    ev.preventDefault();
+    console.log("submit", ev);
+    const form = ev.target as HTMLFormElement;
+    // Construct IDirectiveMod
+    props.onSave!({
+      id: props.txn.id,
+      type: "replace_todo",
+      postings: arrayRange(numNewPosts).map((ii) => {
+        const number = form[`${ii}-units-number`].value || null;
+        return {
+          account: form[`${ii}-account`].value,
+          units: {
+            number,
+            currency: number !== null ? form[`${ii}-units-currency`].value : "",
+          },
+        };
+      }),
+    });
+  };
+
   return (
     <section className="my-2">
-      <FirstLine
-        txn={props.txn}
-        saved={!props.editable}
-        priorMod={props.priorMod}
-        onRevert={props.onRevert}
-        onLink={props.onLink}
-      />
-      {entry.postings.map((posting, idx) => (
-        <Posting key={idx} posting={posting} priorMod={props.priorMod} />
-      ))}
-      {props.editable ? (
-        <EditPosting
-          id={props.txn.id}
-          ref={ref}
-          autocat={props.txn.auto_category}
-          currency={currency}
-          accounts={props.accounts!}
-          onSave={props.onSave!}
+      <form onSubmit={saveChanges}>
+        <FirstLine
+          txn={props.txn}
+          saved={!props.editable}
+          priorMod={props.priorMod}
+          onRevert={props.onRevert}
+          onLink={props.onLink}
         />
-      ) : (
-        props.priorMod &&
-        props.priorMod.postings &&
-        props.priorMod.postings.map((posting, idx) => (
+        {entry.postings.map((posting, idx) => (
           <Posting key={idx} posting={posting} priorMod={props.priorMod} />
-        ))
-      )}
+        ))}
+        {props.editable ? (
+          <EditPosting
+            id={props.txn.id}
+            ref={ref}
+            autocat={props.txn.auto_category}
+            currency={currency}
+            accounts={props.accounts!}
+            onSave={props.onSave!}
+            numNewPosts={numNewPosts}
+            onChangeNumNewPosts={setNumNewPosts}
+          />
+        ) : (
+          props.priorMod &&
+          props.priorMod.postings &&
+          props.priorMod.postings.map((posting, idx) => (
+            <Posting key={idx} posting={posting} priorMod={props.priorMod} />
+          ))
+        )}
+      </form>
     </section>
   );
 });
@@ -174,34 +202,14 @@ interface IEditProps {
   currency: string;
   accounts: Set<string>;
   onSave: OnSaveFn;
+  numNewPosts: number;
+  onChangeNumNewPosts: (num: number) => void;
 }
 const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
-  const [numNewPosts, setNumNewPosts] = useState(1);
+  const { numNewPosts, onChangeNumNewPosts } = props;
 
   return (
-    <form
-      onSubmit={(ev) => {
-        ev.preventDefault();
-        console.log("submit", ev);
-        const form = ev.target as HTMLFormElement;
-        // Construct IDirectiveMod
-        props.onSave({
-          id: props.id,
-          type: "replace_todo",
-          postings: arrayRange(numNewPosts).map((ii) => {
-            const number = form[`${ii}-units-number`].value || null;
-            return {
-              account: form[`${ii}-account`].value,
-              units: {
-                number,
-                currency:
-                  number !== null ? form[`${ii}-units-currency`].value : "",
-              },
-            };
-          }),
-        });
-      }}
-    >
+    <>
       {arrayRange(numNewPosts).map((ii) => (
         <div className="my-1" key={ii}>
           <pre
@@ -238,7 +246,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                   <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
                 <button
-                  onClick={() => setNumNewPosts(numNewPosts + 1)}
+                  onClick={() => onChangeNumNewPosts(numNewPosts + 1)}
                   type="button"
                 >
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
@@ -268,7 +276,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
               </>
             ) : (
               <button
-                onClick={() => setNumNewPosts(numNewPosts - 1)}
+                onClick={() => onChangeNumNewPosts(numNewPosts - 1)}
                 type="button"
               >
                 <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
@@ -277,7 +285,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
           </span>
         </div>
       ))}
-    </form>
+    </>
   );
 });
 
