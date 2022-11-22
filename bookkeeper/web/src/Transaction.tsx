@@ -176,7 +176,7 @@ interface IEditProps {
   onSave: OnSaveFn;
 }
 const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
-  const [numEdits, setNumEdits] = useState(1);
+  const [numNewPosts, setNumNewPosts] = useState(1);
 
   return (
     <form
@@ -188,7 +188,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
         props.onSave({
           id: props.id,
           type: "replace_todo",
-          postings: arrayRange(numEdits).map((ii) => {
+          postings: arrayRange(numNewPosts).map((ii) => {
             const number = form[`${ii}-units-number`].value || null;
             return {
               account: form[`${ii}-account`].value,
@@ -202,7 +202,7 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
         });
       }}
     >
-      {arrayRange(numEdits).map((ii) => (
+      {arrayRange(numNewPosts).map((ii) => (
         <div className="my-1" key={ii}>
           <pre
             className={`${JOURNAL_WIDTH} ml-[2ch] text-black inline-flex justify-between`}
@@ -237,7 +237,10 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 <button type="submit" tabIndex={-1}>
                   <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
-                <button onClick={() => setNumEdits(numEdits + 1)} type="button">
+                <button
+                  onClick={() => setNumNewPosts(numNewPosts + 1)}
+                  type="button"
+                >
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
                 <button
@@ -264,7 +267,10 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 </button>
               </>
             ) : (
-              <button onClick={() => setNumEdits(numEdits - 1)} type="button">
+              <button
+                onClick={() => setNumNewPosts(numNewPosts - 1)}
+                type="button"
+              >
                 <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
               </button>
             )}

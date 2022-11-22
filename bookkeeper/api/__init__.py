@@ -98,13 +98,13 @@ def create_app():
             # store the submitted categorisations. insert in the right place to in-memory store
             assert (
                 request.json is not None
-                and cache.to_sort is not None
+                and cache.unsorted is not None
                 and cache.destination_lines is not None
             )
             mods = [mod_from_dict(dct) for dct in request.json["sorted"]]
             for mod in mods:
-                mod_idx = _index_of(cache.to_sort, mod.id)
-                entry = cache.to_sort[mod_idx]
+                mod_idx = _index_of(cache.unsorted, mod.id)
+                entry = cache.unsorted[mod_idx]
                 if mod.type == "replace_todo":
                     assert mod.postings is not None
                     _replace_todo_with(cache, entry, mod.postings)
@@ -113,15 +113,15 @@ def create_app():
                 elif mod.type == "delete":
                     _delete_transaction(cache, entry)
                 # remove sorted item from to_sort and put it in sorted
-                cache.sorted.append((cache.to_sort[mod_idx], mod))
-                del cache.to_sort[mod_idx]
+                cache.sorted.append((cache.unsorted[mod_idx], mod))
+                del cache.unsorted[mod_idx]
         if cache.accounts is None:
             assert cache.main_file is not None
             all_entries = _parse_journal(str(Path("/data") / cache.main_file))
             cache.accounts = sorted(
                 [entry.account for entry in all_entries if _is_open_account(entry)]
             )
-        if cache.to_sort is None:
+        if cache.unsorted is None:
             # Load the journal file
             assert cache.main_file is not None and cache.destination_file is not None
             all_entries = _parse_journal(str(Path("/data") / cache.main_file))
@@ -134,16 +134,16 @@ def create_app():
                 _auto_categorise(config, str(i), entry)
                 for (i, entry) in enumerate(to_sort)
             ]
-            cache.to_sort = _rank_order(categorised)
-            cache.total = len(cache.to_sort)
+            cache.unsorted = _rank_order(categorised)
+            cache.total = len(cache.unsorted)
         assert cache.total is not None
         # find the $max most promising and return that here
         max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
         return {
-            "to_sort": [to_dict(txn) for txn in cache.to_sort[:max_txns]],
+            "to_sort": [to_dict(txn) for txn in cache.unsorted[:max_txns]],
             "accounts": cache.accounts,
             "count_total": cache.total,
-            "count_sorted": cache.total - len(cache.to_sort),
+            "count_sorted": cache.total - len(cache.unsorted),
         }
 
     @app.route("/sort/commit", methods=["GET", "POST"])
@@ -217,14 +217,14 @@ def create_app():
         """
         Searches for a linked Transaction
         """
-        assert cache.to_sort is not None
+        assert cache.unsorted is not None
         txn_id = request.args.get("txnID")
         amount = D(request.args.get("amount"))
         assert amount is not None
         amount_abs = amount.copy_abs()
         matching = [
             txn
-            for txn in cache.to_sort
+            for txn in cache.unsorted
             if txn_id != txn.id
             and any(
                 [
@@ -247,10 +247,10 @@ def create_app():
         Remove a sorted transaction and put it back in the "to_sort" list
         """
         if request.method == "POST":
-            assert cache.to_sort is not None
+            assert cache.unsorted is not None
             txn_id = request.args.get("txnID")
             idx = next(i for i, (drs, _) in enumerate(cache.sorted) if drs.id == txn_id)
-            cache.to_sort.insert(0, cache.sorted[idx][0])
+            cache.unsorted.insert(0, cache.sorted[idx][0])
             del cache.sorted[idx]
         max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
         return {
@@ -326,7 +326,7 @@ class Cache:
     op: Optional[str] = None
     destination_file: Optional[str] = None
     main_file: Optional[str] = None
-    to_sort: Optional[List[DirectiveForSort]] = None
+    unsorted: Optional[List[DirectiveForSort]] = None
     destination_lines: Optional[List[str]] = None
     accounts: Optional[List[str]] = None
     total: Optional[int] = None
@@ -336,7 +336,7 @@ class Cache:
         self.op = None
         self.destination_file = None
         self.main_file = None
-        self.to_sort = None
+        self.unsorted = None
         self.destination_lines = None
         self.accounts = None
         self.total = None
