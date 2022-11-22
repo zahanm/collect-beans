@@ -106,8 +106,12 @@ def create_app():
                 mod_idx = _index_of(cache.unsorted, mod.id)
                 entry = cache.unsorted[mod_idx]
                 if mod.type == "replace":
-                    assert mod.postings is not None
-                    _replace_with(cache, entry, mod.postings)
+                    assert (
+                        mod.postings is not None
+                        or mod.payee is not None
+                        or mod.narration is not None
+                    )
+                    _replace_with(cache, entry, mod)
                 elif mod.type == "skip":
                     _add_skip_tag(cache, entry)
                 elif mod.type == "delete":
@@ -360,23 +364,33 @@ def _index_of(items: List[DirectiveForSort], id: str) -> int:
     return next(i for i, item in enumerate(items) if item.id == id)
 
 
-def _replace_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):
+def _replace_with(cache: Cache, drs: DirectiveForSort, mod: DirectiveMod):
     """
     Replace the todo posting with the $replacements in $destination_lines
     We don't update $entry in cache.to_sort, because it is stored so that we can revert to it
     """
-    lineno = None
-    for posting in drs.entry.postings:
-        if posting.account == TODO_ACCOUNT:
-            lineno = posting.meta["lineno"]
-            break
-    assert lineno is not None
+    # We make a copy, because the original is stored later so that we can revert to it
+    entry = deepcopy(drs.entry)
+    lineno = entry.meta["lineno"]
+    # first line + 1 line per posting
+    num_lines = 1 + len(entry.postings)
+    if mod.postings is not None:
+        new_postings = [p for p in entry.postings if p.account != TODO_ACCOUNT]
+        new_postings.extend(mod.postings)
+        entry = entry._replace(postings=new_postings)
+    if mod.payee is not None:
+        entry = entry._replace(payee=mod.payee)
+    if mod.narration is not None:
+        entry = entry._replace(narration=mod.narration)
     # -1 since we're going from line number to position
     replace_pos = lineno - 1
     assert cache.destination_lines is not None
     indent = indentation_at(cache.destination_lines[replace_pos])
-    formatted = format_postings(replacements, indent)
-    cache.destination_lines[replace_pos] = formatted
+    formatted = printer.format_entry(entry, DISPLAY_CONTEXT)
+    with_indent = textwrap.indent(formatted, indent)
+    cache.destination_lines[
+        replace_pos : replace_pos + num_lines
+    ] = with_indent.splitlines()
 
 
 def _add_skip_tag(cache: Cache, drs: DirectiveForSort):

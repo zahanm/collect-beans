@@ -59,6 +59,8 @@ def to_dict(item: Any) -> Dict:
             "id": item.id,
             "type": item.type,
             "postings": [to_dict(p) for p in item.postings] if item.postings else None,
+            "payee": item.payee,
+            "narration": item.narration,
         }
     else:
         raise RuntimeError("Unexpected type passed to_dict(): {}".format(type(item)))
@@ -69,11 +71,11 @@ class DirectiveMod:
     id: str
     type: str
     postings: Optional[Set[Posting]]
+    payee: Optional[str]
+    narration: Optional[str]
     # date: datetime.date
     # filename: str
     # lineno: int
-    # payee: Optional[str]
-    # narration: str
 
 
 def _posting_from_dict(item: Any) -> Posting:
@@ -97,12 +99,13 @@ def _posting_from_dict(item: Any) -> Posting:
 
 
 def mod_from_dict(item: Any) -> DirectiveMod:
-    pp = set()
     mod = DirectiveMod(
         id=item["id"],
         type=item["type"],
         postings={_posting_from_dict(p) for p in item["postings"]}
         if "postings" in item
         else None,
+        payee=item["payee"] if "payee" in item else None,
+        narration=item["narration"] if "narration" in item else None,
     )
     return mod
