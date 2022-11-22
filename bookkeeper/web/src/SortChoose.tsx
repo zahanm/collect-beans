@@ -27,7 +27,6 @@ interface ILinkResponse {
   results: Array<IDirectiveForSort>;
 }
 
-const MAX_TXNS = 20;
 const TAG_SKIP_SORT = "skip-sort";
 
 export default function SortChoose() {
@@ -56,10 +55,8 @@ export default function SortChoose() {
       setNumSorted(data.count_sorted);
     };
 
-    if (sorted.size + unsorted.size < MAX_TXNS) {
-      fetchData().catch(errorHandler);
-    }
-  }, [sorted, unsorted, mods]);
+    fetchData().catch(errorHandler);
+  }, [mods]);
 
   const saveChanges = async () => {
     setAsyncProgress("in-process");
