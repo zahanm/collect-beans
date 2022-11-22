@@ -384,28 +384,29 @@ def _replace_with(cache: Cache, drs: DirectiveForSort, mod: DirectiveMod):
         entry = entry._replace(narration=mod.narration)
     # -1 since we're going from line number to position
     replace_pos = lineno - 1
+    outs = _format_entry(cache, entry, replace_pos)
     assert cache.destination_lines is not None
-    indent = indentation_at(cache.destination_lines[replace_pos])
-    formatted = printer.format_entry(entry, DISPLAY_CONTEXT)
-    with_indent = textwrap.indent(formatted, indent)
-    cache.destination_lines[
-        replace_pos : replace_pos + num_lines
-    ] = with_indent.splitlines()
+    cache.destination_lines[replace_pos : replace_pos + num_lines] = outs.splitlines()
 
 
 def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
     # We make a copy, because the original is stored later so that we can revert to it
     entry = deepcopy(drs.entry)
     lineno = entry.meta["lineno"]
-    old_tags = entry.tags or set()
-    entry = entry._replace(tags=old_tags.union({TAG_SKIP_SORT}))
+    entry = entry._replace(tags=(entry.tags or set()).union({TAG_SKIP_SORT}))
+    # -1 since we're going from line number to position
     replace_pos = lineno - 1
+    outs = _format_entry(cache, entry, replace_pos)
     assert cache.destination_lines is not None
-    indent = indentation_at(cache.destination_lines[replace_pos])
-    formatted = printer.format_entry(entry, DISPLAY_CONTEXT)
-    with_indent = textwrap.indent(formatted, indent)
     # Only want the first line, because that's where the tag will go
-    cache.destination_lines[replace_pos] = with_indent.splitlines()[0]
+    cache.destination_lines[replace_pos] = outs.splitlines()[0]
+
+
+def _format_entry(cache: Cache, entry: Directive, pos: int):
+    assert cache.destination_lines is not None
+    indent = indentation_at(cache.destination_lines[pos])
+    formatted = printer.format_entry(entry, DISPLAY_CONTEXT)
+    return textwrap.indent(formatted, indent)
 
 
 def _delete_transaction(cache: Cache, drs: DirectiveForSort):
