@@ -237,7 +237,7 @@ def create_app():
             "results": [to_dict(txn) for txn in matching],
         }
 
-    @app.route("/sort/sorted")
+    @app.route("/sort/sorted", methods=["GET", "POST"])
     def sorted_sort():
         """
         GET
@@ -246,6 +246,12 @@ def create_app():
         POST
         Remove a sorted transaction and put it back in the "to_sort" list
         """
+        if request.method == "POST":
+            assert cache.to_sort is not None
+            txn_id = request.args.get("txnID")
+            idx = next(i for i, (drs, _) in enumerate(cache.sorted) if drs.id == txn_id)
+            cache.to_sort.insert(0, cache.sorted[idx][0])
+            del cache.sorted[idx]
         max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
         return {
             "sorted": [to_dict(drs) for (drs, _) in cache.sorted[:max_txns]],
@@ -348,14 +354,10 @@ def _is_sortable(cache: Cache, entry: Directive) -> bool:
 
 
 def _index_of(items: List[DirectiveForSort], id: str) -> int:
-    found = -1
-    for i, item in enumerate(items):
-        if item.id == id:
-            found = i
-            break
-    if found < 0:
-        raise IndexError
-    return found
+    """
+    Will throw a StopIteration if it doesn't find the id
+    """
+    return next(i for i, item in enumerate(items) if item.id == id)
 
 
 def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):

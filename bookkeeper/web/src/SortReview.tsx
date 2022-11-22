@@ -30,6 +30,18 @@ export default function SortReview() {
     fetchData().catch(errorHandler);
   }, []);
 
+  const deleteMod = async (txnID: string) => {
+    const params = new URLSearchParams();
+    params.append("txnID", txnID);
+    const url = new URL(SORTED_API);
+    url.search = params.toString();
+    const resp = await fetch(url, { method: "POST" });
+    const data = (await resp.json()) as ISortedResponse;
+    console.log("POST", data);
+    setSorted(List(data.sorted));
+    setMods(ImmMap(data.mods));
+  };
+
   return (
     <div className="max-w-screen-lg mx-auto py-5">
       <header>
@@ -43,6 +55,7 @@ export default function SortReview() {
           editable={false}
           onRevert={(txnID) => {
             // Delete this mod via an API call
+            deleteMod(txnID).catch(errorHandler);
           }}
         />
       ))}
