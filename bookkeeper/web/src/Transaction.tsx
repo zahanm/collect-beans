@@ -28,6 +28,7 @@ type OnRevertFn = (txnID: string) => void;
 type OnLinkFn = (txnID: string) => void;
 
 const JOURNAL_WIDTH = "w-10/12";
+const TAG_SKIP_SORT = "skip-sort";
 
 interface IProps {
   txn: IDirectiveForSort;
@@ -58,12 +59,12 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
       <FirstLine
         txn={props.txn}
         saved={!props.editable}
-        deleted={txnDeleted}
+        priorMod={props.priorMod}
         onRevert={props.onRevert}
         onLink={props.onLink}
       />
       {entry.postings.map((posting, idx) => (
-        <Posting key={idx} posting={posting} deleted={txnDeleted} />
+        <Posting key={idx} posting={posting} priorMod={props.priorMod} />
       ))}
       {props.editable ? (
         <EditPosting
@@ -78,7 +79,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
         props.priorMod &&
         props.priorMod.postings &&
         props.priorMod.postings.map((posting, idx) => (
-          <Posting key={idx} posting={posting} deleted={txnDeleted} />
+          <Posting key={idx} posting={posting} priorMod={props.priorMod} />
         ))
       )}
     </section>
@@ -89,7 +90,7 @@ export default Transaction;
 function FirstLine(props: {
   txn: IDirectiveForSort;
   saved: boolean;
-  deleted: boolean;
+  priorMod?: IDirectiveMod;
   onRevert?: OnRevertFn;
   onLink?: OnLinkFn;
 }) {
@@ -98,11 +99,15 @@ function FirstLine(props: {
     !props.saved || props.onRevert,
     "Must provide onRevert if saved is true"
   );
+  const deleted = !!(props.priorMod && props.priorMod.type === "delete");
+  const tags = Set(entry.tags).concat(
+    props.priorMod && props.priorMod.type === "skip" ? [TAG_SKIP_SORT] : []
+  );
   return (
     <div>
       <pre
         className={`${JOURNAL_WIDTH} inline-block ${
-          props.deleted ? "line-through" : ""
+          deleted ? "line-through" : ""
         }`}
       >
         <code className="text-lime-300">
@@ -116,7 +121,7 @@ function FirstLine(props: {
         <code className="text-orange-300">&quot;{entry.narration}&quot;</code>
         &nbsp;
         <code className="text-cyan-500">
-          {entry.tags.map((t) => `#${t}`).join(" ")}
+          {tags.map((t) => `#${t}`).join(" ")}
         </code>
       </pre>
       {props.saved && (
@@ -135,14 +140,15 @@ function FirstLine(props: {
   );
 }
 
-function Posting(props: { posting: IPosting; deleted: boolean }) {
+function Posting(props: { posting: IPosting; priorMod?: IDirectiveMod }) {
   const { posting } = props;
+  const deleted = !!(props.priorMod && props.priorMod.type === "delete");
   const isTodo = posting.account === "Equity:TODO";
   return (
     <pre className={`${JOURNAL_WIDTH} ml-[2ch]`}>
-      <Account name={posting.account} deleted={props.deleted || isTodo} />
+      <Account name={posting.account} deleted={deleted || isTodo} />
       {!isTodo && (
-        <span className={`float-right ${props.deleted ? "line-through" : ""}`}>
+        <span className={`float-right ${deleted ? "line-through" : ""}`}>
           <code className="text-lime-300">{posting.units.number}</code>
           &nbsp;
           <code>{posting.units.currency}</code>

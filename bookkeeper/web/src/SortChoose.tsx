@@ -27,8 +27,6 @@ interface ILinkResponse {
   results: Array<IDirectiveForSort>;
 }
 
-const TAG_SKIP_SORT = "skip-sort";
-
 export default function SortChoose() {
   const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
   // "unsorted" and "sorted" are mutually exclusive. A txn is moved from one to the
@@ -147,12 +145,6 @@ export default function SortChoose() {
             setMods(mods.remove(txnID));
             const sidx = sorted.findIndex((dir) => dir.id === txnID);
             const txn = sorted.get(sidx)!;
-            // Remove the "skip" tag
-            const tags = txn.entry.tags;
-            const tidx = tags.findIndex((t) => t === TAG_SKIP_SORT);
-            if (tidx >= 0) {
-              tags.splice(tidx, 1);
-            }
             // Put this back in the front of "unsorted", and remove from "sorted"
             setUnsorted(unsorted.unshift(txn));
             setSorted(sorted.remove(sidx));
@@ -180,16 +172,6 @@ export default function SortChoose() {
             setMods(mods.concat(newMods.map((mod) => [mod.id, mod])));
             const modIDs = Set(newMods.map((mod) => mod.id));
             const modIDsHas = (dir: IDirectiveForSort) => modIDs.has(dir.id);
-            // Add the "skip" tag for the relevant txns
-            newMods
-              .filter((mod) => mod.type === "skip")
-              .forEach((mod) => {
-                const skipped = unsorted.find((txn) => txn.id === mod.id)!;
-                const tags = skipped.entry.tags;
-                if (!(TAG_SKIP_SORT in tags)) {
-                  tags.push(TAG_SKIP_SORT);
-                }
-              });
             // Update "unsorted" and "sorted"
             setSorted(sorted.concat(unsorted.filter(modIDsHas)));
             setUnsorted(unsorted.filterNot(modIDsHas));
