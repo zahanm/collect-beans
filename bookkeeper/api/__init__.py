@@ -79,7 +79,7 @@ def create_app():
         Re: "sorted" -- See DirectiveMod. DirectiveMod is a JSON object which includes only the _new_ postings that will replace the equity:todo posting.
         {
             "id": str,
-            "type": "replace_todo" | "skip" | "delete"
+            "type": "replace" | "skip" | "delete"
             "postings": [
                 {
                     "account": str,
@@ -105,9 +105,9 @@ def create_app():
             for mod in mods:
                 mod_idx = _index_of(cache.unsorted, mod.id)
                 entry = cache.unsorted[mod_idx]
-                if mod.type == "replace_todo":
+                if mod.type == "replace":
                     assert mod.postings is not None
-                    _replace_todo_with(cache, entry, mod.postings)
+                    _replace_with(cache, entry, mod.postings)
                 elif mod.type == "skip":
                     _add_skip_tag(cache, entry)
                 elif mod.type == "delete":
@@ -360,7 +360,7 @@ def _index_of(items: List[DirectiveForSort], id: str) -> int:
     return next(i for i, item in enumerate(items) if item.id == id)
 
 
-def _replace_todo_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):
+def _replace_with(cache: Cache, drs: DirectiveForSort, replacements: Set[Posting]):
     """
     Replace the todo posting with the $replacements in $destination_lines
     We don't update $entry in cache.to_sort, because it is stored so that we can revert to it

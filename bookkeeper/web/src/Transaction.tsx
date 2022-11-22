@@ -65,7 +65,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
     // Construct IDirectiveMod
     props.onSave!({
       id: props.txn.id,
-      type: "replace_todo",
+      type: "replace",
       postings: arrayRange(numNewPosts).map((ii) => {
         const number = form[`${ii}-units-number`].value || null;
         return {
