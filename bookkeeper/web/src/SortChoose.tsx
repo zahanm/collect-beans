@@ -50,11 +50,11 @@ export default function SortChoose() {
       setUnsorted(List(data.to_sort).filterNot((dir) => modIds.has(dir.id)));
       setAccounts(Set(data.accounts));
       setTotalToSort(data.count_total);
-      setNumSorted(data.count_sorted);
+      setNumSorted(data.count_sorted + sorted.size);
     };
 
     fetchData().catch(errorHandler);
-  }, [mods]);
+  }, [mods, sorted]);
 
   const saveChanges = async () => {
     setAsyncProgress("in-process");
