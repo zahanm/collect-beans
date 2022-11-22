@@ -58,12 +58,15 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const [numNewPosts, setNumNewPosts] = useState(1);
   const [firstLineEdit, setFirstLineEdit] = useState(false);
 
+  invariant(
+    !firstLineEdit || props.editable,
+    "No input fields if global edit switch is off"
+  );
+
   const saveChanges = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    console.log("submit", ev);
     const form = ev.target as HTMLFormElement;
-    // Construct IDirectiveMod
-    props.onSave!({
+    const mod: IDirectiveMod = {
       id: props.txn.id,
       type: "replace",
       postings: arrayRange(numNewPosts).map((ii) => {
@@ -76,7 +79,18 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
           },
         };
       }),
-    });
+    };
+    if (firstLineEdit) {
+      if (form["payee"].value) {
+        mod["payee"] = form["payee"].value;
+      }
+      if (form["narration"].value) {
+        mod["narration"] = form["narration"].value;
+      }
+    }
+    setFirstLineEdit(false);
+    props.onSave!(mod);
+    console.log("submit", ev, mod);
   };
 
   return (
@@ -156,10 +170,14 @@ function FirstLine(props: {
             name="payee"
             className="text-orange-500 w-[28ch] p-1 rounded-lg"
             defaultValue={entry.payee}
+            placeholder="Payee"
+            required
           />
         ) : (
           <code className="text-orange-300" onClick={props.makeEditable}>
-            &quot;{entry.payee}&quot;
+            &quot;
+            {(props.priorMod && props.priorMod.payee) || entry.payee}
+            &quot;
           </code>
         )}
         &nbsp;
@@ -169,10 +187,13 @@ function FirstLine(props: {
             name="narration"
             className="text-orange-500 w-[28ch] p-1 rounded-lg"
             defaultValue={entry.narration}
+            placeholder="Narration"
           />
         ) : (
           <code className="text-orange-300" onClick={props.makeEditable}>
-            &quot;{entry.narration}&quot;
+            &quot;
+            {(props.priorMod && props.priorMod.narration) || entry.narration}
+            &quot;
           </code>
         )}
         &nbsp;

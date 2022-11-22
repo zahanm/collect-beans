@@ -30,4 +30,7 @@ export interface IDirectiveMod {
   type: "replace" | "skip" | "delete";
   // Only the _new_ postings that will replace the equity:todo posting.
   postings?: Array<IPosting>;
+  // Self-explanatory. Only considered if included, naturally.
+  payee?: string;
+  narration?: string;
 }
