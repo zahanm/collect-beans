@@ -56,6 +56,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
     "USD"
   );
   const [numNewPosts, setNumNewPosts] = useState(1);
+  const [firstLineEdit, setFirstLineEdit] = useState(false);
 
   const saveChanges = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -83,10 +84,12 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
       <form onSubmit={saveChanges}>
         <FirstLine
           txn={props.txn}
+          editable={firstLineEdit}
           saved={!props.editable}
           priorMod={props.priorMod}
           onRevert={props.onRevert}
           onLink={props.onLink}
+          makeEditable={() => setFirstLineEdit(true)}
         />
         {entry.postings.map((posting, idx) => (
           <Posting key={idx} posting={posting} priorMod={props.priorMod} />
@@ -117,10 +120,12 @@ export default Transaction;
 
 function FirstLine(props: {
   txn: IDirectiveForSort;
+  editable: boolean;
   saved: boolean;
   priorMod?: IDirectiveMod;
   onRevert?: OnRevertFn;
   onLink?: OnLinkFn;
+  makeEditable: () => void;
 }) {
   const { entry } = props.txn;
   invariant(
@@ -131,6 +136,7 @@ function FirstLine(props: {
   const tags = Set(entry.tags).concat(
     props.priorMod && props.priorMod.type === "skip" ? [TAG_SKIP_SORT] : []
   );
+
   return (
     <div>
       <pre
@@ -144,9 +150,31 @@ function FirstLine(props: {
         &nbsp;
         <code className="text-yellow-300">{entry.flag}</code>
         &nbsp;
-        <code className="text-orange-300">&quot;{entry.payee}&quot;</code>
+        {props.editable ? (
+          <input
+            type="text"
+            name="payee"
+            className="text-orange-500 w-[28ch] p-1 rounded-lg"
+            defaultValue={entry.payee}
+          />
+        ) : (
+          <code className="text-orange-300" onClick={props.makeEditable}>
+            &quot;{entry.payee}&quot;
+          </code>
+        )}
         &nbsp;
-        <code className="text-orange-300">&quot;{entry.narration}&quot;</code>
+        {props.editable ? (
+          <input
+            type="text"
+            name="narration"
+            className="text-orange-500 w-[28ch] p-1 rounded-lg"
+            defaultValue={entry.narration}
+          />
+        ) : (
+          <code className="text-orange-300" onClick={props.makeEditable}>
+            &quot;{entry.narration}&quot;
+          </code>
+        )}
         &nbsp;
         <code className="text-cyan-500">
           {tags.map((t) => `#${t}`).join(" ")}
