@@ -21,7 +21,6 @@ interface ICheckResponse {
 export default function SortCommit() {
   const [before, setBefore] = useState<string>();
   const [after, setAfter] = useState<string>();
-  const [checkPassed, setCheckPassed] = useState<boolean>(false);
   const [errors, setErrors] = useState<ImmMap<string, string>>(ImmMap());
 
   useEffect(() => {
@@ -56,7 +55,6 @@ export default function SortCommit() {
     });
     const data = (await resp.json()) as ICheckResponse;
     console.log("POST", data);
-    setCheckPassed(data.check);
     setErrors(ImmMap(data.errors));
   };
 
