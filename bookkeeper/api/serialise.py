@@ -79,11 +79,10 @@ class DirectiveMod:
 
 
 def _posting_from_dict(item: Any) -> Posting:
-    number = item["units"]["number"]
     return Posting(
         account=item["account"],
         units=Amount(
-            number=D(number) if number else None,
+            number=D(item["units"]["number"]),
             currency=item["units"]["currency"],
         ),
         # flag=item["flag"],

@@ -55,6 +55,8 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const currency = Set(entry.postings.map((p) => p.units.currency)).first(
     "USD"
   );
+  const amountToSort = entry.postings.find((p) => p.account === "Equity:TODO")!
+    .units.number!;
   const [numNewPosts, setNumNewPosts] = useState(1);
   const [firstLineEdit, setFirstLineEdit] = useState(false);
 
@@ -70,12 +72,11 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
       id: props.txn.id,
       type: "replace",
       postings: arrayRange(numNewPosts).map((ii) => {
-        const number = form[`${ii}-units-number`].value || null;
         return {
           account: form[`${ii}-account`].value,
           units: {
-            number,
-            currency: number !== null ? form[`${ii}-units-currency`].value : "",
+            number: form[`${ii}-units-number`].value,
+            currency: form[`${ii}-units-currency`].value,
           },
         };
       }),
@@ -113,6 +114,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
             id={props.txn.id}
             ref={ref}
             autocat={props.txn.auto_category}
+            amount={amountToSort}
             currency={currency}
             accounts={props.accounts!}
             onSave={props.onSave!}
@@ -221,12 +223,15 @@ function Posting(props: { posting: IPosting; priorMod?: IDirectiveMod }) {
   const { posting } = props;
   const deleted = !!(props.priorMod && props.priorMod.type === "delete");
   const isTodo = posting.account === "Equity:TODO";
+  const isDebit = Number(posting.units.number) < 0;
   return (
     <pre className={`${JOURNAL_WIDTH} ml-[2ch]`}>
       <Account name={posting.account} deleted={deleted || isTodo} />
       {!isTodo && (
         <span className={`float-right ${deleted ? "line-through" : ""}`}>
-          <code className="text-lime-300">{posting.units.number}</code>
+          <code className={isDebit ? "text-red-300" : "text-lime-300"}>
+            {posting.units.number}
+          </code>
           &nbsp;
           <code>{posting.units.currency}</code>
         </span>
@@ -248,6 +253,7 @@ function Account(props: { name: string; deleted: boolean }) {
 interface IEditProps {
   id: string;
   autocat: string | null;
+  amount: string;
   currency: string;
   accounts: Set<string>;
   onSave: OnSaveFn;
@@ -276,7 +282,9 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 type="text"
                 className="w-[11ch] mr-[1ch] p-1 text-right rounded-lg"
                 name={`${ii}-units-number`}
-                placeholder="(optional)"
+                required
+                defaultValue={props.amount}
+                placeholder="0.00"
               />
               <input
                 type="text"
