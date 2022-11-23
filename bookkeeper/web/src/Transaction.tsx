@@ -187,7 +187,7 @@ function FirstLine(props: {
           <input
             type="text"
             name="narration"
-            className="text-orange-500 w-[28ch] p-1 rounded-lg"
+            className="text-orange-500 w-[42ch] p-1 rounded-lg"
             defaultValue={entry.narration}
             placeholder="Narration"
           />
