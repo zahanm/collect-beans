@@ -45,9 +45,9 @@ export default function SortChoose() {
       const resp = await fetch(NEXT_API);
       const data = (await resp.json()) as INextResponse;
       console.log("GET", data);
-      const modIds = mods.keySeq().toSet();
-      // Can be added to unsorted as long as it's not already sorted locally
-      setUnsorted(List(data.to_sort).filterNot((dir) => modIds.has(dir.id)));
+      setUnsorted((uns) =>
+        uns.concat(filterToUnseen(uns, sorted, data.to_sort))
+      );
       setAccounts(Set(data.accounts));
       setTotalToSort(data.count_total);
       setNumSorted(data.count_sorted + sorted.size);
@@ -74,7 +74,9 @@ export default function SortChoose() {
     setTotalToSort(data.count_total);
     setNumSorted(data.count_sorted);
     setTimeout(() => {
-      setUnsorted(List(data.to_sort));
+      setUnsorted(
+        unsorted.concat(filterToUnseen(unsorted, sorted, data.to_sort))
+      );
       setAccounts(Set(data.accounts));
       setSorted(List());
       setMods(ImmMap());
@@ -91,15 +93,9 @@ export default function SortChoose() {
     const resp = await fetch(url);
     const data = (await resp.json()) as ILinkResponse;
     console.log("GET", data);
-    const seenIDs = sorted
-      .concat(unsorted)
-      .map((drs) => drs.id)
-      .toSet();
     setUnsorted(
       // Need to check that we aren't adding dupe transactions to the list.
-      List(data.results)
-        .filter((drs) => !seenIDs.has(drs.id))
-        .concat(unsorted)
+      filterToUnseen(unsorted, sorted, data.results).concat(unsorted)
     );
   };
 
@@ -213,4 +209,16 @@ export default function SortChoose() {
       </div>
     </div>
   );
+}
+
+function filterToUnseen(
+  unsorted: List<IDirectiveForSort>,
+  sorted: List<IDirectiveForSort>,
+  newTxns: Array<IDirectiveForSort>
+): List<IDirectiveForSort> {
+  const seenIDs = unsorted
+    .concat(sorted)
+    .map((drs) => drs.id)
+    .toSet();
+  return List(newTxns).filterNot((dir) => seenIDs.has(dir.id));
 }
