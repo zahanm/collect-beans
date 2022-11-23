@@ -101,7 +101,6 @@ export default function SortCommit() {
         <button
           className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
           onClick={() => sendData().catch(errorHandler)}
-          disabled={!checkPassed}
         >
           Write Changes
         </button>

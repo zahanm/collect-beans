@@ -385,8 +385,11 @@ def _replace_with(cache: Cache, drs: DirectiveForSort, mod: DirectiveMod):
     # -1 since we're going from line number to position
     replace_pos = lineno - 1
     outs = _format_entry(cache, entry, replace_pos)
-    assert cache.destination_lines is not None
-    cache.destination_lines[replace_pos : replace_pos + num_lines] = outs.splitlines()
+    outlines = outs.splitlines()
+    if len(outlines) > num_lines:
+        outlines[num_lines - 1 :] = ["\n".join(outlines[num_lines - 1 :])]
+    assert cache.destination_lines is not None and len(outlines) <= num_lines
+    cache.destination_lines[replace_pos : replace_pos + num_lines] = outlines
 
 
 def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
