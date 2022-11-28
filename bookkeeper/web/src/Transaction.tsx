@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import dayjs from "dayjs";
-import { Set } from "immutable";
+import { List, Set } from "immutable";
 import { Combobox, Transition } from "@headlessui/react";
 import {
   PaperAirplaneIcon,
@@ -114,7 +114,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
             id={props.txn.id}
             ref={ref}
             autocat={props.txn.auto_category}
-            amount={amountToSort}
+            amountToSort={amountToSort}
             currency={currency}
             accounts={props.accounts!}
             onSave={props.onSave!}
@@ -253,7 +253,7 @@ function Account(props: { name: string; deleted: boolean }) {
 interface IEditProps {
   id: string;
   autocat: string | null;
-  amount: string;
+  amountToSort: string;
   currency: string;
   accounts: Set<string>;
   onSave: OnSaveFn;
@@ -261,7 +261,15 @@ interface IEditProps {
   onChangeNumNewPosts: (num: number) => void;
 }
 const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
-  const { numNewPosts, onChangeNumNewPosts } = props;
+  const { amountToSort, numNewPosts, onChangeNumNewPosts } = props;
+
+  const [amounts, setAmounts] = useState<List<string>>(() => {
+    const init = [...Array(numNewPosts).fill("0.00")];
+    init[0] = amountToSort;
+    return List(init);
+  });
+
+  invariant(amounts.size === numNewPosts);
 
   return (
     <>
@@ -283,7 +291,8 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 className="w-[11ch] mr-[1ch] p-1 text-right rounded-lg"
                 name={`${ii}-units-number`}
                 required
-                defaultValue={props.amount}
+                value={amounts.get(ii)}
+                onChange={(ev) => setAmounts(amounts.set(ii, ev.target.value))}
                 placeholder="0.00"
               />
               <input
@@ -303,7 +312,15 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                   <PaperAirplaneIcon className="w-5 h-5 inline ml-[1ch]" />
                 </button>
                 <button
-                  onClick={() => onChangeNumNewPosts(numNewPosts + 1)}
+                  onClick={() => {
+                    const sum = amounts.reduce(
+                      (ac, v) => ac + parseFloat(v),
+                      0
+                    );
+                    const rem = parseFloat(amountToSort) - sum;
+                    setAmounts(amounts.push(rem.toFixed(2)));
+                    onChangeNumNewPosts(numNewPosts + 1);
+                  }}
                   type="button"
                 >
                   <PlusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
@@ -333,7 +350,10 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
               </>
             ) : (
               <button
-                onClick={() => onChangeNumNewPosts(numNewPosts - 1)}
+                onClick={() => {
+                  setAmounts(amounts.pop());
+                  onChangeNumNewPosts(numNewPosts - 1);
+                }}
                 type="button"
               >
                 <MinusCircleIcon className="w-5 h-5 inline ml-[1ch]" />
