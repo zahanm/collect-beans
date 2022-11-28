@@ -21,7 +21,7 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { IDirectiveForSort, IDirectiveMod, IPosting } from "./beanTypes";
-import { arrayRange, invariant } from "./utilities";
+import { absDiff, arrayRange, invariant } from "./utilities";
 
 type FwdInputsRef = ForwardedRef<Map<string, HTMLInputElement>>;
 type OnSaveFn = (mod: IDirectiveMod) => void;
@@ -68,6 +68,17 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const saveChanges = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     const form = ev.target as HTMLFormElement;
+    const sum = arrayRange(numNewPosts)
+      .map((ii) => {
+        return parseFloat(form[`${ii}-units-number`].value);
+      })
+      .reduce((acc, v) => acc + v, 0);
+    const reportInput = form[`${numNewPosts - 1}-units-number`];
+    if (absDiff(sum, parseFloat(amountToSort)) > 0.005) {
+      reportInput.setCustomValidity("The transaction does not balance");
+      reportInput.reportValidity();
+      return;
+    }
     const mod: IDirectiveMod = {
       id: props.txn.id,
       type: "replace",
@@ -292,7 +303,10 @@ const EditPosting = forwardRef((props: IEditProps, ref: FwdInputsRef) => {
                 name={`${ii}-units-number`}
                 required
                 value={amounts.get(ii)}
-                onChange={(ev) => setAmounts(amounts.set(ii, ev.target.value))}
+                onChange={(ev) => {
+                  setAmounts(amounts.set(ii, ev.target.value));
+                  ev.target.setCustomValidity("");
+                }}
                 placeholder="0.00"
               />
               <input
