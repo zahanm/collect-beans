@@ -52,7 +52,7 @@ export default function SortReview() {
           txn={dir}
           key={dir.id}
           priorMod={mods.get(dir.id)!}
-          editable={false}
+          postingsEdit={false}
           onRevert={(txnID) => {
             // Delete this mod via an API call
             deleteMod(txnID).catch(errorHandler);

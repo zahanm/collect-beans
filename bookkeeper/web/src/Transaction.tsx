@@ -34,7 +34,7 @@ const TAG_SKIP_SORT = "skip-sort";
 interface IProps {
   txn: IDirectiveForSort;
   accounts?: Set<string>;
-  editable: boolean;
+  postingsEdit: boolean;
   // Must provide either "priodMod" or "onSave". Mutually exclusive.
   priorMod?: IDirectiveMod;
   onSave?: OnSaveFn;
@@ -43,11 +43,11 @@ interface IProps {
 }
 const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   invariant(
-    !props.editable || ref,
+    !props.postingsEdit || ref,
     "Cannot leave out ref param if this is an editable entry"
   );
   invariant(
-    !props.editable || props.accounts,
+    !props.postingsEdit || props.accounts,
     "Must provide accounts if this is an editable entry"
   );
 
@@ -60,29 +60,28 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
   const [numNewPosts, setNumNewPosts] = useState(1);
   const [firstLineEdit, setFirstLineEdit] = useState(false);
 
-  invariant(
-    !firstLineEdit || props.editable,
-    "No input fields if global edit switch is off"
-  );
-
   const saveChanges = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     const form = ev.target as HTMLFormElement;
-    const sum = arrayRange(numNewPosts)
-      .map((ii) => {
-        return parseFloat(form[`${ii}-units-number`].value);
-      })
-      .reduce((acc, v) => acc + v, 0);
-    const reportInput = form[`${numNewPosts - 1}-units-number`];
-    if (absDiff(sum, parseFloat(amountToSort)) > 0.005) {
-      reportInput.setCustomValidity("The transaction does not balance");
-      reportInput.reportValidity();
-      return;
+    if (props.postingsEdit) {
+      const sum = arrayRange(numNewPosts)
+        .map((ii) => {
+          return parseFloat(form[`${ii}-units-number`].value);
+        })
+        .reduce((acc, v) => acc + v, 0);
+      const reportInput = form[`${numNewPosts - 1}-units-number`];
+      if (absDiff(sum, parseFloat(amountToSort)) > 0.005) {
+        reportInput.setCustomValidity("The transaction does not balance");
+        reportInput.reportValidity();
+        return;
+      }
     }
-    const mod: IDirectiveMod = {
+    const mod: IDirectiveMod = props.priorMod || {
       id: props.txn.id,
       type: "replace",
-      postings: arrayRange(numNewPosts).map((ii) => {
+    };
+    if (props.postingsEdit) {
+      mod["postings"] = arrayRange(numNewPosts).map((ii) => {
         return {
           account: form[`${ii}-account`].value,
           units: {
@@ -90,8 +89,8 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
             currency: form[`${ii}-units-currency`].value,
           },
         };
-      }),
-    };
+      });
+    }
     if (firstLineEdit) {
       if (form["payee"].value) {
         mod["payee"] = form["payee"].value;
@@ -111,7 +110,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
         <FirstLine
           txn={props.txn}
           editable={firstLineEdit}
-          saved={!props.editable}
+          saved={!props.postingsEdit}
           priorMod={props.priorMod}
           onRevert={props.onRevert}
           onLink={props.onLink}
@@ -120,7 +119,7 @@ const Transaction = forwardRef((props: IProps, ref: FwdInputsRef) => {
         {entry.postings.map((posting, idx) => (
           <Posting key={idx} posting={posting} priorMod={props.priorMod} />
         ))}
-        {props.editable ? (
+        {props.postingsEdit ? (
           <EditPosting
             id={props.txn.id}
             ref={ref}
@@ -178,14 +177,17 @@ function FirstLine(props: {
         <code className="text-yellow-300">{entry.flag}</code>
         &nbsp;
         {props.editable ? (
-          <input
-            type="text"
-            name="payee"
-            className="text-orange-500 w-[28ch] p-1 rounded-lg"
-            defaultValue={entry.payee}
-            placeholder="Payee"
-            required
-          />
+          <>
+            <input
+              type="text"
+              name="payee"
+              className="text-orange-500 w-[28ch] p-1 rounded-lg"
+              defaultValue={entry.payee}
+              placeholder="Payee"
+              required
+            />
+            <input type="submit" hidden />
+          </>
         ) : (
           <code className="text-orange-300" onClick={props.makeEditable}>
             &quot;

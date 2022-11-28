@@ -135,7 +135,10 @@ export default function SortChoose() {
           key={dir.id}
           priorMod={mods.get(dir.id)!}
           accounts={accounts}
-          editable={false}
+          postingsEdit={false}
+          onSave={(newMod) => {
+            setMods(mods.set(newMod.id, newMod));
+          }}
           onRevert={(txnID) => {
             // Remove the "mod"
             setMods(mods.remove(txnID));
@@ -157,7 +160,7 @@ export default function SortChoose() {
         <Transaction
           txn={dir}
           key={dir.id}
-          editable={true}
+          postingsEdit={true}
           accounts={accounts}
           ref={refs}
           onSave={(newMod) => {
