@@ -182,7 +182,9 @@ function FirstLine(props: {
               type="text"
               name="payee"
               className="text-orange-500 w-[28ch] p-1 rounded-lg"
-              defaultValue={entry.payee}
+              defaultValue={
+                (props.priorMod && props.priorMod.payee) || entry.payee
+              }
               placeholder="Payee"
               required
             />
@@ -201,7 +203,9 @@ function FirstLine(props: {
             type="text"
             name="narration"
             className="text-orange-500 w-[42ch] p-1 rounded-lg"
-            defaultValue={entry.narration}
+            defaultValue={
+              (props.priorMod && props.priorMod.narration) || entry.narration
+            }
             placeholder="Narration"
           />
         ) : (
