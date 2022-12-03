@@ -124,7 +124,7 @@ export default function SortChoose() {
         <div className="w-20 h-20">
           <CircularProgressbarWithChildren value={percent}>
             <small className="text-center w-1/2">
-              {numSorted}/{totalToSort} {percentFmted}%
+              {totalToSort - numSorted}/{totalToSort} &#x23F3; {percentFmted}%
             </small>
           </CircularProgressbarWithChildren>
         </div>
