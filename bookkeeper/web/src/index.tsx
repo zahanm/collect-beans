@@ -9,6 +9,7 @@ import SortOptions from "./SortOptions";
 import SortChoose from "./SortChoose";
 import SortCommit from "./SortCommit";
 import SortReview from "./SortReview";
+import CollectOptions from "./CollectOptions";
 
 import "./index.css";
 
@@ -21,18 +22,27 @@ const router = createBrowserRouter([
   {
     path: "/sort",
     element: <SortOptions />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/sort/choose",
     element: <SortChoose />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/sort/commit",
     element: <SortCommit />,
+    errorElement: <ErrorPage />,
   },
   {
     path: "/sort/review",
     element: <SortReview />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/collect",
+    element: <CollectOptions />,
+    errorElement: <ErrorPage />,
   },
 ]);
 
