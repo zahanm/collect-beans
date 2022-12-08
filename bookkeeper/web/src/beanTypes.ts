@@ -34,3 +34,5 @@ export interface IDirectiveMod {
   payee?: string;
   narration?: string;
 }
+
+export type CollectMode = "transactions" | "balance";

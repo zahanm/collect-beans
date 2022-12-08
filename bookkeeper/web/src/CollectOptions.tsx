@@ -1,28 +1,28 @@
-import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import DisplayProgress, { TProgress } from "./DisplayProgress";
+import { CollectMode } from "./beanTypes";
 import { API, errorHandler } from "./utilities";
 
-const OPTIONS_API = `${API}/collect/options`;
-
-interface IOptionsResponse {
-  collect_mode: string | null;
-  start_date: string | null;
-}
-
 export default function CollectOptions() {
-  const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
-  const [collectMode, setCollectMode] = useState<string>("transactions");
-  const [startDate, setStartDate] = useState<string>(
-    dayjs().format("YYYY-MM-DD")
-  );
+  const [collectMode, setCollectMode] = useState<CollectMode>("transactions");
+  const [copyComplete, setCopyComplete] = useState(false);
 
-  function setStateFromAPI(data: IOptionsResponse) {
-    data.collect_mode && setCollectMode(data.collect_mode);
-    data.start_date && setStartDate(data.start_date);
-  }
+  const copyRef = useRef<HTMLInputElement>(null);
+
+  const params = new URLSearchParams();
+  params.append("mode", collectMode);
+  const url = new URL(`${API}/collect.py`);
+  url.search = params.toString();
+
+  const copyCommand = async () => {
+    if (copyRef.current) {
+      copyRef.current.focus();
+      navigator.clipboard.writeText(copyRef.current.value);
+      setCopyComplete(true);
+      setTimeout(() => setCopyComplete(false), 5 * 1000);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
@@ -31,34 +31,17 @@ export default function CollectOptions() {
         className="my-2"
         onSubmit={(ev) => {
           ev.preventDefault();
-          console.log("submitting form", ev);
-          setAsyncProgress("in-process");
-          const sendData = async () => {
-            console.log("sending data");
-            const body = new FormData(ev.target as HTMLFormElement);
-            const resp = await fetch(OPTIONS_API, {
-              method: "POST",
-              body,
-            });
-            const data = (await resp.json()) as IOptionsResponse;
-            console.log("POST", data);
-            setStateFromAPI(data);
-            setAsyncProgress("success");
-          };
-
-          sendData().catch((err) => {
-            setAsyncProgress("error");
-            errorHandler(err);
-          });
+          console.log("submitting form", ev, collectMode);
         }}
       >
         <p className="py-1">
           <label htmlFor="collect_mode" className="mr-1">
-            Collect mode:
+            Collect mode
           </label>
           <select
             name="collect_mode"
-            defaultValue={collectMode}
+            value={collectMode}
+            onChange={(ev) => setCollectMode(ev.target.value as CollectMode)}
             required
             className="text-black"
           >
@@ -67,33 +50,53 @@ export default function CollectOptions() {
           </select>
         </p>
         <p className="py-1">
-          <label htmlFor="start_from" className="mr-1">
-            Starting date:
-          </label>
           <input
-            type="date"
-            name="start_from"
-            defaultValue={startDate}
-            required
-            className="text-black"
-          ></input>
+            type="text"
+            className="font-mono w-[84ch] text-black p-1"
+            name="copy"
+            value={`python3 <(curl --silent ${url}`}
+            readOnly={true}
+            onFocus={(ev) => ev.target.select()}
+            ref={copyRef}
+          />
+          <button
+            className={`${
+              copyComplete ? "ml-[-7ch]" : "ml-[-5ch]"
+            } bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black`}
+            type="button"
+            onClick={() => copyCommand().catch(errorHandler)}
+            disabled={copyComplete}
+          >
+            {copyComplete ? "copied!" : "copy"}
+          </button>
+        </p>
+        <p className="py-1">
+          <input
+            type="text"
+            className="font-mono w-[84ch] text-black p-1"
+            name="localsecrets"
+            placeholder="Paste the output from the script here"
+          />
+          <button
+            className="ml-[-5ch] bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black"
+            type="button"
+            onClick={() => console.log("paste")}
+          >
+            paste
+          </button>
         </p>
         <p className="text-center">
           <button
             type="submit"
             className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
           >
-            Save in-memory
+            Continue
           </button>
-          <DisplayProgress progress={asyncProgress} className="ml-2" />
         </p>
       </form>
       <div className="mt-2">
-        <Link to={`/`} className="text-sky-400 mr-10">
+        <Link to={`/`} className="text-sky-400">
           Cancel
-        </Link>
-        <Link to={`/collect/choose`} className="text-sky-400">
-          Start
         </Link>
       </div>
     </div>

@@ -9,7 +9,7 @@ import SortOptions from "./SortOptions";
 import SortChoose from "./SortChoose";
 import SortCommit from "./SortCommit";
 import SortReview from "./SortReview";
-import CollectOptions from "./CollectOptions";
+import Collect from "./Collect";
 
 import "./index.css";
 
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/collect",
-    element: <CollectOptions />,
+    element: <Collect />,
     errorElement: <ErrorPage />,
   },
 ]);
