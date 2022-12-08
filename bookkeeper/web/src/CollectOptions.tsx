@@ -9,6 +9,7 @@ export default function CollectOptions() {
   const [copyComplete, setCopyComplete] = useState(false);
 
   const copyRef = useRef<HTMLInputElement>(null);
+  const pasteRef = useRef<HTMLInputElement>(null);
 
   const params = new URLSearchParams();
   params.append("mode", collectMode);
@@ -18,9 +19,15 @@ export default function CollectOptions() {
   const copyCommand = async () => {
     if (copyRef.current) {
       copyRef.current.focus();
-      navigator.clipboard.writeText(copyRef.current.value);
+      await navigator.clipboard.writeText(copyRef.current.value);
       setCopyComplete(true);
       setTimeout(() => setCopyComplete(false), 5 * 1000);
+    }
+  };
+
+  const pasteOutput = async () => {
+    if (pasteRef.current) {
+      pasteRef.current.value = await navigator.clipboard.readText();
     }
   };
 
@@ -61,7 +68,7 @@ export default function CollectOptions() {
           />
           <button
             className={`${
-              copyComplete ? "ml-[-7ch]" : "ml-[-5ch]"
+              copyComplete ? "ml-[-68px]" : "ml-[-50px]"
             } bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black`}
             type="button"
             onClick={() => copyCommand().catch(errorHandler)}
@@ -73,14 +80,15 @@ export default function CollectOptions() {
         <p className="py-1">
           <input
             type="text"
-            className="font-mono w-[84ch] text-black p-1"
+            className="font-mono w-[84ch] text-black p-1 overflow-x-hidden"
             name="localsecrets"
             placeholder="Paste the output from the script here"
+            ref={pasteRef}
           />
           <button
-            className="ml-[-5ch] bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black"
+            className="ml-[-54px] bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black"
             type="button"
-            onClick={() => console.log("paste")}
+            onClick={() => pasteOutput().catch(errorHandler)}
           >
             paste
           </button>
