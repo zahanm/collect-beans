@@ -43,7 +43,8 @@ export default function CollectRun(props: {
               <input
                 type="date"
                 name="start_from"
-                defaultValue={dayjs(startDate).format("YYYY-MM-DD")}
+                value={dayjs(startDate).format("YYYY-MM-DD")}
+                onChange={(ev) => setStartDate(ev.target.value)}
                 required
                 className="text-black px-2"
               />
@@ -52,11 +53,13 @@ export default function CollectRun(props: {
               <label htmlFor="skip_status" className="mr-1">
                 Should skip institution status check
               </label>
-              <select name="skip_status" className="text-black">
+              <select
+                name="skip_status"
+                defaultValue="no"
+                className="text-black"
+              >
                 <option value="yes">Yes</option>
-                <option value="no" selected>
-                  No
-                </option>
+                <option value="no">No</option>
               </select>
             </p>
           </div>

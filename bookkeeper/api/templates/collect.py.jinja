@@ -1,2 +1,36 @@
-lastname = input("what is your last name? > ")
-print("hello {{name}} {}. Welcome.".format(lastname))
+import json
+
+# lastname = input("what is your last name? > ")
+# print("hello {{name}} {}. Welcome.".format(lastname))
+preload = json.loads(
+    """
+{
+  "importers": [
+    {
+      "name": "zahan-chase",
+      "access_token": "abc",
+      "institution_id": "ins_56",
+      "accounts": [
+        {
+          "name": "Liabilities:US:Chase:SapphirePreferred",
+          "plaid_id": "zeJMyeq74MIP7qnKoZkmUNNM08egZ6InvB5AV"
+        }
+      ]
+    },
+    {
+      "name": "first-pub",
+      "access_token": "def",
+      "institution_id": "ins_113974",
+      "accounts": [
+        {
+          "name": "Assets:US:FirstPub:Checking",
+          "plaid_id": "KboBJM5nD7fDPZMADmMXtqnoZkYv18uyxPNyL"
+        }
+      ]
+    }
+  ]
+}
+"""
+)
+print(json.dumps(preload, indent=None))
+# Shell out and send contents on stdin to `pbcopy` command.
