@@ -1,10 +1,13 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { isPropertySignature } from "typescript";
 
 import { CollectMode } from "./beanTypes";
-import { API, errorHandler } from "./utilities";
+import { API, errorHandler, invariant } from "./utilities";
 
-export default function CollectOptions() {
+export default function CollectOptions(props: {
+  onSecretsSubmit: (m: CollectMode, s: string) => void;
+}) {
   const [collectMode, setCollectMode] = useState<CollectMode>("transactions");
   const [copyComplete, setCopyComplete] = useState(false);
 
@@ -39,6 +42,8 @@ export default function CollectOptions() {
         onSubmit={(ev) => {
           ev.preventDefault();
           console.log("submitting form", ev, collectMode);
+          invariant(pasteRef.current);
+          props.onSecretsSubmit(collectMode, pasteRef.current!.value);
         }}
       >
         <p className="py-1">
@@ -61,7 +66,7 @@ export default function CollectOptions() {
             type="text"
             className="font-mono w-[84ch] text-black p-1"
             name="copy"
-            value={`python3 <(curl --silent ${url}`}
+            value={`python3 <(curl --silent "${url}")`}
             readOnly={true}
             onFocus={(ev) => ev.target.select()}
             ref={copyRef}

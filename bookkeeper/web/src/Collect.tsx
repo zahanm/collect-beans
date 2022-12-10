@@ -14,5 +14,14 @@ export default function Collect() {
     invariant(localSecrets != null);
   }
 
-  return collectMode != null ? <div>WIP</div> : <CollectOptions />;
+  return collectMode != null ? (
+    <div>WIP</div>
+  ) : (
+    <CollectOptions
+      onSecretsSubmit={(mode, state) => {
+        setCollectMode(mode);
+        setLocalSecrets(state);
+      }}
+    />
+  );
 }
