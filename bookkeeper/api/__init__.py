@@ -26,6 +26,7 @@ from beancount.scripts.format import align_beancount
 from beancount.ops import validation
 from beancount.parser import printer
 
+from .collect_app import create_collect_app
 from .formatting import DISPLAY_CONTEXT, format_postings, indentation_at
 from .serialise import DirectiveForSort, DirectiveMod, mod_from_dict, to_dict
 
@@ -263,40 +264,7 @@ def create_app():
             "mods": {mod.id: to_dict(mod) for (_, mod) in cache.sorted[:max_txns]},
         }
 
-    # Needed so that it sees my edits to the template file once this app is running
-    app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-    @app.route("/collect.py")
-    def collect_script():
-        def account_schema(acc):
-            return {"name": acc["name"], "plaid_id": acc["id"]}
-
-        def importer_schema(name, imp):
-            return {
-                "name": name,
-                "op_id": imp["op-id"],
-                "op_vault": imp["op-vault"],
-                "institution_id": imp["institution-id"],
-                "accounts": [
-                    account_schema(acc)
-                    for acc in imp["accounts"]
-                    if acc["sync"] == request.args.get("mode", "transactions")
-                ],
-            }
-
-        importers = [
-            importer_schema(name, importer)
-            for name, importer in config["importers"].items()
-            if importer["downloader"] == "plaid"
-            and any(
-                [
-                    acc["sync"] == request.args.get("mode", "transactions")
-                    for acc in importer["accounts"]
-                ]
-            )
-        ]
-        data = {"importers": importers}
-        return render_template("collect.py.jinja", data=json.dumps(data, indent=2))
+    create_collect_app(app, config)
 
     return app
 
