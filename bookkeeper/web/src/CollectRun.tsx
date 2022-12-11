@@ -93,6 +93,9 @@ function Importer(props: { imp: ImporterSchema }) {
         Instituition ID: <code>{imp.institution_id}</code>
       </p>
       <p>
+        Access token: <code>{imp.access_token || "None"}</code>
+      </p>
+      <p>
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
       </p>
       {imp.accounts.map((acc) => (

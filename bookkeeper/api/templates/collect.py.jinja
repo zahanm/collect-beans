@@ -38,7 +38,7 @@ class CollectSecrets:
 
     def fetch_creds_from_op(self, op_id):
         """fetch credentials from 1Password"""
-        op_path = f"op://personal/{op_id}/password"
+        op_path = f"op://personal/{op_id}/access_token"
         logging.debug("op read %s", op_path)
         # fetch the item
         ret = subprocess.check_output(
@@ -52,6 +52,7 @@ class CollectSecrets:
         output = deepcopy(importer)
         del output["op_id"]
         output["access_token"] = self.fetch_creds_from_op(importer["op_id"])
+        assert len(output["access_token"]) > 0
         return output
 
     def copy_to_macos_clipboard(self, s: str):
