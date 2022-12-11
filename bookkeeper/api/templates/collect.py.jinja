@@ -36,9 +36,9 @@ class CollectSecrets:
         if returncode != 0:
             subprocess.run(["op", "signin"])
 
-    def fetch_creds_from_op(self, op_id):
+    def fetch_creds_from_op(self, op_vault, op_id):
         """fetch credentials from 1Password"""
-        op_path = f"op://personal/{op_id}/access_token"
+        op_path = f"op://{op_vault}/{op_id}/access_token"
         logging.debug("op read %s", op_path)
         # fetch the item
         ret = subprocess.check_output(
@@ -51,7 +51,9 @@ class CollectSecrets:
         print_stderr(importer["name"])
         output = deepcopy(importer)
         del output["op_id"]
-        output["access_token"] = self.fetch_creds_from_op(importer["op_id"])
+        output["access_token"] = self.fetch_creds_from_op(
+            importer["op_vault"], importer["op_id"]
+        )
         assert len(output["access_token"]) > 0
         return output
 

@@ -60,10 +60,9 @@ def create_app():
             cache.reset()
             cache.op = "sort"
             cache.destination_file = request.form.get("destination_file")
-            cache.main_file = request.form.get("main_file")
         return {
             "destination_file": cache.destination_file,
-            "main_file": cache.main_file,
+            "main_file": config["beancount"]["main-ledger"],
             "journal_files": [p.name for p in Path("/data").glob("*.beancount")],
         }
 
@@ -121,15 +120,18 @@ def create_app():
                 cache.sorted.append((cache.unsorted[mod_idx], mod))
                 del cache.unsorted[mod_idx]
         if cache.accounts is None:
-            assert cache.main_file is not None
-            all_entries = _parse_journal(str(Path("/data") / cache.main_file))
+            all_entries = _parse_journal(
+                str(Path("/data") / config["beancount"]["main-ledger"])
+            )
             cache.accounts = sorted(
                 [entry.account for entry in all_entries if _is_open_account(entry)]
             )
         if cache.unsorted is None:
             # Load the journal file
-            assert cache.main_file is not None and cache.destination_file is not None
-            all_entries = _parse_journal(str(Path("/data") / cache.main_file))
+            assert cache.destination_file is not None
+            all_entries = _parse_journal(
+                str(Path("/data") / config["beancount"]["main-ledger"])
+            )
             # Load destination file
             with open(Path("/data") / cache.destination_file, "r") as dest:
                 cache.destination_lines = dest.read().splitlines()
@@ -184,9 +186,7 @@ def create_app():
         files), this needs to be a POST.
         """
         assert (
-            cache.destination_lines is not None
-            and cache.destination_file is not None
-            and cache.main_file is not None
+            cache.destination_lines is not None and cache.destination_file is not None
         )
         dest_output = _create_output(cache.destination_lines)
         formatted_output = align_beancount(dest_output)
@@ -199,7 +199,7 @@ def create_app():
             with open(Path(scratch) / cache.destination_file, "w") as dest:
                 dest.write(formatted_output)
             _, errors, _ = loader.load_file(
-                Path(scratch) / cache.main_file,
+                Path(scratch) / config["beancount"]["main-ledger"],
                 # Force slow and hardcore validations.
                 extra_validations=validation.HARDCORE_VALIDATIONS,
             )
@@ -275,6 +275,7 @@ def create_app():
             return {
                 "name": name,
                 "op_id": imp["op-id"],
+                "op_vault": imp["op-vault"],
                 "institution_id": imp["institution-id"],
                 "accounts": [
                     account_schema(acc)
@@ -357,7 +358,6 @@ def _create_output(lines: List[str]) -> str:
 class Cache:
     op: Optional[str] = None
     destination_file: Optional[str] = None
-    main_file: Optional[str] = None
     unsorted: Optional[List[DirectiveForSort]] = None
     destination_lines: Optional[List[str]] = None
     accounts: Optional[List[str]] = None
@@ -367,7 +367,6 @@ class Cache:
     def reset(self):
         self.op = None
         self.destination_file = None
-        self.main_file = None
         self.unsorted = None
         self.destination_lines = None
         self.accounts = None
