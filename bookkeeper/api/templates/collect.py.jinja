@@ -65,7 +65,8 @@ class CollectSecrets:
         out_data = {"importers": out_importers}
         # Shell out and send contents on stdin to `pbcopy` command.
         self.copy_to_macos_clipboard(json.dumps(out_data))
-        print("Copied to macOS copy-paste Clipboard")
+        print("Secrets copied to macOS clipboard.")
+        print("Return to browser to continue.")
 
 
 if __name__ == "__main__":

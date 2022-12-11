@@ -96,7 +96,7 @@ function Importer(props: { imp: ImporterSchema }) {
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
       </p>
       {imp.accounts.map((acc) => (
-        <p className="pl-1" key={acc.name}>
+        <p className="pl-2" key={acc.name}>
           <code>{acc.name}</code>
         </p>
       ))}

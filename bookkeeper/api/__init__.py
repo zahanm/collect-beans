@@ -276,7 +276,11 @@ def create_app():
                 "name": name,
                 "op_id": imp["op-id"],
                 "institution_id": imp["institution-id"],
-                "accounts": [account_schema(acc) for acc in imp["accounts"]],
+                "accounts": [
+                    account_schema(acc)
+                    for acc in imp["accounts"]
+                    if acc["sync"] == request.args.get("mode", "transactions")
+                ],
             }
 
         importers = [
