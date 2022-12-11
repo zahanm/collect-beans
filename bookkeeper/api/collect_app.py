@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 import json
+from time import sleep
 from typing import Any
 
 from flask import Flask, request, render_template
@@ -55,4 +56,8 @@ def create_collect_app(app: Flask, config: Any):
         mode = request.json["mode"]
         assert mode == "transactions" or mode == "balance"
         importer = importer_from_dict(request.json["importer"])
-        return {"returncode": 0, "errors": []}
+        sleep(2)
+        if mode == "transactions":
+            return {"returncode": 0, "errors": []}
+        else:
+            return {"returncode": 1, "errors": ["testing 1 2"]}

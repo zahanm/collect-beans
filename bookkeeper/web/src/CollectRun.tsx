@@ -33,6 +33,7 @@ export default function CollectRun(props: {
   const [startDate, setStartDate] = useState<string>(
     dayjs().subtract(30, "days").format("YYYY-MM-DD")
   );
+  const [errors, setErrors] = useState<Array<string>>([]);
 
   const runImporter = async (importer: ImporterSchema) => {
     const body = {
@@ -50,6 +51,9 @@ export default function CollectRun(props: {
     });
     const data = (await resp.json()) as IRunResponse;
     console.log("POST", data);
+    if (data.returncode != 0) {
+      setErrors(data.errors);
+    }
   };
 
   return (
@@ -61,6 +65,7 @@ export default function CollectRun(props: {
         <Config start={startDate} onChangeStart={(s) => setStartDate(s)} />
       </div>
       <p className="p-4">We have {secrets.importers.length} importers</p>
+      {errors.length > 0 ? <Errors errors={errors} /> : null}
       <div className="grid grid-cols-2">
         {secrets.importers.map((imp) => (
           <Importer
@@ -142,6 +147,18 @@ function Importer(props: {
       >
         Run
       </button>
+    </div>
+  );
+}
+
+function Errors(props: { errors: Array<string> }) {
+  return (
+    <div className="p-4 bg-red-300">
+      {props.errors.map((error) => (
+        <span className="text-red-600" key={error}>
+          {error}
+        </span>
+      ))}
     </div>
   );
 }
