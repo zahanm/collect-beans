@@ -1,4 +1,5 @@
 from itertools import chain, groupby
+import json
 from shutil import copy
 from tempfile import TemporaryDirectory
 import textwrap
@@ -267,7 +268,30 @@ def create_app():
 
     @app.route("/collect.py")
     def collect_script():
-        return render_template("collect.py.jinja", name="Zahan")
+        def account_schema(acc):
+            return {"name": acc["name"], "plaid_id": acc["id"]}
+
+        def importer_schema(name, imp):
+            return {
+                "name": name,
+                "op_id": imp["op-id"],
+                "institution_id": imp["institution-id"],
+                "accounts": [account_schema(acc) for acc in imp["accounts"]],
+            }
+
+        importers = [
+            importer_schema(name, importer)
+            for name, importer in config["importers"].items()
+            if importer["downloader"] == "plaid"
+            and any(
+                [
+                    acc["sync"] == request.args.get("mode", "transactions")
+                    for acc in importer["accounts"]
+                ]
+            )
+        ]
+        data = {"importers": importers}
+        return render_template("collect.py.jinja", data=json.dumps(data, indent=2))
 
     return app
 

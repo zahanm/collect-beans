@@ -1,36 +1,73 @@
+from copy import deepcopy
 import json
+import logging
+import subprocess
+import sys
 
-# lastname = input("what is your last name? > ")
-# print("hello {{name}} {}. Welcome.".format(lastname))
-preload = json.loads(
-    """
-{
-  "importers": [
-    {
-      "name": "zahan-chase",
-      "access_token": "abc",
-      "institution_id": "ins_56",
-      "accounts": [
-        {
-          "name": "Liabilities:US:Chase:SapphirePreferred",
-          "plaid_id": "zeJMyeq74MIP7qnKoZkmUNNM08egZ6InvB5AV"
-        }
-      ]
-    },
-    {
-      "name": "first-pub",
-      "access_token": "def",
-      "institution_id": "ins_113974",
-      "accounts": [
-        {
-          "name": "Assets:US:FirstPub:Checking",
-          "plaid_id": "KboBJM5nD7fDPZMADmMXtqnoZkYv18uyxPNyL"
-        }
-      ]
-    }
-  ]
-}
+DATA_STR = """
+{{data}}
 """
-)
-print(json.dumps(preload, indent=None))
-# Shell out and send contents on stdin to `pbcopy` command.
+
+
+def print_stderr(s: str):
+    print(s, file=sys.stderr)
+
+
+class CollectSecrets:
+    def __init__(self) -> None:
+        self.data = json.loads(DATA_STR.strip())
+
+    def check_that_op_is_present(self):
+        """1Password CLI: https://support.1password.com/command-line/"""
+        # check that op is installed, this will throw if not
+        subprocess.run(
+            ["op", "--version"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    def sign_in_to_op_if_needed(self):
+        returncode = subprocess.call(
+            ["op", "whoami"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if returncode != 0:
+            subprocess.run(["op", "signin"])
+
+    def fetch_creds_from_op(self, op_id):
+        """fetch credentials from 1Password"""
+        op_path = f"op://personal/{op_id}/password"
+        logging.debug("op read %s", op_path)
+        # fetch the item
+        ret = subprocess.check_output(
+            ["op", "read", op_path],
+            text=True,
+        )
+        return ret.strip()
+
+    def importer_schema(self, importer):
+        print_stderr(importer["name"])
+        output = deepcopy(importer)
+        del output["op_id"]
+        output["access_token"] = self.fetch_creds_from_op(importer["op_id"])
+        return output
+
+    def copy_to_macos_clipboard(self, s: str):
+        subprocess.run(["pbcopy"], input=s, text=True)
+
+    def run(self):
+        self.check_that_op_is_present()
+        self.sign_in_to_op_if_needed()
+        print_stderr(f"{len(self.data['importers'])} importers")
+        out_importers = [self.importer_schema(imp) for imp in self.data["importers"]]
+        out_data = {"importers": out_importers}
+        # Shell out and send contents on stdin to `pbcopy` command.
+        self.copy_to_macos_clipboard(json.dumps(out_data))
+        print("Copied to macOS copy-paste Clipboard")
+
+
+if __name__ == "__main__":
+    cs = CollectSecrets()
+    cs.run()
