@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
+import { List, Map as ImmMap } from "immutable";
 import React, { useState } from "react";
 
 import { CollectMode } from "./beanTypes";
+import DisplayProgress, { TProgress } from "./DisplayProgress";
 import { API, errorHandler } from "./utilities";
 
 export interface SecretsSchema {
@@ -34,9 +36,13 @@ export default function CollectRun(props: {
     dayjs().subtract(30, "days").format("YYYY-MM-DD")
   );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
-  const [errors, setErrors] = useState<Array<string>>([]);
+  const [errors, setErrors] = useState<List<string>>(List());
+  const [runProgress, setRunProgress] = useState<ImmMap<string, TProgress>>(
+    ImmMap()
+  );
 
   const runImporter = async (importer: ImporterSchema) => {
+    setRunProgress(runProgress.set(importer.name, "in-process"));
     const body = {
       start: startDate,
       end: endDate,
@@ -52,8 +58,15 @@ export default function CollectRun(props: {
     });
     const data = (await resp.json()) as IRunResponse;
     console.log("POST", data);
-    if (data.returncode != 0) {
-      setErrors(data.errors);
+    if (data.returncode !== 0) {
+      setErrors(errors.concat(data.errors));
+      setRunProgress(runProgress.set(importer.name, "error"));
+    } else {
+      setRunProgress(runProgress.set(importer.name, "success"));
+      setTimeout(
+        () => setRunProgress(runProgress.remove(importer.name)),
+        5 * 1000
+      );
     }
   };
 
@@ -71,12 +84,13 @@ export default function CollectRun(props: {
         />
       </div>
       <p className="p-4">We have {secrets.importers.length} importers</p>
-      {errors.length > 0 ? <Errors errors={errors} /> : null}
+      {errors.size > 0 ? <Errors errors={errors} /> : null}
       <div className="grid grid-cols-2">
         {secrets.importers.map((imp) => (
           <Importer
             imp={imp}
             runner={(imp) => runImporter(imp).catch(errorHandler)}
+            runprogress={runProgress.get(imp.name)}
             key={imp.name}
           />
         ))}
@@ -145,6 +159,7 @@ function Config(props: {
 function Importer(props: {
   imp: ImporterSchema;
   runner: (i: ImporterSchema) => void;
+  runprogress: TProgress | undefined;
 }) {
   const { imp } = props;
   return (
@@ -164,18 +179,27 @@ function Importer(props: {
           <code>{acc.name}</code>
         </p>
       ))}
-      <button
-        type="button"
-        className="absolute top-1 right-1 p-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
-        onClick={() => props.runner(imp)}
-      >
-        Run
-      </button>
+      <span className="absolute top-1 right-1">
+        {props.runprogress ? (
+          <DisplayProgress
+            progress={props.runprogress}
+            className="inline-block m-1"
+          />
+        ) : (
+          <button
+            type="button"
+            className="p-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
+            onClick={() => props.runner(imp)}
+          >
+            Run
+          </button>
+        )}
+      </span>
     </div>
   );
 }
 
-function Errors(props: { errors: Array<string> }) {
+function Errors(props: { errors: List<string> }) {
   return (
     <div className="p-4 bg-red-300">
       {props.errors.map((error) => (
