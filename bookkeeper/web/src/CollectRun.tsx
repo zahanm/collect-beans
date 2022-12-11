@@ -33,12 +33,13 @@ export default function CollectRun(props: {
   const [startDate, setStartDate] = useState<string>(
     dayjs().subtract(30, "days").format("YYYY-MM-DD")
   );
+  const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
   const [errors, setErrors] = useState<Array<string>>([]);
 
   const runImporter = async (importer: ImporterSchema) => {
     const body = {
       start: startDate,
-      end: dayjs().format("YYYY-MM-DD"),
+      end: endDate,
       mode,
       importer,
     };
@@ -62,7 +63,12 @@ export default function CollectRun(props: {
         We're running in <strong>{mode}</strong> mode
       </p>
       <div className="p-4">
-        <Config start={startDate} onChangeStart={(s) => setStartDate(s)} />
+        <Config
+          start={startDate}
+          onChangeStart={(s) => setStartDate(s)}
+          end={endDate}
+          onChangeEnd={(e) => setEndDate(e)}
+        />
       </div>
       <p className="p-4">We have {secrets.importers.length} importers</p>
       {errors.length > 0 ? <Errors errors={errors} /> : null}
@@ -79,7 +85,12 @@ export default function CollectRun(props: {
   );
 }
 
-function Config(props: { start: string; onChangeStart: (s: string) => void }) {
+function Config(props: {
+  start: string;
+  onChangeStart: (s: string) => void;
+  end: string;
+  onChangeEnd: (s: string) => void;
+}) {
   return (
     <>
       <h2 className="text-lg">Options</h2>
@@ -87,13 +98,26 @@ function Config(props: { start: string; onChangeStart: (s: string) => void }) {
         <div>
           <p className="py-1">
             <label htmlFor="start_from" className="mr-1">
-              Starting date
+              Start
             </label>
             <input
               type="date"
               name="start_from"
-              value={dayjs(props.start).format("YYYY-MM-DD")}
+              value={props.start}
               onChange={(ev) => props.onChangeStart(ev.target.value)}
+              required
+              className="text-black px-2"
+            />
+          </p>
+          <p className="py-1">
+            <label htmlFor="end_on" className="mr-1">
+              End
+            </label>
+            <input
+              type="date"
+              name="end_on"
+              value={props.end}
+              onChange={(ev) => props.onChangeEnd(ev.target.value)}
               required
               className="text-black px-2"
             />
