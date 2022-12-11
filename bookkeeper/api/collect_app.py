@@ -1,7 +1,10 @@
+from datetime import date, timedelta
 import json
 from typing import Any
 
 from flask import Flask, request, render_template
+
+from .serialise import importer_from_dict
 
 
 def create_collect_app(app: Flask, config: Any):
@@ -39,3 +42,19 @@ def create_collect_app(app: Flask, config: Any):
         ]
         data = {"importers": importers}
         return render_template("collect.py.jinja", data=json.dumps(data, indent=2))
+
+    @app.route("/collect/fetch", methods=["POST"])
+    def collect_fetch():
+        """
+        Run a Plaid transactions / balance fetch for a particular importer
+        """
+        assert request.json is not None
+        # today = date.today()
+        # request.args.get("start", (today - timedelta(days=30)).isoformat())
+        start = date.fromisoformat(request.json["start"])
+        # request.args.get("end", today.isoformat())
+        end = date.fromisoformat(request.json["end"])
+        mode = request.json["mode"]  # request.args.get("mode", "transactions")
+        assert mode == "transactions" or mode == "balance"
+        importer = importer_from_dict(request.json["importer"])
+        return {"returncode": 0, "errors": []}

@@ -108,3 +108,30 @@ def mod_from_dict(item: Any) -> DirectiveMod:
         narration=item["narration"] if "narration" in item else None,
     )
     return mod
+
+
+@dataclass(frozen=True)
+class Account:
+    name: str
+    plaid_id: str
+
+
+@dataclass(frozen=True)
+class Importer:
+    name: str
+    access_token: str
+    institution_id: str
+    accounts: Set[Account]
+
+
+def importer_from_dict(item: Any) -> Importer:
+    return Importer(
+        name=item["name"],
+        access_token=item["access_token"],
+        institution_id=item["institution_id"],
+        accounts={_account_from_dict(a) for a in item["accounts"]},
+    )
+
+
+def _account_from_dict(item: Any) -> Account:
+    return Account(name=item["name"], plaid_id=item["plaid_id"])
