@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import React, { useState } from "react";
 
 import { CollectMode } from "./beanTypes";
+import { API, errorHandler } from "./utilities";
 
 export interface SecretsSchema {
   importers: Array<ImporterSchema>;
@@ -17,6 +18,12 @@ interface AccountSchema {
   plaid_id: string;
 }
 
+const RUN_API = `${API}/collect/run`;
+interface IRunResponse {
+  returncode: number;
+  errors: Array<string>;
+}
+
 export default function CollectRun(props: {
   mode: CollectMode;
   secrets: SecretsSchema;
@@ -26,6 +33,24 @@ export default function CollectRun(props: {
   const [startDate, setStartDate] = useState<string>(
     dayjs().subtract(30, "days").format("YYYY-MM-DD")
   );
+
+  const runImporter = async (importer: ImporterSchema) => {
+    const body = {
+      start: startDate,
+      end: dayjs().format("YYYY-MM-DD"),
+      mode,
+      importer,
+    };
+    const resp = await fetch(RUN_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    const data = (await resp.json()) as IRunResponse;
+    console.log("POST", data);
+  };
 
   return (
     <div>
@@ -38,7 +63,11 @@ export default function CollectRun(props: {
       <p className="p-4">We have {secrets.importers.length} importers</p>
       <div className="grid grid-cols-2">
         {secrets.importers.map((imp) => (
-          <Importer imp={imp} key={imp.name} />
+          <Importer
+            imp={imp}
+            runner={(imp) => runImporter(imp).catch(errorHandler)}
+            key={imp.name}
+          />
         ))}
       </div>
     </div>
@@ -84,10 +113,13 @@ function Config(props: { start: string; onChangeStart: (s: string) => void }) {
   );
 }
 
-function Importer(props: { imp: ImporterSchema }) {
+function Importer(props: {
+  imp: ImporterSchema;
+  runner: (i: ImporterSchema) => void;
+}) {
   const { imp } = props;
   return (
-    <div className="border-solid border-2 rounded-lg p-4 m-1">
+    <div className="border-solid border-2 rounded-lg p-4 m-1 relative">
       <h3>{imp.name}</h3>
       <p>
         Instituition ID: <code>{imp.institution_id}</code>
@@ -103,6 +135,13 @@ function Importer(props: { imp: ImporterSchema }) {
           <code>{acc.name}</code>
         </p>
       ))}
+      <button
+        type="button"
+        className="absolute top-1 right-1 p-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
+        onClick={() => props.runner(imp)}
+      >
+        Run
+      </button>
     </div>
   );
 }
