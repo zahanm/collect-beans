@@ -15,13 +15,11 @@ interface IProgressResponse {
 
 export default function SortOptions() {
   const [journalFiles, setJournalFiles] = useState<Array<string>>([]);
-  const [mainFile, setMainFile] = useState<string>();
   const [destFile, setDestFile] = useState<string>();
   const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
 
   function setStateFromAPI(data: IProgressResponse) {
     setJournalFiles(data.journal_files);
-    data.main_file && setMainFile(data.main_file);
     data.destination_file && setDestFile(data.destination_file);
   }
 
@@ -66,24 +64,6 @@ export default function SortOptions() {
           });
         }}
       >
-        <p className="py-1">
-          <label htmlFor="main_file" className="mr-1">
-            Main file:
-          </label>
-          <select
-            name="main_file"
-            value={mainFile}
-            onChange={(ev) => setMainFile(ev.target.value)}
-            required
-            className="text-black"
-          >
-            {journalFiles.map((f) => (
-              <option value={f} key={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-        </p>
         <p className="py-1">
           <label htmlFor="destination_file" className="mr-1">
             Destination file:
