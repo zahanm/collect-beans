@@ -1,10 +1,12 @@
 from datetime import date, timedelta
 import json
+import logging
 from time import sleep
 from typing import Any
 
 from flask import Flask, request, render_template
 
+from .collect_plaid import PlaidCollector
 from .serialise import importer_from_dict
 
 
@@ -15,7 +17,11 @@ def create_collect_app(app: Flask, config: Any):
     @app.route("/collect.py")
     def collect_script():
         def account_schema(acc):
-            return {"name": acc["name"], "plaid_id": acc["id"]}
+            return {
+                "name": acc["name"],
+                "plaid_id": acc["id"],
+                "currency": acc["currency"],
+            }
 
         def importer_schema(name, imp):
             return {
@@ -44,6 +50,10 @@ def create_collect_app(app: Flask, config: Any):
         data = {"importers": importers}
         return render_template("collect.py.jinja", data=json.dumps(data, indent=2))
 
+    collector = PlaidCollector(config)
+    # TODO remove this
+    logging.getLogger().setLevel(logging.DEBUG)
+
     @app.route("/collect/run", methods=["POST"])
     def collect_run():
         """
@@ -56,8 +66,15 @@ def create_collect_app(app: Flask, config: Any):
         mode = request.json["mode"]
         assert mode == "transactions" or mode == "balance"
         importer = importer_from_dict(request.json["importer"])
-        sleep(2)
         if mode == "transactions":
+            # collect
+            account_to_txns = collector.fetch_transactions(start, end, importer)
+            # insert and write new file
+            print(account_to_txns)
+            # return status
             return {"returncode": 0, "errors": []}
         else:
-            return {"returncode": 1, "errors": ["testing 1 2"]}
+            return {
+                "returncode": 1,
+                "errors": ["Balance mode is unimplemented as-yet."],
+            }

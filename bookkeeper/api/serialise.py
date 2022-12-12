@@ -114,6 +114,7 @@ def mod_from_dict(item: Any) -> DirectiveMod:
 class Account:
     name: str
     plaid_id: str
+    currency: str
 
 
 @dataclass(frozen=True)
@@ -134,4 +135,6 @@ def importer_from_dict(item: Any) -> Importer:
 
 
 def _account_from_dict(item: Any) -> Account:
-    return Account(name=item["name"], plaid_id=item["plaid_id"])
+    return Account(
+        name=item["name"], plaid_id=item["plaid_id"], currency=item["currency"]
+    )
