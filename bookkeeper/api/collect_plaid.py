@@ -1,7 +1,7 @@
 from datetime import date
 import json
 import logging
-from typing import Any, List
+from typing import Any, Dict, List
 
 from beancount.core import flags
 from beancount.core.number import D
@@ -37,7 +37,9 @@ class PlaidCollector:
         api_client = ApiClient(configuration)
         self.client = PlaidApi(api_client)
 
-    def fetch_transactions(self, start: date, end: date, importer: Importer):
+    def fetch_transactions(
+        self, start: date, end: date, importer: Importer
+    ) -> Dict[str, Entries]:
         # the transactions in the response are paginated, so make multiple calls while increasing the offset to
         # retrieve all transactions
         transactions: List[PlaidTransaction] = []
@@ -53,24 +55,27 @@ class PlaidCollector:
                     end_date=end,
                     options=opts,
                 )
-                logging.debug(
-                    json.dumps(req.to_dict(), indent=2, sort_keys=True, default=str)
+                logging.info(
+                    f"{importer.name}: %s",
+                    json.dumps(req.to_dict(), indent=2, sort_keys=True, default=str),
                 )
                 response: TransactionsGetResponse = self.client.transactions_get(req)
             except ApiException as e:
                 logging.warning("Plaid error: %s", e.body)
-                # TODO return the error
-                return
+                raise e
             transactions.extend(response.transactions)
             if first_response is None:
                 first_response = response
                 total_transactions = response.total_transactions
+            logging.info(
+                f"{importer.name}: Fetched {len(response.transactions)} transactions"
+            )
             logging.debug(
-                "> FETCH TXNS: %s",
+                "> RAW FETCHED TXNS: %s",
                 json.dumps(response.to_dict(), indent=2, sort_keys=True, default=str),
             )
 
-        def construct_ledger(account_meta):
+        def construct_ledger(account_meta) -> Entries:
             assert first_response is not None
             # find the matching account in Plaid response
             account: AccountBase = next(
@@ -80,7 +85,7 @@ class PlaidCollector:
             )
             if account is None:
                 logging.warning("Not present in response: %s", account_meta.name)
-                return
+                return []
             currency = account_meta.currency
             ledger = []
             for transaction in transactions:
@@ -105,7 +110,8 @@ class PlaidCollector:
                     ),
                     Posting(
                         account=TODO_ACCOUNT,
-                        units=Amount(None, None),
+                        # In practice, beancount libs are fine with this
+                        units=None,  # type: ignore
                         cost=None,
                         price=None,
                         flag=None,

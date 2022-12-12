@@ -2,11 +2,13 @@ from datetime import date, timedelta
 import json
 import logging
 from time import sleep
-from typing import Any
+from typing import Any, List
 
 from flask import Flask, request, render_template
+from plaid import ApiException
 
 from .collect_plaid import PlaidCollector
+from .collect_editor import LedgerEditor
 from .serialise import importer_from_dict
 
 
@@ -51,8 +53,7 @@ def create_collect_app(app: Flask, config: Any):
         return render_template("collect.py.jinja", data=json.dumps(data, indent=2))
 
     collector = PlaidCollector(config)
-    # TODO remove this
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
 
     @app.route("/collect/run", methods=["POST"])
     def collect_run():
@@ -66,13 +67,22 @@ def create_collect_app(app: Flask, config: Any):
         mode = request.json["mode"]
         assert mode == "transactions" or mode == "balance"
         importer = importer_from_dict(request.json["importer"])
+        errors: List[str] = []
         if mode == "transactions":
             # collect
-            account_to_txns = collector.fetch_transactions(start, end, importer)
-            # insert and write new file
-            print(account_to_txns)
+            try:
+                account_to_txns = collector.fetch_transactions(start, end, importer)
+            except ApiException as e:
+                errors.append(str(e.body))
+            else:
+                # insert and write new file
+                for account, txns in account_to_txns.items():
+                    try:
+                        LedgerEditor.insert(config, account, txns)
+                    except RuntimeError as re:
+                        errors.append(str(re))
             # return status
-            return {"returncode": 0, "errors": []}
+            return {"returncode": len(errors), "errors": errors}
         else:
             return {
                 "returncode": 1,

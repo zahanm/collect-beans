@@ -203,9 +203,9 @@ function Errors(props: { errors: List<string> }) {
   return (
     <div className="p-4 bg-red-300">
       {props.errors.map((error) => (
-        <span className="text-red-600" key={error}>
+        <p className="text-red-600" key={error}>
           {error}
-        </span>
+        </p>
       ))}
     </div>
   );

@@ -53,7 +53,7 @@ def create_sort_app(app: Flask, config: Any):
             cache.destination_file = request.form.get("destination_file")
         return {
             "destination_file": cache.destination_file,
-            "main_file": config["beancount"]["main-ledger"],
+            "main_file": config["files"]["main-ledger"],
             "journal_files": [p.name for p in Path("/data").glob("*.beancount")],
         }
 
@@ -112,7 +112,7 @@ def create_sort_app(app: Flask, config: Any):
                 del cache.unsorted[mod_idx]
         if cache.accounts is None:
             all_entries = _parse_journal(
-                str(Path("/data") / config["beancount"]["main-ledger"])
+                str(Path("/data") / config["files"]["main-ledger"])
             )
             cache.accounts = sorted(
                 [entry.account for entry in all_entries if _is_open_account(entry)]
@@ -121,7 +121,7 @@ def create_sort_app(app: Flask, config: Any):
             # Load the journal file
             assert cache.destination_file is not None
             all_entries = _parse_journal(
-                str(Path("/data") / config["beancount"]["main-ledger"])
+                str(Path("/data") / config["files"]["main-ledger"])
             )
             # Load destination file
             with open(Path("/data") / cache.destination_file, "r") as dest:
@@ -190,7 +190,7 @@ def create_sort_app(app: Flask, config: Any):
             with open(Path(scratch) / cache.destination_file, "w") as dest:
                 dest.write(formatted_output)
             _, errors, _ = loader.load_file(
-                Path(scratch) / config["beancount"]["main-ledger"],
+                Path(scratch) / config["files"]["main-ledger"],
                 # Force slow and hardcore validations.
                 extra_validations=validation.HARDCORE_VALIDATIONS,
             )
