@@ -17,9 +17,7 @@ from plaid.model.transactions_get_request_options import TransactionsGetRequestO
 from plaid.model.transactions_get_response import TransactionsGetResponse
 
 from .serialise import Importer
-
-# Temp account used by Sorting later to know which txns to pull out
-TODO_ACCOUNT = "Equity:TODO"
+from .utilities import TODO_ACCOUNT
 
 
 class PlaidCollector:

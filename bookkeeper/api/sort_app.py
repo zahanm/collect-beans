@@ -26,9 +26,9 @@ from .serialise import DirectiveForSort
 from .sort_cache import Cache
 from .formatting import DISPLAY_CONTEXT, indentation_at
 from .serialise import DirectiveForSort, DirectiveMod, mod_from_dict, to_dict
+from .utilities import TODO_ACCOUNT, parse_journal
 
 SUPPORTED_DIRECTIVES = {Transaction}
-TODO_ACCOUNT = "Equity:TODO"
 TAG_SKIP_SORT = "skip-sort"
 DELETED_LINE = "\0"
 DEFAULT_MAX_TXNS = 20
@@ -111,7 +111,7 @@ def create_sort_app(app: Flask, config: Any):
                 cache.sorted.append((cache.unsorted[mod_idx], mod))
                 del cache.unsorted[mod_idx]
         if cache.accounts is None:
-            all_entries = _parse_journal(
+            all_entries = parse_journal(
                 str(Path("/data") / config["files"]["main-ledger"])
             )
             cache.accounts = sorted(
@@ -120,7 +120,7 @@ def create_sort_app(app: Flask, config: Any):
         if cache.unsorted is None:
             # Load the journal file
             assert cache.destination_file is not None
-            all_entries = _parse_journal(
+            all_entries = parse_journal(
                 str(Path("/data") / config["files"]["main-ledger"])
             )
             # Load destination file
@@ -253,11 +253,6 @@ def create_sort_app(app: Flask, config: Any):
             "sorted": [to_dict(drs) for (drs, _) in cache.sorted[:max_txns]],
             "mods": {mod.id: to_dict(mod) for (_, mod) in cache.sorted[:max_txns]},
         }
-
-
-def _parse_journal(fname: str) -> Entries:
-    entries, _errors, _options_map = loader.load_file(fname)
-    return entries
 
 
 def _accounts(entry: Directive) -> Set[str]:

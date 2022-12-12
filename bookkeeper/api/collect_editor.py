@@ -9,10 +9,8 @@ from beancount.ingest import similar
 from beancount.parser import printer
 from beancount.scripts.format import align_beancount
 
-from .formatting import DISPLAY_CONTEXT
-
-# Name of metadata field to be set to indicate that the entry is a likely duplicate.
-DUPLICATE_META = "__duplicate__"
+from .formatting import DISPLAY_CONTEXT, DUPLICATE_META, format_entries
+from .utilities import parse_journal
 
 
 class LedgerEditor:
@@ -23,7 +21,7 @@ class LedgerEditor:
         """
         # Parse the existing ledger files
         main_ledger = Path("/data") / config["files"]["main-ledger"]
-        existing_entries = _parse_journal(str(main_ledger))
+        existing_entries = parse_journal(str(main_ledger))
 
         # Flag the duplicates
         cls.annotate_duplicate_entries(new_entries, existing_entries)
@@ -40,7 +38,7 @@ class LedgerEditor:
         # -1 since we're going from line number to position, but then +1 for doing this on the next line
         insert_pos = lineno
         destination_lines.insert(
-            insert_pos, "\n" + _format_entries(new_entries).rstrip()
+            insert_pos, "\n" + format_entries(new_entries, "").rstrip()
         )
 
         # Run the beancount auto-formatter
@@ -100,22 +98,3 @@ class LedgerEditor:
         for entry in new_entries:
             if id(entry) in duplicate_set:
                 entry.meta[DUPLICATE_META] = True
-
-
-# TODO de-dupe this with the function in sort_app.py
-def _parse_journal(fname: str) -> Entries:
-    entries, _errors, _options_map = loader.load_file(fname)
-    return entries
-
-
-# TODO Use the one from .formatting
-def _format_entries(entries: Entries) -> str:
-    outf = StringIO()
-    for entry in entries:
-        outs = printer.format_entry(entry, DISPLAY_CONTEXT)
-        if DUPLICATE_META in entry.meta:
-            # Make it a comment
-            outs = textwrap.indent(outs, "; ")
-        outf.write(outs)
-        outf.write("\n")  # add a newline
-    return outf.getvalue()

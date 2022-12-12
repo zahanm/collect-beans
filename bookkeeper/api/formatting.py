@@ -9,6 +9,8 @@ from beancount.core.data import (
     Posting,
 )
 
+from .utilities import DUPLICATE_META
+
 DISPLAY_CONTEXT = DisplayContext()
 DISPLAY_CONTEXT.set_commas(True)
 
@@ -17,6 +19,9 @@ def format_entries(entries: Entries, indent: str) -> str:
     outf = StringIO()
     for entry in entries:
         outs = printer.format_entry(entry, DISPLAY_CONTEXT)
+        if DUPLICATE_META in entry.meta:
+            # Make it a comment
+            outs = textwrap.indent(outs, "; ")
         outf.write(textwrap.indent(outs, indent))
         outf.write("\n")  # add a newline
     return outf.getvalue()
