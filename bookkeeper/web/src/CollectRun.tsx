@@ -148,7 +148,7 @@ export default function CollectRun(props: {
     };
 
     fetchLastImported().catch(errorHandler);
-  }, [otherImporters, secrets.importers]);
+  }, [otherImporters, secrets.importers, thirtyDaysAgo]);
 
   useEffect(() => {
     const fetchOtherImporters = async () => {
@@ -175,7 +175,7 @@ export default function CollectRun(props: {
         We're running in <strong>{mode}</strong> mode
       </p>
       <div className="p-4">
-        <Backup />
+        <Backup anyimporterrunning={anyImporterRunning} />
       </div>
       <div className="p-4">
         <Config
@@ -219,7 +219,7 @@ interface IBackupResponse {
   };
 }
 
-function Backup() {
+function Backup(props: { anyimporterrunning: boolean }) {
   const [showDiff, setShowDiff] = useState<boolean>(false);
   const [before, setBefore] = useState<string>();
   const [after, setAfter] = useState<string>();
@@ -238,10 +238,10 @@ function Backup() {
       setDiff(data.contents.old, data.contents.new);
     };
 
-    if (showDiff) {
+    if (bkpProgress !== "in-process") {
       fetchDiff().catch(errorHandler);
     }
-  }, [showDiff]);
+  }, [showDiff, bkpProgress, props.anyimporterrunning]);
 
   useEffect(() => {
     const runBackup = async () => {
@@ -265,10 +265,11 @@ function Backup() {
       <h2 className="text-lg">Backup</h2>
       <p>
         <button
-          className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
+          className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black disabled:text-gray-400 disabled:border-gray-400"
           onClick={() => setShowDiff((show) => !show)}
+          disabled={!showDiff && before === after}
         >
-          {showDiff ? "Hide diff" : "View diff"}
+          {showDiff ? "Hide diff" : before === after ? "No diff" : "View diff"}
         </button>
         <span>
           <button
