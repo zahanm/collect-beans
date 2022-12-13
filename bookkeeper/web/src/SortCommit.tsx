@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import { Map as ImmMap } from "immutable";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/20/solid";
 
 import { API, errorHandler } from "./utilities";
 
@@ -22,6 +26,7 @@ export default function SortCommit() {
   const [before, setBefore] = useState<string>();
   const [after, setAfter] = useState<string>();
   const [errors, setErrors] = useState<ImmMap<string, string>>(ImmMap());
+  const [checkPassed, setCheckPassed] = useState<boolean>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,23 +60,15 @@ export default function SortCommit() {
     });
     const data = (await resp.json()) as ICheckResponse;
     console.log("POST", data);
+    setCheckPassed(data.check);
     setErrors(ImmMap(data.errors));
   };
 
   return (
     <div>
-      <p>Commit the edits</p>
-      <div className="max-h-[90vh] overflow-y-auto">
-        <ReactDiffViewer
-          oldValue={before}
-          newValue={after}
-          splitView={false}
-          useDarkTheme={true}
-          compareMethod={DiffMethod.LINES}
-        />
-      </div>
+      <h2 className="text-xl p-4">Commit the edits</h2>
       {errors.size > 0 && (
-        <div className="mx-6 text-red-500">
+        <div className="px-6 py-3 text-red-500 bg-red-200">
           <h2 className="text-xl my-2 font-semibold">
             New edits failed <code>bean-check</code>!
           </h2>
@@ -86,16 +83,33 @@ export default function SortCommit() {
           </pre>
         </div>
       )}
-      <div className="mt-3 text-center">
+      <div className="max-h-[90vh] overflow-y-auto">
+        <ReactDiffViewer
+          oldValue={before}
+          newValue={after}
+          splitView={false}
+          useDarkTheme={true}
+          compareMethod={DiffMethod.LINES}
+        />
+      </div>
+      <div className="my-3 text-center">
         <Link to={`/sort/choose`} className="text-sky-400">
           Back
         </Link>
-        <button
-          className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black mx-6"
-          onClick={() => beanCheck().catch(errorHandler)}
-        >
-          Check
-        </button>
+        <span className="mx-6">
+          <button
+            className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+            onClick={() => beanCheck().catch(errorHandler)}
+          >
+            Check
+          </button>
+          {checkPassed && (
+            <CheckCircleIcon className="w-5 h-5 inline ml-2 text-green-500" />
+          )}
+          {errors.size > 0 && (
+            <ExclamationTriangleIcon className="w-5 h-5 inline ml-2  text-red-500" />
+          )}
+        </span>
         <button
           className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
           onClick={() => sendData().catch(errorHandler)}
