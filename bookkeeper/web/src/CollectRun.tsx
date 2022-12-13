@@ -165,6 +165,10 @@ export default function CollectRun(props: {
     fetchOtherImporters().catch(errorHandler);
   }, [mode]);
 
+  const anyImporterRunning = runProgress
+    .valueSeq()
+    .some((p) => p === "in-process");
+
   return (
     <div>
       <p className="p-4">
@@ -192,6 +196,7 @@ export default function CollectRun(props: {
             lastimported={lastImported}
             start={startDates.get(imp.name)!}
             onChangeStart={(d) => setStartDates((sds) => sds.set(imp.name, d))}
+            anyimporterrunning={anyImporterRunning}
           />
         ))}
       </div>
@@ -347,6 +352,7 @@ function Importer(props: {
   lastimported: ImmMap<string, string>;
   start: string;
   onChangeStart: (d: string) => void;
+  anyimporterrunning: boolean;
 }) {
   const { imp } = props;
   return (
@@ -377,6 +383,7 @@ function Importer(props: {
           onChange={(ev) => props.onChangeStart(ev.target.value)}
           required
           className="bg-slate-300 text-black p-1 w-[12ch] mr-2 border-solid border-2 rounded-lg"
+          disabled={props.anyimporterrunning}
         />
         {props.runprogress ? (
           <DisplayProgress
@@ -388,6 +395,7 @@ function Importer(props: {
             type="button"
             className="p-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
             onClick={() => props.runner(imp)}
+            disabled={props.anyimporterrunning}
           >
             Run
           </button>
