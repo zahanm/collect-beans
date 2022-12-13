@@ -115,9 +115,11 @@ export default function CollectRun(props: {
   useEffect(() => {
     const fetchLastImported = async () => {
       const params = new URLSearchParams();
-      secrets.importers.forEach((imp) =>
-        imp.accounts.forEach((acc) => params.append("accounts", acc.name))
-      );
+      otherImporters
+        .concat(secrets.importers)
+        .forEach((imp) =>
+          imp.accounts.forEach((acc) => params.append("accounts", acc.name))
+        );
       const url = new URL(LAST_IMPORTED_API);
       url.search = params.toString();
       const resp = await fetch(url);
@@ -127,17 +129,24 @@ export default function CollectRun(props: {
     };
 
     fetchLastImported().catch(errorHandler);
-  }, []);
+  }, [otherImporters, secrets.importers]);
 
   useEffect(() => {
+    const importableAccounts = List(secrets.importers)
+      .map((imp) => List(imp.accounts).map((acc) => acc.name))
+      .flatten()
+      .toSet();
     const oldestLastImported = lastImported
+      // only importable accounts
+      .filter((v, k) => importableAccounts.has(k))
       .valueSeq()
-      .filterNot((v) => !!v)
+      // take out the nulls
+      .filter((v) => !!v)
       .min();
     if (oldestLastImported) {
       setStartDate(oldestLastImported);
     }
-  }, [lastImported]);
+  }, [lastImported, secrets.importers]);
 
   useEffect(() => {
     const fetchOtherImporters = async () => {
@@ -152,7 +161,7 @@ export default function CollectRun(props: {
     };
 
     fetchOtherImporters().catch(errorHandler);
-  }, []);
+  }, [mode]);
 
   return (
     <div>
@@ -350,7 +359,7 @@ function Importer(props: {
   runprogress: TProgress | undefined;
   lastimported: ImmMap<string, string>;
 }) {
-  const { imp, lastimported } = props;
+  const { imp } = props;
   return (
     <div className="border-solid border-2 rounded-lg p-4 m-1 relative">
       <h3 className="text-pink-200">{imp.name}</h3>
@@ -416,12 +425,16 @@ function Account(props: {
 }) {
   const { account, lastimported } = props;
   return (
-    <p className="pl-2" key={account.name}>
-      <code className="text-green-300">{account.name}</code>
+    <p className="pl-2 flex justify-between" key={account.name}>
+      <code
+        className={`text-green-300 whitespace-nowrap overflow-x-auto ${
+          lastimported.get(account.name) ? "max-w-[77%]" : ""
+        }`}
+      >
+        {account.name}
+      </code>
       {lastimported.get(account.name) && (
-        <span className="float-right text-amber-200">
-          {lastimported.get(account.name)}
-        </span>
+        <span className="text-amber-200">{lastimported.get(account.name)}</span>
       )}
     </p>
   );
