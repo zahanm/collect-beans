@@ -82,9 +82,14 @@ def create_collect_app(app: Flask, config: Any):
                     except RuntimeError as re:
                         errors.append(str(re))
             # return status
-            return {"returncode": len(errors), "errors": errors}
+            return {
+                "importer": importer.name,
+                "returncode": len(errors),
+                "errors": errors,
+            }
         else:
             return {
+                "importer": importer.name,
                 "returncode": 1,
                 "errors": ["Balance mode is unimplemented as-yet."],
             }

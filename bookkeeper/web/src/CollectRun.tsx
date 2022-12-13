@@ -36,13 +36,17 @@ export default function CollectRun(props: {
     dayjs().subtract(30, "days").format("YYYY-MM-DD")
   );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
-  const [errors, setErrors] = useState<List<string>>(List());
   const [runProgress, setRunProgress] = useState<ImmMap<string, TProgress>>(
     ImmMap()
   );
+  const [errors, setErrors] = useState<ImmMap<string, List<string>>>(ImmMap());
 
   const runImporter = async (importer: ImporterSchema) => {
-    setRunProgress(runProgress.set(importer.name, "in-process"));
+    if (runProgress.get(importer.name) === "error") {
+      // Skip running an error'd importer
+      return;
+    }
+    setRunProgress((rp) => rp.set(importer.name, "in-process"));
     const body = {
       start: startDate,
       end: endDate,
@@ -59,14 +63,20 @@ export default function CollectRun(props: {
     const data = (await resp.json()) as IRunResponse;
     console.log("POST", data);
     if (data.returncode !== 0) {
-      setErrors(errors.concat(data.errors));
-      setRunProgress(runProgress.set(importer.name, "error"));
+      setErrors((errs) => errs.set(importer.name, List(data.errors)));
+      setRunProgress((rp) => rp.set(importer.name, "error"));
     } else {
-      setRunProgress(runProgress.set(importer.name, "success"));
-      setTimeout(
-        () => setRunProgress(runProgress.remove(importer.name)),
-        5 * 1000
-      );
+      setRunProgress((rp) => rp.set(importer.name, "success"));
+      setTimeout(() => {
+        setRunProgress((rp) => rp.remove(importer.name));
+      }, 10 * 1000);
+    }
+  };
+
+  const runAllImporters = async () => {
+    // Run them serially
+    for (const importer of secrets.importers) {
+      await runImporter(importer);
     }
   };
 
@@ -81,6 +91,7 @@ export default function CollectRun(props: {
           onChangeStart={(s) => setStartDate(s)}
           end={endDate}
           onChangeEnd={(e) => setEndDate(e)}
+          onRunAll={() => runAllImporters().catch(errorHandler)}
         />
       </div>
       <p className="p-4">We have {secrets.importers.length} importers</p>
@@ -104,6 +115,7 @@ function Config(props: {
   onChangeStart: (s: string) => void;
   end: string;
   onChangeEnd: (s: string) => void;
+  onRunAll: () => void;
 }) {
   return (
     <>
@@ -147,7 +159,10 @@ function Config(props: {
           </p>
         </div>
         <div className="flex items-center">
-          <button className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black">
+          <button
+            className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
+            onClick={() => props.onRunAll()}
+          >
             Run all
           </button>
         </div>
@@ -199,14 +214,22 @@ function Importer(props: {
   );
 }
 
-function Errors(props: { errors: List<string> }) {
+function Errors(props: { errors: ImmMap<string, List<string>> }) {
   return (
     <div className="p-4 bg-red-300">
-      {props.errors.map((error) => (
-        <p className="text-red-600" key={error}>
-          {error}
-        </p>
-      ))}
+      {props.errors
+        .map((errs, name) => (
+          <div key={name}>
+            <p className="text-red-900 font-semibold">{name}</p>
+            {errs.map((error) => (
+              <p className="text-red-600" key={error}>
+                {error}
+              </p>
+            ))}
+          </div>
+        ))
+        .valueSeq()
+        .toList()}
     </div>
   );
 }
