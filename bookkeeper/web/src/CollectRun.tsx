@@ -366,7 +366,7 @@ function Importer(props: {
       <p>
         Instituition ID: <code>{imp.institution_id}</code>
       </p>
-      <p>
+      <p className="whitespace-nowrap overflow-x-auto">
         Access token:{" "}
         <code className="text-sky-200">{imp.access_token || "None"}</code>
       </p>
@@ -411,7 +411,7 @@ function OtherImporter(props: {
       <p>Downloader: {imp.downloader}</p>
       {imp.importer && <p>Importer: {imp.importer}</p>}
       {imp.instructions && (
-        <p className="overflow-x-auto">{imp.instructions}</p>
+        <p className="overflow-x-auto text-sky-200">{imp.instructions}</p>
       )}
       <p>
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
