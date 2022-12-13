@@ -1,6 +1,6 @@
 from datetime import date
 from pathlib import Path
-from typing import Any, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 from beancount import loader
 from beancount.core.data import Entries, Balance, Directive
@@ -74,12 +74,16 @@ class LedgerEditor:
     def last_imported(
         cls,
         config: Any,
-        account: str,
-    ) -> Optional[date]:
+        accounts: List[str],
+    ) -> Dict[str, Optional[date]]:
         main_ledger = Path("/data") / config["files"]["main-ledger"]
         existing_entries = parse_journal(str(main_ledger))
-        bal = cls.find_last_balance(config, account, existing_entries)
-        return bal.date if bal else None
+
+        def last(account):
+            bal = cls.find_last_balance(config, account, existing_entries)
+            return bal.date if bal else None
+
+        return {account: last(account) for account in accounts}
 
     @classmethod
     def find_last_balance(

@@ -128,12 +128,12 @@ def create_collect_app(app: Flask, config: Any):
     @app.route("/collect/last-imported")
     def collect_last_imported():
         accounts = request.args.getlist("accounts")
-
-        def last_imported(account: str) -> Optional[str]:
-            last = LedgerEditor.last_imported(config, account)
-            return last.isoformat() if last else None
-
-        return {"last": {account: last_imported(account) for account in accounts}}
+        return {
+            "last": {
+                acc: last.isoformat() if last else None
+                for acc, last in LedgerEditor.last_imported(config, accounts).items()
+            }
+        }
 
     @app.route("/collect/other-importers")
     def collect_other_importers():
