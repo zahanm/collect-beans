@@ -19,6 +19,7 @@ interface ImporterSchema {
 interface AccountSchema {
   name: string;
   plaid_id: string;
+  currency: string;
 }
 
 const RUN_API = `${API}/collect/run`;
@@ -30,6 +31,22 @@ interface IRunResponse {
 const LAST_IMPORTED_API = `${API}/collect/last-imported`;
 interface ILastImportedResponse {
   last: Record<string, string>;
+}
+
+const OTHER_IMPORTERS_API = `${API}/collect/other-importers`;
+interface IOtherImportersResponse {
+  importers: Array<OtherImporterSchema>;
+}
+interface OtherImporterSchema {
+  name: string;
+  downloader: string;
+  importer?: string;
+  instructions?: string;
+  accounts: Array<OtherAccountSchema>;
+}
+interface OtherAccountSchema {
+  name: string;
+  currency: string;
 }
 
 export default function CollectRun(props: {
@@ -52,6 +69,9 @@ export default function CollectRun(props: {
   const [lastImported, setLastImported] = useState<ImmMap<string, string>>(
     ImmMap()
   );
+  const [otherImporters, setOtherImporters] = useState<
+    List<OtherImporterSchema>
+  >(List());
 
   const runImporter = async (importer: ImporterSchema) => {
     if (runProgress.get(importer.name) === "error") {
@@ -119,6 +139,21 @@ export default function CollectRun(props: {
     }
   }, [lastImported]);
 
+  useEffect(() => {
+    const fetchOtherImporters = async () => {
+      const params = new URLSearchParams();
+      params.set("mode", mode);
+      const url = new URL(OTHER_IMPORTERS_API);
+      url.search = params.toString();
+      const resp = await fetch(url);
+      const data = (await resp.json()) as IOtherImportersResponse;
+      console.log("GET", data);
+      setOtherImporters(List(data.importers));
+    };
+
+    fetchOtherImporters().catch(errorHandler);
+  }, []);
+
   return (
     <div>
       <p className="p-4">
@@ -147,6 +182,13 @@ export default function CollectRun(props: {
             key={imp.name}
             lastimported={lastImported}
           />
+        ))}
+      </div>
+      <hr />
+      <p className="p-4">We have {otherImporters.size} other importers</p>
+      <div className="grid grid-cols-2">
+        {otherImporters.map((imp) => (
+          <OtherImporter imp={imp} key={imp.name} lastimported={lastImported} />
         ))}
       </div>
     </div>
@@ -323,14 +365,7 @@ function Importer(props: {
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
       </p>
       {imp.accounts.map((acc) => (
-        <p className="pl-2" key={acc.name}>
-          <code className="text-green-300">{acc.name}</code>
-          {lastimported.get(acc.name) && (
-            <span className="float-right text-amber-200">
-              {lastimported.get(acc.name)}
-            </span>
-          )}
-        </p>
+        <Account account={acc} lastimported={props.lastimported} />
       ))}
       <span className="absolute top-1 right-1">
         {props.runprogress ? (
@@ -349,6 +384,46 @@ function Importer(props: {
         )}
       </span>
     </div>
+  );
+}
+
+function OtherImporter(props: {
+  imp: OtherImporterSchema;
+  lastimported: ImmMap<string, string>;
+}) {
+  const { imp } = props;
+  return (
+    <div className="border-solid border-2 rounded-lg p-4 m-1 relative">
+      <h3 className="text-pink-200">{imp.name}</h3>
+      <p>Downloader: {imp.downloader}</p>
+      {imp.importer && <p>Importer: {imp.importer}</p>}
+      {imp.instructions && (
+        <p className="overflow-x-auto">{imp.instructions}</p>
+      )}
+      <p>
+        {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
+      </p>
+      {imp.accounts.map((acc) => (
+        <Account account={acc} lastimported={props.lastimported} />
+      ))}
+    </div>
+  );
+}
+
+function Account(props: {
+  account: AccountSchema | OtherAccountSchema;
+  lastimported: ImmMap<string, string>;
+}) {
+  const { account, lastimported } = props;
+  return (
+    <p className="pl-2" key={account.name}>
+      <code className="text-green-300">{account.name}</code>
+      {lastimported.get(account.name) && (
+        <span className="float-right text-amber-200">
+          {lastimported.get(account.name)}
+        </span>
+      )}
+    </p>
   );
 }
 
