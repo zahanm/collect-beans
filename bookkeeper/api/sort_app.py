@@ -158,14 +158,15 @@ def create_sort_app(app: Flask, config: Any):
         dest_output = _create_output(cache.destination_lines)
         # Run the beancount auto-formatter
         formatted_output = align_beancount(dest_output)
+        written = False
         if request.args.get("write", False):
             assert request.method == "POST"
             with open(Path("/data") / cache.destination_file, mode="w") as dest:
                 dest.write(formatted_output)
-        return {
-            "before": before,
-            "after": formatted_output,
-        }
+                written = True
+            # assuming this is written successfully
+            before = formatted_output
+        return {"before": before, "after": formatted_output, "written": written}
 
     @app.route("/sort/check", methods=["POST"])
     def check_sort():

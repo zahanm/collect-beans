@@ -15,6 +15,7 @@ const CHECK_API = `${API}/sort/check`;
 interface ICommitResponse {
   before: string;
   after: string;
+  written: boolean;
 }
 
 interface ICheckResponse {
@@ -27,6 +28,7 @@ export default function SortCommit() {
   const [after, setAfter] = useState<string>();
   const [errors, setErrors] = useState<ImmMap<string, string>>(ImmMap());
   const [checkPassed, setCheckPassed] = useState<boolean>();
+  const [written, setWritten] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +42,7 @@ export default function SortCommit() {
     fetchData().catch(errorHandler);
   }, []);
 
-  const sendData = async () => {
+  const writeChanges = async () => {
     const params = new URLSearchParams();
     params.append("write", "true");
     const url = new URL(COMMIT_API);
@@ -52,6 +54,7 @@ export default function SortCommit() {
     console.log("POST", data);
     setBefore(data.before);
     setAfter(data.after);
+    setWritten(data.written);
   };
 
   const beanCheck = async () => {
@@ -63,6 +66,19 @@ export default function SortCommit() {
     setCheckPassed(data.check);
     setErrors(ImmMap(data.errors));
   };
+
+  if (written) {
+    return (
+      <div className="h-screen w-screen flex flex-col items-center justify-center">
+        <CheckCircleIcon className="w-20 h-20" />
+        <h2 className="text-2xl">
+          <Link to={`/`} className="hover:underline">
+            Done!
+          </Link>
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -112,7 +128,8 @@ export default function SortCommit() {
         </span>
         <button
           className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
-          onClick={() => sendData().catch(errorHandler)}
+          onClick={() => writeChanges().catch(errorHandler)}
+          disabled={checkPassed === undefined}
         >
           Write Changes
         </button>
