@@ -1,10 +1,9 @@
-from io import StringIO
+from datetime import date
 from pathlib import Path
-import textwrap
-from typing import Any, List
+from typing import Any, List, Optional, Type
 
 from beancount import loader
-from beancount.core.data import Entries, Balance
+from beancount.core.data import Entries, Balance, Directive
 from beancount.ingest import similar
 from beancount.parser import printer
 from beancount.scripts.format import align_beancount
@@ -62,6 +61,30 @@ class LedgerEditor:
         The assumption (which is safe in my journal) is that each account ends its dedicated section with a "balance" entry.
         "destination_entries" itself is a date-ordered list of directives.
         """
+        bal = cls.find_last_balance(config, account, existing_entries)
+        if bal:
+            if len(new_entries) == 1 and bal.date == new_entries[0].date:
+                raise RuntimeError(f"No new updates for {account}")
+            return bal.meta["lineno"]
+        else:
+            # insert at the end of the file
+            return len(destination_lines)
+
+    @classmethod
+    def last_imported(
+        cls,
+        config: Any,
+        account: str,
+    ) -> Optional[date]:
+        main_ledger = Path("/data") / config["files"]["main-ledger"]
+        existing_entries = parse_journal(str(main_ledger))
+        bal = cls.find_last_balance(config, account, existing_entries)
+        return bal.date if bal else None
+
+    @classmethod
+    def find_last_balance(
+        cls, config: Any, account: str, existing_entries: Entries
+    ) -> Optional[Directive]:
         matching_balances = [
             entry
             for entry in existing_entries
@@ -70,16 +93,13 @@ class LedgerEditor:
             and Path(entry.meta["filename"]).name == config["files"]["current-ledger"]
         ]
         if len(matching_balances) == 0:
-            # insert at the end of the file
-            return len(destination_lines)
+            return None
         else:
             newest_balance = max(
                 matching_balances,
                 key=lambda entry: entry.date,
             )
-            if len(new_entries) == 1 and newest_balance.date == new_entries[0].date:
-                raise RuntimeError(f"No new updates for {account}")
-            return newest_balance.meta["lineno"]
+            return newest_balance
 
     @classmethod
     def annotate_duplicate_entries(cls, new_entries, existing_entries):

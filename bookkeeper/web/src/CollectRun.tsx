@@ -27,6 +27,11 @@ interface IRunResponse {
   errors: Array<string>;
 }
 
+const LAST_IMPORTED_API = `${API}/collect/last-imported`;
+interface ILastImportedResponse {
+  last: Record<string, string>;
+}
+
 export default function CollectRun(props: {
   mode: CollectMode;
   secrets: SecretsSchema;
@@ -37,10 +42,16 @@ export default function CollectRun(props: {
     dayjs().subtract(30, "days").format("YYYY-MM-DD")
   );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
+  // Map { importer name -> import progress }
   const [runProgress, setRunProgress] = useState<ImmMap<string, TProgress>>(
     ImmMap()
   );
+  // Map { importer name -> list of errors }
   const [errors, setErrors] = useState<ImmMap<string, List<string>>>(ImmMap());
+  // Map { account name -> last import date in YYYY-MM-DD }
+  const [lastImported, setLastImported] = useState<ImmMap<string, string>>(
+    ImmMap()
+  );
 
   const runImporter = async (importer: ImporterSchema) => {
     if (runProgress.get(importer.name) === "error") {
@@ -81,6 +92,33 @@ export default function CollectRun(props: {
     }
   };
 
+  useEffect(() => {
+    const fetchLastImported = async () => {
+      const params = new URLSearchParams();
+      secrets.importers.forEach((imp) =>
+        imp.accounts.forEach((acc) => params.append("accounts", acc.name))
+      );
+      const url = new URL(LAST_IMPORTED_API);
+      url.search = params.toString();
+      const resp = await fetch(url);
+      const data = (await resp.json()) as ILastImportedResponse;
+      console.log("GET", data);
+      setLastImported(ImmMap(data.last));
+    };
+
+    fetchLastImported().catch(errorHandler);
+  }, []);
+
+  useEffect(() => {
+    const oldestLastImported = lastImported
+      .valueSeq()
+      .filterNot((v) => !!v)
+      .min();
+    if (oldestLastImported) {
+      setStartDate(oldestLastImported);
+    }
+  }, [lastImported]);
+
   return (
     <div>
       <p className="p-4">
@@ -107,6 +145,7 @@ export default function CollectRun(props: {
             runner={(imp) => runImporter(imp).catch(errorHandler)}
             runprogress={runProgress.get(imp.name)}
             key={imp.name}
+            lastimported={lastImported}
           />
         ))}
       </div>
@@ -267,23 +306,30 @@ function Importer(props: {
   imp: ImporterSchema;
   runner: (i: ImporterSchema) => void;
   runprogress: TProgress | undefined;
+  lastimported: ImmMap<string, string>;
 }) {
-  const { imp } = props;
+  const { imp, lastimported } = props;
   return (
     <div className="border-solid border-2 rounded-lg p-4 m-1 relative">
-      <h3>{imp.name}</h3>
+      <h3 className="text-pink-200">{imp.name}</h3>
       <p>
         Instituition ID: <code>{imp.institution_id}</code>
       </p>
       <p>
-        Access token: <code>{imp.access_token || "None"}</code>
+        Access token:{" "}
+        <code className="text-sky-200">{imp.access_token || "None"}</code>
       </p>
       <p>
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
       </p>
       {imp.accounts.map((acc) => (
         <p className="pl-2" key={acc.name}>
-          <code>{acc.name}</code>
+          <code className="text-green-300">{acc.name}</code>
+          {lastimported.get(acc.name) && (
+            <span className="float-right text-amber-200">
+              {lastimported.get(acc.name)}
+            </span>
+          )}
         </p>
       ))}
       <span className="absolute top-1 right-1">

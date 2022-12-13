@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 import subprocess
 from time import sleep
-from typing import Any, List
+from typing import Any, List, Optional
 
 from flask import Flask, request, render_template
 from plaid import ApiException
@@ -99,6 +99,7 @@ def create_collect_app(app: Flask, config: Any):
     @app.route("/collect/backup", methods=["GET", "POST"])
     def collect_backup():
         """
+        Sample command:
         rclone sync --progress accounts/ backup-accounts/current --backup-dir backup-accounts/`date -I`
         """
         current_dir = Path("/data")
@@ -123,3 +124,13 @@ def create_collect_app(app: Flask, config: Any):
         with open(current_dir / config["files"]["current-ledger"], "r") as ledger:
             new_contents = ledger.read()
         return {"contents": {"old": old_contents, "new": new_contents}}
+
+    @app.route("/collect/last-imported")
+    def collect_last_imported():
+        accounts = request.args.getlist("accounts")
+
+        def last_imported(account: str) -> Optional[str]:
+            last = LedgerEditor.last_imported(config, account)
+            return last.isoformat() if last else None
+
+        return {"last": {account: last_imported(account) for account in accounts}}
