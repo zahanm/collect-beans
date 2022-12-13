@@ -240,7 +240,11 @@ function Config(props: {
             <label htmlFor="skip_status" className="mr-1">
               Should skip institution status check
             </label>
-            <select name="skip_status" defaultValue="no" className="text-black">
+            <select
+              name="skip_status"
+              defaultValue="yes"
+              className="text-black"
+            >
               <option value="yes">Yes</option>
               <option value="no">No</option>
             </select>
