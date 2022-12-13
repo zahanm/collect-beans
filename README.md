@@ -1,10 +1,12 @@
 ## `collect-beans`
 
-My collection of [Beancount](http://furius.ca/beancount/) importers and downloaders. Beancount is an implementation of [Plain Text Accounting](https://plaintextaccounting.org/).
+My app for collecting and sorting through [Beancount](https://beancount.github.io/) transactions. Beancount is an implementation of [Plain Text Accounting](https://plaintextaccounting.org/).
 
-`collector.py` is the primary entrypoint to [Plaid](https://plaid.com)-backed fetch transactions → beancount entries.
+This uses [Plaid](https://plaid.com) to fetch transactions.
+
+See the respective READMEs in `bookkeeper/` to set up the app.
 
 ## Dependencies
 
-- 1Password CLI
-- `pdftotext` - `brew install poppler`
+- 1Password CLI on the client machine
+- Docker on the host that will be running this
