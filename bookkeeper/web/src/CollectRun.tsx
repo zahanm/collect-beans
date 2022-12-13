@@ -146,8 +146,7 @@ export default function CollectRun(props: {
       const resp = await fetch(url);
       const data = (await resp.json()) as ILastImportedResponse;
       console.log("GET", data);
-      const last = ImmMap(data.last);
-      setLastImported(last);
+      setLastImported((last) => last.merge(data.last));
       // Set startDates to the oldest last-import for an account in that importer
       setStartDates((sds) =>
         sds.map((_, impname) => {
@@ -155,7 +154,7 @@ export default function CollectRun(props: {
             (imp) => imp.name === impname
           )!;
           const oldestLastImport = List(importer.accounts)
-            .map((acc) => last.get(acc.name))
+            .map((acc) => data.last[acc.name])
             .filter((v) => !!v)
             .min();
           return oldestLastImport
