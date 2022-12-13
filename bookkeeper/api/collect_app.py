@@ -2,6 +2,7 @@ from datetime import date, timedelta
 import json
 import logging
 from pathlib import Path
+import subprocess
 from time import sleep
 from typing import Any, List
 
@@ -100,10 +101,25 @@ def create_collect_app(app: Flask, config: Any):
         """
         rclone sync --progress accounts/ backup-accounts/current --backup-dir backup-accounts/`date -I`
         """
+        current_dir = Path("/data")
+        backups_dir = Path("/backups")
+        if request.method == "POST":
+            args = [
+                "rclone",
+                "sync",
+                str(current_dir),
+                str(backups_dir / "current"),
+                "--backup-dir",
+                f"{backups_dir}/{date.today().isoformat()}",
+                "--exclude",
+                ".git/",
+            ]
+            logging.info(" ".join(args))
+            subprocess.check_call(args)
         with open(
-            Path("/backups/current") / config["files"]["current-ledger"], "r"
+            backups_dir / "current" / config["files"]["current-ledger"], "r"
         ) as backup:
             old_contents = backup.read()
-        with open(Path("/data") / config["files"]["current-ledger"], "r") as ledger:
+        with open(current_dir / config["files"]["current-ledger"], "r") as ledger:
             new_contents = ledger.read()
         return {"contents": {"old": old_contents, "new": new_contents}}

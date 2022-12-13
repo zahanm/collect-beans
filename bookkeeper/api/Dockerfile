@@ -4,6 +4,8 @@ FROM python:3
 
 WORKDIR /app
 
+RUN curl https://rclone.org/install.sh | bash
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
