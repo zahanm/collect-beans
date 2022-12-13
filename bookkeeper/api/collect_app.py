@@ -134,3 +134,43 @@ def create_collect_app(app: Flask, config: Any):
             return last.isoformat() if last else None
 
         return {"last": {account: last_imported(account) for account in accounts}}
+
+    @app.route("/collect/other-importers")
+    def collect_other_importers():
+        def account_schema(acc):
+            return {
+                "name": acc["name"],
+                "currency": acc["currency"],
+            }
+
+        def importer_schema(name, imp):
+            ii = {
+                "name": name,
+                "downloader": imp["downloader"],
+                "accounts": [
+                    account_schema(acc)
+                    for acc in imp["accounts"]
+                    if imp["downloader"] != "plaid"
+                    or "sync" not in acc
+                    or acc["sync"] != request.args.get("mode", "transactions")
+                ],
+            }
+            if "importer" in imp:
+                ii["importer"] = imp["importer"]
+            if "instructions" in imp:
+                ii["instructions"] = imp["instructions"]
+            return ii
+
+        importers = [
+            importer_schema(name, importer)
+            for name, importer in config["importers"].items()
+            if importer["downloader"] != "plaid"
+            or any(
+                [
+                    acc["sync"] != request.args.get("mode", "transactions")
+                    for acc in importer["accounts"]
+                ]
+            )
+        ]
+
+        return {"importers": importers}
