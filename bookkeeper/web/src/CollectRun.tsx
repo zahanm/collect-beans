@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { List, Map as ImmMap } from "immutable";
 import React, { useEffect, useState } from "react";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
@@ -6,6 +7,8 @@ import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import { CollectMode } from "./beanTypes";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
 import { API, errorHandler } from "./utilities";
+
+dayjs.extend(relativeTime);
 
 export interface SecretsSchema {
   importers: Array<ImporterSchema>;
@@ -217,6 +220,9 @@ interface IBackupResponse {
     old: string;
     new: string;
   };
+  timestamps: {
+    last_backup: number;
+  };
 }
 
 function Backup(props: { anyimporterrunning: boolean }) {
@@ -224,10 +230,12 @@ function Backup(props: { anyimporterrunning: boolean }) {
   const [before, setBefore] = useState<string>();
   const [after, setAfter] = useState<string>();
   const [bkpProgress, setBkpProgress] = useState<TProgress>("idle");
+  const [lastBackup, setLastBackup] = useState<number>();
 
-  function setDiff(newbefore: string, newafter: string) {
+  function setDiff(newbefore: string, newafter: string, last: number) {
     setBefore(newbefore);
     setAfter(newafter);
+    setLastBackup(last);
   }
 
   useEffect(() => {
@@ -235,7 +243,11 @@ function Backup(props: { anyimporterrunning: boolean }) {
       const resp = await fetch(BACKUP_API);
       const data = (await resp.json()) as IBackupResponse;
       console.log("GET", data);
-      setDiff(data.contents.old, data.contents.new);
+      setDiff(
+        data.contents.old,
+        data.contents.new,
+        data.timestamps.last_backup
+      );
     };
 
     if (bkpProgress !== "in-process") {
@@ -250,7 +262,11 @@ function Backup(props: { anyimporterrunning: boolean }) {
       });
       const data = (await resp.json()) as IBackupResponse;
       console.log("POST", data);
-      setDiff(data.contents.old, data.contents.new);
+      setDiff(
+        data.contents.old,
+        data.contents.new,
+        data.timestamps.last_backup
+      );
       setBkpProgress("success");
       setTimeout(() => setBkpProgress("idle"), 10 * 1000);
     };
@@ -271,15 +287,18 @@ function Backup(props: { anyimporterrunning: boolean }) {
         >
           {showDiff ? "Hide diff" : before === after ? "No diff" : "View diff"}
         </button>
-        <span>
+        <span className="ml-3">
           <button
-            className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black ml-3"
+            className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
             onClick={() => setBkpProgress("in-process")}
           >
             Run backup
           </button>
           <DisplayProgress progress={bkpProgress} className="m-1" />
         </span>
+        {lastBackup && (
+          <span className="ml-3">Last: {dayjs.unix(lastBackup).fromNow()}</span>
+        )}
       </p>
       {showDiff && before && after ? (
         <div className="max-h-[60vh] overflow-y-auto">

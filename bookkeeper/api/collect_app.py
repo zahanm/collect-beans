@@ -117,13 +117,15 @@ def create_collect_app(app: Flask, config: Any):
             ]
             logging.info(" ".join(args))
             subprocess.check_call(args)
-        with open(
-            backups_dir / "current" / config["files"]["current-ledger"], "r"
-        ) as backup:
+        backup_ledger = backups_dir / "current" / config["files"]["current-ledger"]
+        with open(backup_ledger, "r") as backup:
             old_contents = backup.read()
         with open(current_dir / config["files"]["current-ledger"], "r") as ledger:
             new_contents = ledger.read()
-        return {"contents": {"old": old_contents, "new": new_contents}}
+        return {
+            "contents": {"old": old_contents, "new": new_contents},
+            "timestamps": {"last_backup": backup_ledger.stat().st_mtime},
+        }
 
     @app.route("/collect/last-imported")
     def collect_last_imported():
