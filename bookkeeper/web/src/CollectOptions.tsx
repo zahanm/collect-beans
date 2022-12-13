@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { isPropertySignature } from "typescript";
 
 import { CollectMode } from "./beanTypes";
 import { API, errorHandler, invariant } from "./utilities";
