@@ -374,7 +374,11 @@ function Importer(props: {
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
       </p>
       {imp.accounts.map((acc) => (
-        <Account account={acc} lastimported={props.lastimported} />
+        <Account
+          account={acc}
+          lastimported={props.lastimported}
+          key={acc.name}
+        />
       ))}
       <span className="absolute top-1 right-1">
         {props.runprogress ? (
@@ -413,7 +417,11 @@ function OtherImporter(props: {
         {imp.accounts.length} account{imp.accounts.length > 1 ? "s" : ""}
       </p>
       {imp.accounts.map((acc) => (
-        <Account account={acc} lastimported={props.lastimported} />
+        <Account
+          account={acc}
+          lastimported={props.lastimported}
+          key={acc.name}
+        />
       ))}
     </div>
   );
@@ -425,7 +433,7 @@ function Account(props: {
 }) {
   const { account, lastimported } = props;
   return (
-    <p className="pl-2 flex justify-between" key={account.name}>
+    <p className="pl-2 flex justify-between">
       <code
         className={`text-green-300 whitespace-nowrap overflow-x-auto ${
           lastimported.get(account.name) ? "max-w-[77%]" : ""
