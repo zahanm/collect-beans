@@ -30,7 +30,7 @@ interface IRunResponse {
 
 const LAST_IMPORTED_API = `${API}/collect/last-imported`;
 interface ILastImportedResponse {
-  last: Record<string, string>;
+  last: { [k: string]: string };
 }
 
 const OTHER_IMPORTERS_API = `${API}/collect/other-importers`;
@@ -55,9 +55,6 @@ export default function CollectRun(props: {
 }) {
   const { mode, secrets } = props;
 
-  const [startDate, setStartDate] = useState<string>(
-    dayjs().subtract(30, "days").format("YYYY-MM-DD")
-  );
   const [endDate, setEndDate] = useState<string>(dayjs().format("YYYY-MM-DD"));
   // Map { importer name -> import progress }
   const [runProgress, setRunProgress] = useState<ImmMap<string, TProgress>>(
@@ -73,6 +70,12 @@ export default function CollectRun(props: {
     List<OtherImporterSchema>
   >(List());
 
+  const thirtyDaysAgo = dayjs().subtract(30, "days").format("YYYY-MM-DD");
+  // Map { importer name -> start date in YYYY-MM-DD }
+  const [startDates, setStartDates] = useState<ImmMap<string, string>>(
+    ImmMap(secrets.importers.map((imp) => [imp.name, thirtyDaysAgo]))
+  );
+
   const runImporter = async (importer: ImporterSchema) => {
     if (runProgress.get(importer.name) === "error") {
       // Skip running an error'd importer
@@ -80,7 +83,7 @@ export default function CollectRun(props: {
     }
     setRunProgress((rp) => rp.set(importer.name, "in-process"));
     const body = {
-      start: startDate,
+      start: startDates.get(importer.name)!,
       end: endDate,
       mode,
       importer,
@@ -125,28 +128,27 @@ export default function CollectRun(props: {
       const resp = await fetch(url);
       const data = (await resp.json()) as ILastImportedResponse;
       console.log("GET", data);
-      setLastImported(ImmMap(data.last));
+      const last = ImmMap(data.last);
+      setLastImported(last);
+      // Set startDates to the oldest last-import for an account in that importer
+      setStartDates((sds) =>
+        sds.map((_, impname) => {
+          const importer = secrets.importers.find(
+            (imp) => imp.name === impname
+          )!;
+          const oldestLastImport = List(importer.accounts)
+            .map((acc) => last.get(acc.name))
+            .filter((v) => !!v)
+            .min();
+          return oldestLastImport
+            ? dayjs(oldestLastImport).subtract(3, "days").format("YYYY-MM-DD")
+            : thirtyDaysAgo;
+        })
+      );
     };
 
     fetchLastImported().catch(errorHandler);
   }, [otherImporters, secrets.importers]);
-
-  useEffect(() => {
-    const importableAccounts = List(secrets.importers)
-      .map((imp) => List(imp.accounts).map((acc) => acc.name))
-      .flatten()
-      .toSet();
-    const oldestLastImported = lastImported
-      // only importable accounts
-      .filter((v, k) => importableAccounts.has(k))
-      .valueSeq()
-      // take out the nulls
-      .filter((v) => !!v)
-      .min();
-    if (oldestLastImported) {
-      setStartDate(oldestLastImported);
-    }
-  }, [lastImported, secrets.importers]);
 
   useEffect(() => {
     const fetchOtherImporters = async () => {
@@ -173,8 +175,6 @@ export default function CollectRun(props: {
       </div>
       <div className="p-4">
         <Config
-          start={startDate}
-          onChangeStart={(s) => setStartDate(s)}
           end={endDate}
           onChangeEnd={(e) => setEndDate(e)}
           onRunAll={() => runAllImporters().catch(errorHandler)}
@@ -190,6 +190,8 @@ export default function CollectRun(props: {
             runprogress={runProgress.get(imp.name)}
             key={imp.name}
             lastimported={lastImported}
+            start={startDates.get(imp.name)!}
+            onChangeStart={(d) => setStartDates((sds) => sds.set(imp.name, d))}
           />
         ))}
       </div>
@@ -289,8 +291,6 @@ function Backup() {
 }
 
 function Config(props: {
-  start: string;
-  onChangeStart: (s: string) => void;
   end: string;
   onChangeEnd: (s: string) => void;
   onRunAll: () => void;
@@ -301,21 +301,8 @@ function Config(props: {
       <div className="grid grid-cols-2">
         <div>
           <p className="py-1">
-            <label htmlFor="start_from" className="mr-1">
-              Start
-            </label>
-            <input
-              type="date"
-              name="start_from"
-              value={props.start}
-              onChange={(ev) => props.onChangeStart(ev.target.value)}
-              required
-              className="text-black px-2"
-            />
-          </p>
-          <p className="py-1">
             <label htmlFor="end_on" className="mr-1">
-              End
+              End on
             </label>
             <input
               type="date"
@@ -358,6 +345,8 @@ function Importer(props: {
   runner: (i: ImporterSchema) => void;
   runprogress: TProgress | undefined;
   lastimported: ImmMap<string, string>;
+  start: string;
+  onChangeStart: (d: string) => void;
 }) {
   const { imp } = props;
   return (
@@ -381,6 +370,14 @@ function Importer(props: {
         />
       ))}
       <span className="absolute top-1 right-1">
+        <input
+          type="date"
+          name="start_from"
+          value={props.start}
+          onChange={(ev) => props.onChangeStart(ev.target.value)}
+          required
+          className="bg-slate-300 text-black p-1 w-[12ch] mr-2 border-solid border-2 rounded-lg"
+        />
         {props.runprogress ? (
           <DisplayProgress
             progress={props.runprogress}
