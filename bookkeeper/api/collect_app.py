@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 import json
 import logging
+from pathlib import Path
 from time import sleep
 from typing import Any, List
 
@@ -93,3 +94,16 @@ def create_collect_app(app: Flask, config: Any):
                 "returncode": 1,
                 "errors": ["Balance mode is unimplemented as-yet."],
             }
+
+    @app.route("/collect/backup", methods=["GET", "POST"])
+    def collect_backup():
+        """
+        rclone sync --progress accounts/ backup-accounts/current --backup-dir backup-accounts/`date -I`
+        """
+        with open(
+            Path("/backups/current") / config["files"]["current-ledger"], "r"
+        ) as backup:
+            old_contents = backup.read()
+        with open(Path("/data") / config["files"]["current-ledger"], "r") as ledger:
+            new_contents = ledger.read()
+        return {"contents": {"old": old_contents, "new": new_contents}}

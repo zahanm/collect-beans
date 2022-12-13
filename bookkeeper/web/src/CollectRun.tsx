@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { List, Map as ImmMap } from "immutable";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 
 import { CollectMode } from "./beanTypes";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
@@ -86,6 +87,9 @@ export default function CollectRun(props: {
         We're running in <strong>{mode}</strong> mode
       </p>
       <div className="p-4">
+        <Backup />
+      </div>
+      <div className="p-4">
         <Config
           start={startDate}
           onChangeStart={(s) => setStartDate(s)}
@@ -107,6 +111,90 @@ export default function CollectRun(props: {
         ))}
       </div>
     </div>
+  );
+}
+
+const BACKUP_API = `${API}/collect/backup`;
+interface IBackupResponse {
+  contents: {
+    old: string;
+    new: string;
+  };
+}
+
+function Backup() {
+  const [showDiff, setShowDiff] = useState<boolean>(false);
+  const [before, setBefore] = useState<string>();
+  const [after, setAfter] = useState<string>();
+  const [bkpProgress, setBkpProgress] = useState<TProgress>("idle");
+
+  function setDiff(newbefore: string, newafter: string) {
+    setBefore(newbefore);
+    setAfter(newafter);
+  }
+
+  useEffect(() => {
+    const fetchDiff = async () => {
+      const resp = await fetch(BACKUP_API);
+      const data = (await resp.json()) as IBackupResponse;
+      console.log("GET", data);
+      setDiff(data.contents.old, data.contents.new);
+    };
+
+    if (showDiff) {
+      fetchDiff().catch(errorHandler);
+    }
+  }, [showDiff]);
+
+  useEffect(() => {
+    const runBackup = async () => {
+      const resp = await fetch(BACKUP_API, {
+        method: "POST",
+      });
+      const data = (await resp.json()) as IBackupResponse;
+      console.log("POST", data);
+      setDiff(data.contents.old, data.contents.new);
+      setBkpProgress("success");
+      setTimeout(() => setBkpProgress("idle"), 10 * 1000);
+    };
+
+    if (bkpProgress === "in-process") {
+      runBackup().catch(errorHandler);
+    }
+  }, [bkpProgress]);
+
+  return (
+    <>
+      <h2 className="text-lg">Backup</h2>
+      <p>
+        <button
+          className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black"
+          onClick={() => setShowDiff((show) => !show)}
+        >
+          {showDiff ? "Hide diff" : "View diff"}
+        </button>
+        <span>
+          <button
+            className="bg-slate-700 px-1 border-solid border-2 rounded-lg hover:bg-white hover:text-black ml-3"
+            onClick={() => setBkpProgress("in-process")}
+          >
+            Run backup
+          </button>
+          <DisplayProgress progress={bkpProgress} className="m-1" />
+        </span>
+      </p>
+      {showDiff && before && after ? (
+        <div className="max-h-[60vh] overflow-y-auto">
+          <ReactDiffViewer
+            oldValue={before}
+            newValue={after}
+            splitView={false}
+            useDarkTheme={true}
+            compareMethod={DiffMethod.LINES}
+          />
+        </div>
+      ) : null}
+    </>
   );
 }
 
