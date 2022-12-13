@@ -119,6 +119,21 @@ export default function CollectRun(props: {
   };
 
   useEffect(() => {
+    const fetchOtherImporters = async () => {
+      const params = new URLSearchParams();
+      params.set("mode", mode);
+      const url = new URL(OTHER_IMPORTERS_API);
+      url.search = params.toString();
+      const resp = await fetch(url);
+      const data = (await resp.json()) as IOtherImportersResponse;
+      console.log("GET", data);
+      setOtherImporters(List(data.importers));
+    };
+
+    fetchOtherImporters().catch(errorHandler);
+  }, [mode]);
+
+  useEffect(() => {
     const fetchLastImported = async () => {
       const params = new URLSearchParams();
       otherImporters
@@ -152,21 +167,6 @@ export default function CollectRun(props: {
 
     fetchLastImported().catch(errorHandler);
   }, [otherImporters, secrets.importers, thirtyDaysAgo]);
-
-  useEffect(() => {
-    const fetchOtherImporters = async () => {
-      const params = new URLSearchParams();
-      params.set("mode", mode);
-      const url = new URL(OTHER_IMPORTERS_API);
-      url.search = params.toString();
-      const resp = await fetch(url);
-      const data = (await resp.json()) as IOtherImportersResponse;
-      console.log("GET", data);
-      setOtherImporters(List(data.importers));
-    };
-
-    fetchOtherImporters().catch(errorHandler);
-  }, [mode]);
 
   const anyImporterRunning = runProgress
     .valueSeq()
@@ -297,7 +297,7 @@ function Backup(props: { anyimporterrunning: boolean }) {
           <DisplayProgress progress={bkpProgress} className="m-1" />
         </span>
         {lastBackup && (
-          <span className="ml-3">Last: {dayjs.unix(lastBackup).fromNow()}</span>
+          <span className="ml-3">{dayjs.unix(lastBackup).fromNow()}</span>
         )}
       </p>
       {showDiff && before && after ? (
