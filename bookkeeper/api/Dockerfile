@@ -11,5 +11,5 @@ RUN pip install -r requirements.txt
 
 ENV TZ="America/Los_Angeles"
 
-EXPOSE 5005
-ENTRYPOINT [ "flask", "--app", "src/bookkeeper/api", "run", "--port", "5005", "--host", "0.0.0.0" ]
+EXPOSE 5000
+ENTRYPOINT [ "flask", "--app", "src/bookkeeper/api", "run", "--port", "5000", "--host", "0.0.0.0" ]
