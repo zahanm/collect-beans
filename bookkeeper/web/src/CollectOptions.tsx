@@ -70,16 +70,18 @@ export default function CollectOptions(props: {
             onFocus={(ev) => ev.target.select()}
             ref={copyRef}
           />
-          <button
-            className={`${
-              copyComplete ? "ml-[-68px]" : "ml-[-50px]"
-            } bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black`}
-            type="button"
-            onClick={() => copyCommand().catch(errorHandler)}
-            disabled={copyComplete}
-          >
-            {copyComplete ? "copied!" : "copy"}
-          </button>
+          {window.isSecureContext && (
+            <button
+              className={`${
+                copyComplete ? "ml-[-68px]" : "ml-[-50px]"
+              } bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black`}
+              type="button"
+              onClick={() => copyCommand().catch(errorHandler)}
+              disabled={copyComplete}
+            >
+              {copyComplete ? "copied!" : "copy"}
+            </button>
+          )}
         </p>
         <p className="py-1">
           <input
@@ -89,13 +91,15 @@ export default function CollectOptions(props: {
             placeholder="Paste the output from the script here"
             ref={pasteRef}
           />
-          <button
-            className="ml-[-54px] bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black"
-            type="button"
-            onClick={() => pasteOutput().catch(errorHandler)}
-          >
-            paste
-          </button>
+          {window.isSecureContext && (
+            <button
+              className="ml-[-54px] bg-slate-700 px-1 border-solid border-2 rounded-md hover:bg-white hover:text-black"
+              type="button"
+              onClick={() => pasteOutput().catch(errorHandler)}
+            >
+              paste
+            </button>
+          )}
         </p>
         <p className="text-center">
           <button
