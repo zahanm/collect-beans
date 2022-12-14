@@ -15,7 +15,8 @@ RUN yarn global add serve
 
 COPY . .
 
-RUN yarn build
+ARG API_HOST="http://localhost:5005"
+RUN REACT_APP_API_HOST=${API_HOST} yarn build
 
 EXPOSE 3000
 ENTRYPOINT [ "serve", "build/" ]

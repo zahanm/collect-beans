@@ -36,6 +36,12 @@ npx serve build/
 
 And open [http://localhost:3000](http://localhost:3000)
 
+Now with Docker.
+
+```
+docker build --tag book-web --build-arg API_HOST="http://foo.bar" .
+```
+
 ### `yarn eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
