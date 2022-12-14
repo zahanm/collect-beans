@@ -20,7 +20,7 @@ class InvariantViolationError extends Error {
   }
 }
 
-export const API = "http://localhost:5005";
+export const API = process.env.REACT_APP_API_HOST;
 
 export function absDiff(a: number, b: number): number {
   return Math.abs(Math.abs(a) - Math.abs(b));
