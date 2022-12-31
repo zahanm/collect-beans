@@ -1,20 +1,20 @@
-from datetime import date, timedelta
+from datetime import date
 import json
 import logging
 from pathlib import Path
 import subprocess
-from time import sleep
-from typing import Any, List, Optional
+from typing import Any, List
 
 from flask import Flask, request, render_template
 from plaid import ApiException
 
+from .utilities import Config
 from .collect_plaid import PlaidCollector
 from .collect_editor import LedgerEditor
 from .serialise import importer_from_dict
 
 
-def create_collect_app(app: Flask, config: Any):
+def create_collect_app(app: Flask, config: Config):
     # Needed so that it sees my edits to the template file once this app is running
     app.config["TEMPLATES_AUTO_RELOAD"] = True
 

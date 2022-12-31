@@ -2,7 +2,7 @@ from itertools import chain, groupby
 from shutil import copy
 from tempfile import TemporaryDirectory
 import textwrap
-from typing import Any, Dict, Set, List
+from typing import Set, List
 from pathlib import Path
 from hashlib import sha1
 from copy import deepcopy
@@ -10,7 +10,6 @@ from copy import deepcopy
 from flask import Flask, request
 from beancount import loader
 from beancount.core.data import (
-    Entries,
     Transaction,
     Pad,
     Balance,
@@ -26,7 +25,7 @@ from .serialise import DirectiveForSort
 from .sort_cache import Cache
 from .formatting import DISPLAY_CONTEXT, indentation_at
 from .serialise import DirectiveForSort, DirectiveMod, mod_from_dict, to_dict
-from .utilities import TODO_ACCOUNT, parse_journal
+from .utilities import TODO_ACCOUNT, Config, parse_journal
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TAG_SKIP_SORT = "skip-sort"
@@ -34,7 +33,7 @@ DELETED_LINE = "\0"
 DEFAULT_MAX_TXNS = 20
 
 
-def create_sort_app(app: Flask, config: Any):
+def create_sort_app(app: Flask, config: Config):
     cache = Cache()
 
     @app.route("/sort/progress", methods=["GET", "POST"])
@@ -51,6 +50,7 @@ def create_sort_app(app: Flask, config: Any):
             cache.reset()
             cache.op = "sort"
             cache.destination_file = request.form.get("destination_file")
+            config.reload()
         return {
             "destination_file": cache.destination_file,
             "main_file": config["files"]["main-ledger"],
@@ -272,9 +272,7 @@ def _is_open_account(entry: Directive) -> bool:
     return type(entry) is Open
 
 
-def _auto_categorise(
-    config: Dict[str, Any], id: str, entry: Directive
-) -> DirectiveForSort:
+def _auto_categorise(config: Config, id: str, entry: Directive) -> DirectiveForSort:
     for pat, account in config["categories"].items():
         if pat.lower() in entry.payee.lower():
             return DirectiveForSort(id=id, entry=entry, autocat=account)
