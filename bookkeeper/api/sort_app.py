@@ -47,6 +47,8 @@ def create_sort_app(app: Flask, config: Config):
         Body (form): destination_file, main_file -- both are just the file name
         """
         if request.method == "POST":
+            if len(cache.sorted) > 0:
+                raise UserWarning("You have unsaved sortings that will be lost")
             cache.reset()
             cache.op = "sort"
             cache.destination_file = request.form.get("destination_file")
