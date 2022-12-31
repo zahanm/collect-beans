@@ -114,6 +114,8 @@ def create_collect_app(app: Flask, config: Config):
                 f"{backups_dir}/{date.today().isoformat()}",
                 "--exclude",
                 ".git/",
+                "--exclude",
+                "*.picklecache",
             ]
             logging.info(" ".join(args))
             subprocess.check_call(args)
