@@ -138,6 +138,10 @@ class PlaidCollector:
                 if bal != None:
                     # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
                     bal = round(bal, 2)
+                    if account.type in {"credit", "loan"}:
+                        # the balance is a liability in the case of credit cards, and loans
+                        # https://plaid.com/docs/#account-types
+                        bal = -bal
                     meta = data.new_metadata("foo", 0)
                     entry = Balance._make(
                         [
