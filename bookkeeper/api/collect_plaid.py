@@ -11,6 +11,7 @@ from beancount.core.data import Entries, Transaction, Balance, Posting
 from plaid import ApiException, Configuration, Environment, ApiClient
 from plaid.api.plaid_api import PlaidApi
 from plaid.model.account_base import AccountBase
+from plaid.model.account_type import AccountType
 from plaid.model.transaction import Transaction as PlaidTransaction
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
@@ -138,7 +139,7 @@ class PlaidCollector:
                 if bal != None:
                     # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
                     bal = round(bal, 2)
-                    if account.type in {"credit", "loan"}:
+                    if account.type in [AccountType("credit"), AccountType("loan")]:
                         # the balance is a liability in the case of credit cards, and loans
                         # https://plaid.com/docs/#account-types
                         bal = -bal
