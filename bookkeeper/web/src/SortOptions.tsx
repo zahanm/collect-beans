@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
+import { List } from "immutable";
 
 import { API, errorHandler } from "./utilities";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
@@ -14,13 +16,21 @@ interface IProgressResponse {
 }
 
 export default function SortOptions() {
-  const [journalFiles, setJournalFiles] = useState<Array<string>>([]);
+  const [journalFiles, setJournalFiles] = useState<List<string>>(List());
   const [destFile, setDestFile] = useState<string>();
   const [asyncProgress, setAsyncProgress] = useState<TProgress>("idle");
 
   function setStateFromAPI(data: IProgressResponse) {
-    setJournalFiles(data.journal_files);
-    data.destination_file && setDestFile(data.destination_file);
+    const journalFiles = List(data.journal_files).sort();
+    setJournalFiles(journalFiles);
+    if (data.destination_file) {
+      setDestFile(data.destination_file);
+    } else {
+      const thisYear = `${dayjs().year()}.beancount`;
+      if (journalFiles.contains(thisYear)) {
+        setDestFile(thisYear);
+      }
+    }
   }
 
   useEffect(() => {
