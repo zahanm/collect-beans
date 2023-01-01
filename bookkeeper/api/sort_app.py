@@ -10,11 +10,13 @@ from copy import deepcopy
 from flask import Flask, request
 from beancount import loader
 from beancount.core.data import (
+    Entries,
     Transaction,
     Pad,
     Balance,
     Directive,
     Open,
+    Close,
 )
 from beancount.core.number import D
 from beancount.scripts.format import align_beancount
@@ -112,19 +114,14 @@ def create_sort_app(app: Flask, config: Config):
                 # remove sorted item from to_sort and put it in sorted
                 cache.sorted.append((cache.unsorted[mod_idx], mod))
                 del cache.unsorted[mod_idx]
-        if cache.accounts is None:
-            all_entries = parse_journal(
-                str(Path("/data") / config["files"]["main-ledger"])
-            )
-            cache.accounts = sorted(
-                [entry.account for entry in all_entries if _is_open_account(entry)]
-            )
         if cache.unsorted is None:
-            # Load the journal file
+            assert cache.accounts is None
             assert cache.destination_file is not None
+            # Load the journal file
             all_entries = parse_journal(
                 str(Path("/data") / config["files"]["main-ledger"])
             )
+            cache.accounts = sorted(_open_accounts(all_entries))
             # Load destination file
             with open(Path("/data") / cache.destination_file, "r") as dest:
                 cache.destination_lines = dest.read().splitlines()
@@ -260,18 +257,19 @@ def create_sort_app(app: Flask, config: Config):
 
 def _accounts(entry: Directive) -> Set[str]:
     if type(entry) is Transaction:
-        return set([posting.account for posting in entry.postings])
+        return {posting.account for posting in entry.postings}
     if type(entry) in {Pad, Balance}:
         return {entry.account}
     raise RuntimeError(f"Check SUPPORTED_DIRECTIVES before passing a {type(entry)}")
 
 
-def _is_open_account(entry: Directive) -> bool:
+def _open_accounts(all_entries: Entries) -> Set[str]:
     """
-    We include all accounts, including the closed ones, because you never know if
-    I'm editing an old transaction.
+    Includes all accounts that are currently open (ie, have no "close" directive)
     """
-    return type(entry) is Open
+    open = {entry.account for entry in all_entries if type(entry) is Open}
+    closed = {entry.account for entry in all_entries if type(entry) is Close}
+    return open - closed
 
 
 def _auto_categorise(config: Config, id: str, entry: Directive) -> DirectiveForSort:
