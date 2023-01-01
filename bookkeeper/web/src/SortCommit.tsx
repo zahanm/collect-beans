@@ -84,11 +84,11 @@ export default function SortCommit() {
     <div>
       <h2 className="text-xl p-4">Commit the edits</h2>
       {errors.size > 0 && (
-        <div className="px-6 py-3 text-red-500 bg-red-200">
+        <div className="px-6 py-3 text-red-500 bg-red-200 max-w-full">
           <h2 className="text-xl my-2 font-semibold">
             New edits failed <code>bean-check</code>!
           </h2>
-          <pre>
+          <pre className="overflow-x-auto">
             {errors
               .map((message, hash) => (
                 <p key={hash}>
