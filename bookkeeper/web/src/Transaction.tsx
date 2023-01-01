@@ -434,9 +434,18 @@ const AccountSelector = forwardRef((props: IASProps, refs: FwdInputsRef) => {
         >
           <Combobox.Options className="absolute mt-1 max-h-60 w-[48ch] z-10 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             {filteredAccounts.size === 0 && query !== "" ? (
-              <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                Nothing found.
-              </div>
+              // If nothing is found, allow a custom entry.
+              <Combobox.Option
+                key={query}
+                value={query}
+                className={({ active }) =>
+                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                    active ? "bg-teal-600 text-white" : "text-gray-900"
+                  }`
+                }
+              >
+                <span className="block truncate font-normal">{query}</span>
+              </Combobox.Option>
             ) : (
               filteredAccounts.map((account) => (
                 <Combobox.Option

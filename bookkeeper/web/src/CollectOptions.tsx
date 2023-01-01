@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
 
 import { CollectMode } from "./beanTypes";
 import NavBar from "./NavBar";
