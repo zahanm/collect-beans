@@ -6,6 +6,7 @@ import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 
 import { CollectMode } from "./beanTypes";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
+import NavBar from "./NavBar";
 import { API, errorHandler } from "./utilities";
 
 dayjs.extend(relativeTime);
@@ -209,6 +210,7 @@ export default function CollectRun(props: {
           <OtherImporter imp={imp} key={imp.name} lastimported={lastImported} />
         ))}
       </div>
+      <NavBar />
     </div>
   );
 }

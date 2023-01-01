@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { API, errorHandler } from "./utilities";
+import NavBar from "./NavBar";
 
 const COMMIT_API = `${API}/sort/commit`;
 const CHECK_API = `${API}/sort/check`;
@@ -109,8 +110,10 @@ export default function SortCommit() {
         />
       </div>
       <div className="my-3 text-center">
-        <Link to={`/sort/choose`} className="text-sky-400">
-          Back
+        <Link to={`/sort/choose`}>
+          <button className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black">
+            Back
+          </button>
         </Link>
         <span className="mx-6">
           <button
@@ -134,6 +137,7 @@ export default function SortCommit() {
           Write Changes
         </button>
       </div>
+      <NavBar />
     </div>
   );
 }

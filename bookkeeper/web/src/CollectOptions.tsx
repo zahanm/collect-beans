@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { CollectMode } from "./beanTypes";
+import NavBar from "./NavBar";
 import { API, errorHandler, invariant } from "./utilities";
 
 export default function CollectOptions(props: {
@@ -110,11 +111,7 @@ export default function CollectOptions(props: {
           </button>
         </p>
       </form>
-      <div className="mt-2">
-        <Link to={`/`} className="text-sky-400">
-          Cancel
-        </Link>
-      </div>
+      <NavBar />
     </div>
   );
 }

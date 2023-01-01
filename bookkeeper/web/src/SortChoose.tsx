@@ -8,6 +8,7 @@ import { IDirectiveForSort, IDirectiveMod } from "./beanTypes";
 import Transaction from "./Transaction";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
 import { API, errorHandler } from "./utilities";
+import NavBar from "./NavBar";
 
 const NEXT_API = `${API}/sort/next`;
 const LINK_API = `${API}/sort/link`;
@@ -210,6 +211,7 @@ export default function SortChoose() {
           <DisplayProgress progress={asyncProgress} className="ml-2" />
         </span>
       </div>
+      <NavBar />
     </div>
   );
 }

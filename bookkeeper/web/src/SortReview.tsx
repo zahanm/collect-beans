@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { IDirectiveForSort, IDirectiveMod } from "./beanTypes";
+import NavBar from "./NavBar";
 import Transaction from "./Transaction";
 import { API, errorHandler } from "./utilities";
 
@@ -73,6 +74,7 @@ export default function SortReview() {
           <Link to={`/sort/commit`}>Commit</Link>
         </button>
       </div>
+      <NavBar />
     </div>
   );
 }

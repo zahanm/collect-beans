@@ -5,6 +5,7 @@ import { List } from "immutable";
 
 import { API, errorHandler } from "./utilities";
 import DisplayProgress, { TProgress } from "./DisplayProgress";
+import NavBar from "./NavBar";
 
 const PROGRESS_API = `${API}/sort/progress`;
 
@@ -100,16 +101,17 @@ export default function SortOptions() {
             Save in-memory
           </button>
           <DisplayProgress progress={asyncProgress} className="ml-2" />
+          <Link to={`/sort/choose`} className="ml-2">
+            <button
+              type="button"
+              className="border-solid border-2 rounded-full p-2 hover:bg-white hover:text-black"
+            >
+              Start
+            </button>
+          </Link>
         </p>
       </form>
-      <div className="mt-2">
-        <Link to={`/`} className="text-sky-400 mr-10">
-          Cancel
-        </Link>
-        <Link to={`/sort/choose`} className="text-sky-400">
-          Start
-        </Link>
-      </div>
+      <NavBar />
     </div>
   );
 }
