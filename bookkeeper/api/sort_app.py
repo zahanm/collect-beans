@@ -91,28 +91,13 @@ def create_sort_app(app: Flask, config: Config):
         """
         if request.method == "POST":
             # store the submitted categorisations. insert in the right place to in-memory store
-            assert (
-                request.json is not None
-                and cache.unsorted is not None
-                and cache.destination_lines is not None
-            )
+            assert request.json is not None and cache.unsorted is not None
             mods = [mod_from_dict(dct) for dct in request.json["sorted"]]
             for mod in mods:
                 mod_idx = _index_of(cache.unsorted, mod.id)
-                entry = cache.unsorted[mod_idx]
-                if mod.type == "replace":
-                    assert (
-                        mod.postings is not None
-                        or mod.payee is not None
-                        or mod.narration is not None
-                    )
-                    _replace_with(cache, entry, mod)
-                elif mod.type == "skip":
-                    _add_skip_tag(cache, entry)
-                elif mod.type == "delete":
-                    _delete_transaction(cache, entry)
                 # remove sorted item from to_sort and put it in sorted
-                cache.sorted.append((cache.unsorted[mod_idx], mod))
+                cache.sorted.append(cache.unsorted[mod_idx])
+                cache.mods[mod.id] = mod
                 del cache.unsorted[mod_idx]
         if cache.unsorted is None:
             assert cache.accounts is None
@@ -122,9 +107,6 @@ def create_sort_app(app: Flask, config: Config):
                 str(Path("/data") / config["files"]["main-ledger"])
             )
             cache.accounts = sorted(_open_accounts(all_entries))
-            # Load destination file
-            with open(Path("/data") / cache.destination_file, "r") as dest:
-                cache.destination_lines = dest.read().splitlines()
             to_sort = [entry for entry in all_entries if _is_sortable(cache, entry)]
             # Rank todos by most promising
             categorised = [
@@ -149,12 +131,10 @@ def create_sort_app(app: Flask, config: Config):
         POST
         Args: write=True for this to actually write out to the file
         """
-        assert (
-            cache.destination_lines is not None and cache.destination_file is not None
-        )
+        assert cache.destination_file is not None
         with open(Path("/data") / cache.destination_file) as dest:
             before = dest.read()
-        dest_output = _create_output(cache.destination_lines)
+        dest_output = _create_output(cache)
         # Run the beancount auto-formatter
         formatted_output = align_beancount(dest_output)
         written = False
@@ -176,10 +156,8 @@ def create_sort_app(app: Flask, config: Config):
         Since that is a write operation (though it doesn't touch the original
         files), this needs to be a POST.
         """
-        assert (
-            cache.destination_lines is not None and cache.destination_file is not None
-        )
-        dest_output = _create_output(cache.destination_lines)
+        assert cache.destination_file is not None
+        dest_output = _create_output(cache)
         formatted_output = align_beancount(dest_output)
 
         with TemporaryDirectory() as scratch:
@@ -244,14 +222,17 @@ def create_sort_app(app: Flask, config: Config):
         """
         if request.method == "POST":
             assert cache.unsorted is not None
-            txn_id = request.args.get("txnID")
-            idx = next(i for i, (drs, _) in enumerate(cache.sorted) if drs.id == txn_id)
-            cache.unsorted.insert(0, cache.sorted[idx][0])
+            txn_id = request.args["txnID"]
+            idx = _index_of(cache.sorted, txn_id)
+            cache.unsorted.insert(0, cache.sorted[idx])
             del cache.sorted[idx]
+            del cache.mods[txn_id]
         max_txns = request.args.get("max", DEFAULT_MAX_TXNS)
         return {
-            "sorted": [to_dict(drs) for (drs, _) in cache.sorted[:max_txns]],
-            "mods": {mod.id: to_dict(mod) for (_, mod) in cache.sorted[:max_txns]},
+            "sorted": [to_dict(drs) for drs in cache.sorted[:max_txns]],
+            "mods": {
+                drs.id: to_dict(cache.mods[drs.id]) for drs in cache.sorted[:max_txns]
+            },
         }
 
 
@@ -299,8 +280,26 @@ def _rank_order(entries: List[DirectiveForSort]) -> List[DirectiveForSort]:
     return list(chain.from_iterable(groups))
 
 
-def _create_output(lines: List[str]) -> str:
-    return "\n".join([l for l in lines if l != DELETED_LINE])
+def _create_output(cache: Cache) -> str:
+    assert cache.destination_file is not None
+    # Load destination file
+    with open(Path("/data") / cache.destination_file, "r") as dest:
+        destination_lines = dest.read().splitlines()
+    for id, mod in cache.mods.items():
+        mod_idx = _index_of(cache.sorted, id)
+        entry = cache.sorted[mod_idx]
+        if mod.type == "replace":
+            assert (
+                mod.postings is not None
+                or mod.payee is not None
+                or mod.narration is not None
+            )
+            _replace_with(destination_lines, entry, mod)
+        elif mod.type == "skip":
+            _add_skip_tag(destination_lines, entry)
+        elif mod.type == "delete":
+            _delete_transaction(destination_lines, entry)
+    return "\n".join([l for l in destination_lines if l != DELETED_LINE])
 
 
 def _is_sortable(cache: Cache, entry: Directive) -> bool:
@@ -320,7 +319,9 @@ def _index_of(items: List[DirectiveForSort], id: str) -> int:
     return next(i for i, item in enumerate(items) if item.id == id)
 
 
-def _replace_with(cache: Cache, drs: DirectiveForSort, mod: DirectiveMod):
+def _replace_with(
+    destination_lines: List[str], drs: DirectiveForSort, mod: DirectiveMod
+):
     """
     Replace the todo posting with the $replacements in $destination_lines
     We don't update $entry in cache.to_sort, because it is stored so that we can revert to it
@@ -340,42 +341,39 @@ def _replace_with(cache: Cache, drs: DirectiveForSort, mod: DirectiveMod):
         entry = entry._replace(narration=mod.narration)
     # -1 since we're going from line number to position
     replace_pos = lineno - 1
-    outs = _format_entry(cache, entry, replace_pos)
+    outs = _format_entry(destination_lines, entry, replace_pos)
     outlines = outs.splitlines()
     if len(outlines) > num_lines:
         outlines[num_lines - 1 :] = ["\n".join(outlines[num_lines - 1 :])]
-    assert cache.destination_lines is not None and len(outlines) <= num_lines
-    cache.destination_lines[replace_pos : replace_pos + num_lines] = outlines
+    assert len(outlines) <= num_lines
+    destination_lines[replace_pos : replace_pos + num_lines] = outlines
 
 
-def _add_skip_tag(cache: Cache, drs: DirectiveForSort):
+def _add_skip_tag(destination_lines: List[str], drs: DirectiveForSort):
     # We make a copy, because the original is stored later so that we can revert to it
     entry = deepcopy(drs.entry)
     lineno = entry.meta["lineno"]
     entry = entry._replace(tags=(entry.tags or set()).union({TAG_SKIP_SORT}))
     # -1 since we're going from line number to position
     replace_pos = lineno - 1
-    outs = _format_entry(cache, entry, replace_pos)
-    assert cache.destination_lines is not None
+    outs = _format_entry(destination_lines, entry, replace_pos)
     # Only want the first line, because that's where the tag will go
-    cache.destination_lines[replace_pos] = outs.splitlines()[0]
+    destination_lines[replace_pos] = outs.splitlines()[0]
 
 
-def _format_entry(cache: Cache, entry: Directive, pos: int):
-    assert cache.destination_lines is not None
-    indent = indentation_at(cache.destination_lines[pos])
+def _format_entry(destination_lines: List[str], entry: Directive, pos: int):
+    indent = indentation_at(destination_lines[pos])
     formatted = printer.format_entry(entry, DISPLAY_CONTEXT)
     return textwrap.indent(formatted, indent)
 
 
-def _delete_transaction(cache: Cache, drs: DirectiveForSort):
+def _delete_transaction(destination_lines: List[str], drs: DirectiveForSort):
     lineno = drs.entry.meta["lineno"]
     # -1 since we're going from line number to position
     rm_pos = lineno - 1
     # transaction header; postings; newline
     rm_num = 1 + len(drs.entry.postings) + 1
-    assert cache.destination_lines is not None
     # note that I cannot just remove these lines because then all subsequent line
     # number lookups from "entry.meta" will be off
     # So I remove these later in _create_output()
-    cache.destination_lines[rm_pos : rm_pos + rm_num] = [DELETED_LINE] * rm_num
+    destination_lines[rm_pos : rm_pos + rm_num] = [DELETED_LINE] * rm_num
