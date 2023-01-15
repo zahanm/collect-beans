@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import json
 import logging
 from typing import Any, Dict, List
@@ -7,10 +7,12 @@ from beancount.core import flags
 from beancount.core.number import D
 from beancount.core.amount import Amount
 from beancount.core import data
-from beancount.core.data import Entries, Transaction, Balance, Posting
+from beancount.core.data import Entries, Transaction, Balance, Posting, Pad
 from plaid import ApiException, Configuration, Environment, ApiClient
 from plaid.api.plaid_api import PlaidApi
 from plaid.model.account_base import AccountBase
+from plaid.model.accounts_get_request import AccountsGetRequest
+from plaid.model.accounts_get_response import AccountsGetResponse
 from plaid.model.account_type import AccountType
 from plaid.model.transaction import Transaction as PlaidTransaction
 from plaid.model.transactions_get_request import TransactionsGetRequest
@@ -19,6 +21,9 @@ from plaid.model.transactions_get_response import TransactionsGetResponse
 
 from .serialise import Importer
 from .utilities import TODO_ACCOUNT
+
+
+NET_WORTH_SYNC = "Equity:Net-Worth-Sync"
 
 
 class PlaidCollector:
@@ -159,3 +164,59 @@ class PlaidCollector:
             return ledger
 
         return {acc.name: construct_ledger(acc) for acc in importer.accounts}
+
+    def fetch_balance(self, importer: Importer) -> Dict[str, Entries]:
+        try:
+            req = AccountsGetRequest(access_token=importer.access_token)
+            logging.info(
+                f"{importer.name}: %s",
+                json.dumps(req.to_dict(), indent=2, sort_keys=True, default=str),
+            )
+            response: AccountsGetResponse = self.client.accounts_get(req)
+        except ApiException as e:
+            logging.warning("Plaid error: %s", e.body)
+            raise e
+
+        def pad_and_balance(account_meta) -> Entries:
+            account: AccountBase = next(
+                acc
+                for acc in response.accounts
+                if acc.account_id == account_meta.plaid_id
+            )
+            if account is None:
+                logging.warning("Not present in response: %s", account_meta.name)
+                return []
+            currency = account_meta.currency
+            bal = D(account.balances.current)
+            if bal != None and (bal < 0 or bal > 0):
+                # sadly, plaid-python parses as `float` https://github.com/plaid/plaid-python/issues/136
+                bal = round(bal, 2)
+                if account.type in [AccountType("credit"), AccountType("loan")]:
+                    # the balance is a liability in the case of credit cards, and loans
+                    # https://plaid.com/docs/#account-types
+                    bal = -bal
+                meta = data.new_metadata("foo", 0)
+                return [
+                    Pad._make(
+                        [
+                            meta,
+                            date.today() + timedelta(days=-1),
+                            account_meta.name,
+                            NET_WORTH_SYNC,  # source_account
+                        ]
+                    ),
+                    Balance._make(
+                        [
+                            meta,
+                            date.today(),
+                            account_meta.name,
+                            Amount(bal, currency),
+                            None,  # tolerance
+                            None,  # diff_amount
+                        ]
+                    ),
+                ]
+
+            return []
+
+        return {acc.name: pad_and_balance(acc) for acc in importer.accounts}

@@ -64,13 +64,13 @@ def create_collect_app(app: Flask, config: Config):
         and insert the entries into the current ledger.
         """
         assert request.json is not None
-        start = date.fromisoformat(request.json["start"])
-        end = date.fromisoformat(request.json["end"])
         mode = request.json["mode"]
         assert mode == "transactions" or mode == "balance"
         importer = importer_from_dict(request.json["importer"])
         errors: List[str] = []
         if mode == "transactions":
+            start = date.fromisoformat(request.json["start"])
+            end = date.fromisoformat(request.json["end"])
             # collect
             try:
                 account_to_txns = collector.fetch_transactions(start, end, importer)
@@ -90,10 +90,22 @@ def create_collect_app(app: Flask, config: Config):
                 "errors": errors,
             }
         else:
+            # collect
+            try:
+                account_to_txns = collector.fetch_balance(importer)
+            except ApiException as e:
+                errors.append(str(e.body))
+            else:
+                # insert and write new file
+                for account, txns in account_to_txns.items():
+                    try:
+                        LedgerEditor.insert(config, account, txns)
+                    except RuntimeError as re:
+                        errors.append(str(re))
             return {
                 "importer": importer.name,
-                "returncode": 1,
-                "errors": ["Balance mode is unimplemented as-yet."],
+                "returncode": len(errors),
+                "errors": errors,
             }
 
     @app.route("/collect/backup", methods=["GET", "POST"])
