@@ -23,11 +23,12 @@ from beancount.scripts.format import align_beancount
 from beancount.ops import validation
 from beancount.parser import printer
 
+from .config_app import Config
 from .serialise import DirectiveForSort
 from .sort_cache import Cache
 from .formatting import DISPLAY_CONTEXT, indentation_at
 from .serialise import DirectiveForSort, DirectiveMod, mod_from_dict, to_dict
-from .utilities import TODO_ACCOUNT, Config, parse_journal
+from .utilities import TODO_ACCOUNT, parse_journal
 
 SUPPORTED_DIRECTIVES = {Transaction}
 TAG_SKIP_SORT = "skip-sort"

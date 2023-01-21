@@ -8,9 +8,9 @@ from typing import Any, List
 from flask import Flask, request, render_template
 from plaid import ApiException
 
-from .utilities import Config
 from .collect_plaid import PlaidCollector
 from .collect_editor import LedgerEditor
+from .config_app import Config
 from .serialise import importer_from_dict
 
 
