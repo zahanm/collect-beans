@@ -83,7 +83,7 @@ class PlaidCollector:
             )
             if len(response.transactions) == 0:
                 logging.info(
-                    f"{importer.name}: BREAK! Plaid isn't giving any more txns ({len(transactions)} of {total_transactions})"
+                    f"{importer.name}: BREAK! Plaid isn't giving any more txns, missing {total_transactions - len(transactions)} txn"
                 )
                 break
 
