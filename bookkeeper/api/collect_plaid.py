@@ -75,12 +75,17 @@ class PlaidCollector:
                 first_response = response
                 total_transactions = response.total_transactions
             logging.info(
-                f"{importer.name}: Fetched {len(response.transactions)} transactions"
+                f"{importer.name}: Fetched {len(response.transactions)} transactions ({len(transactions)} of {total_transactions})"
             )
             logging.debug(
                 "> RAW FETCHED TXNS: %s",
                 json.dumps(response.to_dict(), indent=2, sort_keys=True, default=str),
             )
+            if len(response.transactions) == 0:
+                logging.info(
+                    f"{importer.name}: BREAK! Plaid isn't giving any more txns ({len(transactions)} of {total_transactions})"
+                )
+                break
 
         def construct_ledger(account_meta) -> Entries:
             assert first_response is not None
