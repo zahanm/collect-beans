@@ -2,6 +2,7 @@ from datetime import date, timedelta
 import json
 import logging
 from typing import Any, Dict, List
+from time import sleep
 
 from beancount.core import flags
 from beancount.core.number import D
@@ -63,6 +64,8 @@ class PlaidCollector:
                     f"{importer.name}: %s",
                     json.dumps(req.to_dict(), indent=2, sort_keys=True, default=str),
                 )
+                if opts.offset > 0:
+                    sleep(1)  # seconds. To avoid hitting Plaid rate limits.
                 response: TransactionsGetResponse = self.client.transactions_get(req)
             except ApiException as e:
                 logging.warning("Plaid error: %s", e.body)
