@@ -144,6 +144,7 @@ def create_sort_app(app: Flask, config: Config):
             with open(Path("/data") / cache.destination_file, mode="w") as dest:
                 dest.write(formatted_output)
                 written = True
+                cache.reset()
             # assuming this is written successfully
             before = formatted_output
         return {"before": before, "after": formatted_output, "written": written}
