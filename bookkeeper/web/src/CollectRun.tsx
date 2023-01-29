@@ -53,6 +53,8 @@ interface OtherAccountSchema {
   currency: string;
 }
 
+const OVERLAP_IMPORT_DAYS = 1;
+
 export default function CollectRun(props: {
   mode: CollectMode;
   secrets: SecretsSchema;
@@ -159,7 +161,9 @@ export default function CollectRun(props: {
             .filter((v) => !!v)
             .min();
           return oldestLastImport
-            ? dayjs(oldestLastImport).subtract(3, "days").format("YYYY-MM-DD")
+            ? dayjs(oldestLastImport)
+                .subtract(OVERLAP_IMPORT_DAYS, "days")
+                .format("YYYY-MM-DD")
             : thirtyDaysAgo;
         })
       );
